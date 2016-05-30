@@ -20,8 +20,9 @@ def roll_test_dice():
     sleep(5)
 
 def roll_dice():
+    global backpack
     #roll = randint(1,6)  #this is what is screwing up the dice rolling!
-    roll = 6
+    roll = 5
     misc.clearscreen
     print "\nYou walked %d paces and..." % roll
     sleep(1)
@@ -32,11 +33,15 @@ def roll_dice():
         
     elif roll == 2:
         misc.clearscreen()
-        print "Big monster attack!"
+        print "\nYou were attacked by a Big Monster!\n"
+        inventory.backpack["hp"] -= 15
+        print "Your health is now at %d" % inventory.backpack["hp"]
+        sleep(2)
         
     elif roll == 3:
         misc.clearscreen()
         print "You found a weapon!"
+        sleep(2)
         
     elif roll == 4:
         misc.clearscreen()
@@ -44,7 +49,10 @@ def roll_dice():
         
     elif roll == 5:
         misc.clearscreen()
-        print "Small monster attack!"
+        print "\nYou were attacked by a Small Monster!\n"
+        inventory.backpack["hp"] -= 5
+        print "Your health is now at %d" % inventory.backpack["hp"]
+        sleep(2)
         
     else:
         misc.clearscreen()
