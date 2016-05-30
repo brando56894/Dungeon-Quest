@@ -18,7 +18,7 @@ if DEBUG_MODE == "enabled":
 def menu():
     misc.clearscreen()
     global inv
-    print "Current Health: %d" % inventory.inv[0]
+    print "Current Health: %d" % inventory.backpack["health"]
     print "\nWhat would you like to do?\n"
     print "***********************"
     print "** R: Roll Dice      **"
@@ -33,7 +33,7 @@ def menu():
     choice = choice.lower()
     
     if choice == 'r':
-        actions.roll_test_dice()
+        actions.roll_dice()
     
     elif choice == 'l':
         inventory.list_inventory()
