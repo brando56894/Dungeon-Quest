@@ -16,7 +16,7 @@ def menu():
     print "\n####### DEBUG ########################################"
     print "### Attacks:   B)ig S)mall                         ###"
     print "### Find:      W)eapon P)otion G)old               ###"
-    print "### Misc:      H)ealth S)hop  C)hange Health       ###"
+    print "### Misc:      H)ealth V)isit Shop  C)hange Health ###"
     print "### Actions:   PA)Potion Actions R)oll Dice        ###"
     print "### Inventory: LI)List II)Initialize               ###"
     print "######################################################"
@@ -53,7 +53,7 @@ def menu():
     if choice == 'li':
         inventory.list_inventory()
         
-    if choice == 's':
+    if choice == 'v':
         actions.visit_shop()
         
     if choice == 'pa':
