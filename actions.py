@@ -21,8 +21,8 @@ def roll_test_dice():
 
 def roll_dice():
     global backpack
-    #roll = randint(1,6)  #this is what is screwing up the dice rolling!
-    roll = 5
+    roll = randint(1,6)
+    #roll = 5
     misc.clearscreen
     print "\nYou walked %d paces and..." % roll
     sleep(1)
@@ -40,7 +40,7 @@ def roll_dice():
         
     elif roll == 3:
         misc.clearscreen()
-        print "You found a weapon!"
+        print "\nYou found a weapon!"
         sleep(2)
         
     elif roll == 4:
@@ -56,7 +56,7 @@ def roll_dice():
         
     else:
         misc.clearscreen()
-        print "You're safe for the moment!"
+        print "\nYou're safe for the moment!"
         print "Take a minute to catch your breath"
         sleep(2)
         if inventory.backpack["health"] <= 60 and inventory.backpack["potions"] > 0:
@@ -84,46 +84,49 @@ def visit_shop():
             print "\nYou have purchased %d Health Potions." % potions_amount
             inventory.backpack["gold"] -= (potions_amount*20) #subtract the cost of the potions from the total gold
             inventory.backpack["potions"] += potions_amount #add the purchased potions to the total held in inventory
-            sleep(1)
+            sleep(2)
         else:
             print "\nSorry you don't have enough gold!"
-            sleep(1)
+            sleep(2)
             visit_shop()
             
     elif choice == 'w':
         print "\nSorry we're currently out of weapons"
-        sleep(1)
+        sleep(2)
         
     elif choice == 'n':
         print "\nWhy did you come here then?!"
-        sleep(1)
+        sleep(2)
     
     else:
         print "Not a valid choice"
-        sleep(1)
+        sleep(2)
         
 def find_gold(amount):
-    global inv
     inventory.backpack["gold"] = inventory.backpack["gold"] + amount
     print "\nYou found %d gold! You now have %d pieces of gold!" % (amount,inventory.backpack["gold"])
-    sleep(1)
+    sleep(2)
     
 def quit_game():
     print "\nGood Bye!\n"
     exit(0)
     
 def find_potion():
-    global inv
-    sleep(1)
     print "\nYou found a health potion."
-    print "You now have %d health potions in your inventory." % inventory.backpack["potions"]
     inventory.backpack["potions"] += 1
+    print "You now have %d health potions in your inventory." % inventory.backpack["potions"]
+    sleep(2)
     
 def use_potion():
-    global inv
     global backpack
     
-    amount = int(raw_input("\nYou currently have %d health potions. \nHow many would you like to use?\n Each one restores 10 HP " % inventory.backpack["potions"]))
-    inventory.backpack["health"] += (amount*10)
-    inventory.backpack["potions"] -= amount
-    print "\nYour health is now at %d" % inventory.backpack["health"]
+    misc.clearscreen()
+    amount = int(raw_input("\nYou currently have %d health potions. \nHow many would you like to use?\nEach one restores 10 HP: " % inventory.backpack["potions"]))
+    if inventory.backpack["potions"] > 0:
+        inventory.backpack["health"] += (amount*10)
+        inventory.backpack["potions"] -= amount
+        print "\nYour health is now at %d" % inventory.backpack["health"]
+        sleep(2)
+    else:
+        print "\nSorry you don't any potions!\nI hope you can make it!'"
+        sleep(2)

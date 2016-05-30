@@ -24,6 +24,7 @@ def menu():
     print "** R: Roll Dice      **"
     print "** L: List Inventory **"
     print "** V: Visit Shop     **"
+    print "** U: Use Potion     **"
     print "** Q: Quit           **"
     if DEBUG_MODE == "enabled":
         print "** D: Debug Menu     **"
@@ -40,6 +41,9 @@ def menu():
     
     elif choice == 'v':
         actions.visit_shop()
+    
+    elif choice == 'u':
+        actions.use_potion()
     
     elif choice == 'q':
         actions.quit_game()
