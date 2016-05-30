@@ -6,10 +6,9 @@ from time import sleep
 import misc
 
 def initialize():
-    global weapons
     global inv
+    global backpack
     
-    weapons = {'dagger': 5}
     """
     inventory index
     0 health
@@ -18,8 +17,20 @@ def initialize():
     3 xp
     """
     inv = [100,0,0,0]
+    backpack = {
+        "hp": 100,
+        "potions": 0,
+        "gold": 0,
+        "xp": 0,
+        "weapons": {'dagger':5}
+        }
     
 def list_inventory():
-    global inv
-    print "\nYou currently have %d health potions, and %d pieces of gold" % (inv[1],inv[2])
+    #global inv
+    global backpack
+    #print "\nYou currently have %d health potions, and %d pieces of gold" % (inv[1],inv[2])
+    print "\nYou currently have %d health potions, and %d pieces of gold" % (backpack["potions"],backpack["gold"])
+    print "\nYour currently held weapons are:" 
+    for weapon in backpack["weapons"]:
+        print weapon
     sleep(2)
