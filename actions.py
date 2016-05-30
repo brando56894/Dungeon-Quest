@@ -34,8 +34,8 @@ def roll_dice():
     elif roll == 2:
         misc.clearscreen()
         print "\nYou were attacked by a Big Monster!\n"
-        inventory.backpack["hp"] -= 15
-        print "Your health is now at %d" % inventory.backpack["hp"]
+        inventory.backpack["health"] -= 15
+        print "Your health is now at %d" % inventory.backpack["health"]
         sleep(2)
         
     elif roll == 3:
@@ -50,8 +50,8 @@ def roll_dice():
     elif roll == 5:
         misc.clearscreen()
         print "\nYou were attacked by a Small Monster!\n"
-        inventory.backpack["hp"] -= 5
-        print "Your health is now at %d" % inventory.backpack["hp"]
+        inventory.backpack["health"] -= 5
+        print "Your health is now at %d" % inventory.backpack["health"]
         sleep(2)
         
     else:
@@ -59,9 +59,9 @@ def roll_dice():
         print "You're safe for the moment!"
         print "Take a minute to catch your breath"
         sleep(2)
-        if inventory.inv[0] <= 60 and inventory.inv[1] > 0:
+        if inventory.backpack["health"] <= 60 and inventory.backpack["potions"] > 0:
             print "\n*****DANGER*****\n"
-            choice = raw_input("\nYour health is currently at %d, would you like to use a Health Potion? (y or n) " % inventory.inv[0])
+            choice = raw_input("\nYour health is currently at %d, would you like to use a Health Potion? (y or n) " % inventory.backpack["health"])
             choice.lower()
             if choice == 'y':
                 use_potion()
@@ -71,7 +71,7 @@ def roll_dice():
 def visit_shop():
     misc.clearscreen()
     print "\nWhat would you like to purchase?"
-    print "You currently have %d gold coins." % inventory.inv[2]
+    print "You currently have %d gold coins." % inventory.backpack["gold"]
     print "\nP) Health Potions"
     print "W) Weapons"
     print "N) Nothing"
@@ -80,10 +80,10 @@ def visit_shop():
 
     if choice == 'p':
         potions_amount = int(raw_input("\nEach Health Potion is 20 gold coins and restores 10 health. \nHow many would you like to buy?: "))
-        if (potions_amount*20) <= inventory.inv[2]:
+        if (potions_amount*20) <= inventory.backpack["gold"]:
             print "\nYou have purchased %d Health Potions." % potions_amount
-            inventory.inv[2] -= (potions_amount*20) #subtract the cost of the potions from the total gold
-            inventory.inv[1] += potions_amount #add the purchased potions to the total held in inventory
+            inventory.backpack["gold"] -= (potions_amount*20) #subtract the cost of the potions from the total gold
+            inventory.backpack["potions"] += potions_amount #add the purchased potions to the total held in inventory
             sleep(1)
         else:
             print "\nSorry you don't have enough gold!"
@@ -104,8 +104,8 @@ def visit_shop():
         
 def find_gold(amount):
     global inv
-    inventory.inv[2] = inventory.inv[2] + amount
-    print "\nYou found %d gold! You now have %d pieces of gold!" % (amount,inventory.inv[2])
+    inventory.backpack["gold"] = inventory.backpack["gold"] + amount
+    print "\nYou found %d gold! You now have %d pieces of gold!" % (amount,inventory.backpack["gold"])
     sleep(1)
     
 def quit_game():
@@ -116,12 +116,14 @@ def find_potion():
     global inv
     sleep(1)
     print "\nYou found a health potion."
-    print "You now have %d health potions in your inventory." % inventory.inv[1]
-    inventory.inv[1] += 1
+    print "You now have %d health potions in your inventory." % inventory.backpack["potions"]
+    inventory.backpack["potions"] += 1
     
 def use_potion():
     global inv
-    amount = int(raw_input("\nYou currently have %d health potions. \nHow many would you like to use?\n Each one restores 10 HP "))
-    inventory.inv[0] += (amount*10)
-    inventory.inv[2] -= amount
-    print "\nYour health is now at %d" % inventory.inv[0]
+    global backpack
+    
+    amount = int(raw_input("\nYou currently have %d health potions. \nHow many would you like to use?\n Each one restores 10 HP " % inventory.backpack["potions"]))
+    inventory.backpack["health"] += (amount*10)
+    inventory.backpack["potions"] -= amount
+    print "\nYour health is now at %d" % inventory.backpack["health"]
