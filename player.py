@@ -90,5 +90,5 @@ class create(object):
     
     def take_damage(self, damage):
         self.health -= self.damage
-        print "Your health is now at %d" self.health
+        print "Your health is now at %d" % self.health
         return self
