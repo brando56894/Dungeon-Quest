@@ -34,11 +34,11 @@ def menu(newPlayer):
         newPlayer.find_weapon()
         
     if choice == 'p':
-        player.find_potions()
+        newPlayer.find_potions()
         
     if choice == 'g':
-        amount = int(raw_input("How much? "))
-        newPlayer.find_gold(amount)
+        #amount = int(raw_input("How much? "))
+        newPlayer.find_gold()
         
     if choice == 'li':
         newPlayer.list_inventory()
@@ -53,7 +53,6 @@ def menu(newPlayer):
         actions.roll_dice()
     
     if choice == 'c':
-        health = raw_input("To what? ")
+        health = int(raw_input("To what? "))
         newPlayer.set_health(health)
-        print "Health has been changed to %d" % newPlayer.health
         sleep(2)

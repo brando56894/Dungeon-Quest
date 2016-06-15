@@ -37,7 +37,7 @@ def menu():
         newPlayer.list_inventory()
     
     elif choice == 'v':
-        actions.visit_shop()
+        actions.visit_shop(newPlayer)
     
     elif choice == 'u':
         newPlayer.use_potion()
@@ -51,7 +51,7 @@ def menu():
     else:
         print ("\nYou didn't select a valid choice.")
         print ("Please choose again.")
-        sleep(1)
+        sleep(2)
 
 #Starts the game
 print "Dungeon Quest v1.0\n"
