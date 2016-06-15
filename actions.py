@@ -7,7 +7,7 @@ from random import randint
 from random import randrange
 import os
 
-def roll_dice():
+def roll_dice(newPlayer):
     roll = randint(1,6)
     clearscreen
     print "\nYou walked %d paces and..." % roll
@@ -15,7 +15,7 @@ def roll_dice():
     
     if roll == 1:
         clearscreen()
-        newPlayer.find_gold
+        newPlayer.find_gold()
         
     elif roll == 2:
         clearscreen()
@@ -25,7 +25,7 @@ def roll_dice():
         
     elif roll == 3:
         clearscreen()
-        newPlayer.find_weapon
+        newPlayer.find_weapon()
         
     elif roll == 4:
         clearscreen()

@@ -31,7 +31,7 @@ def menu():
     choice = choice.lower()
     
     if choice == 'r':
-        actions.roll_dice()
+        actions.roll_dice(newPlayer)
     
     elif choice == 'l':
         newPlayer.list_inventory()
