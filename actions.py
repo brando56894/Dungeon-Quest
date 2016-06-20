@@ -4,13 +4,17 @@
 
 from time import sleep
 from random import randint
-from random import randrange
 import os
+import monsters
 
 def roll_dice(newPlayer):
+    #TODO: add more roles since some options come up too often, also try to find a better random number generator
     roll = randint(1,6)
     clearscreen
-    print "\nYou walked %d paces and..." % roll
+    if roll == 1:
+        print "\nYou walked %d pace and..." % roll
+    else:
+        print "\nYou walked %d paces and..." % roll
     sleep(1)
     
     if roll == 1:
@@ -19,13 +23,13 @@ def roll_dice(newPlayer):
         
     elif roll == 2:
         clearscreen()
-        print "\nYou were attacked by a Big Monster!\n"
-        newPlayer.take_damage(15)
-        sleep(2)
+        newMonster = monsters.create(50,15,"Big Monster") #creates a monster named 'Big Monster' with 50 HP that deals 15 damage per hit
+        newMonster.attack(newPlayer)
+        del newMonster
         
     elif roll == 3:
         clearscreen()
-        newPlayer.find_weapon()
+        newPlayer.find_weapon() #TODO: make this actually do something
         
     elif roll == 4:
         clearscreen()
@@ -33,9 +37,9 @@ def roll_dice(newPlayer):
         
     elif roll == 5:
         clearscreen()
-        print "\nYou were attacked by a Small Monster!\n"
-        newPlayer.take_damage(5)
-        sleep(2)
+        newMonster = monsters.create(25,7,"Small Monster") #creates a monster named 'Small Monster' with 25 HP that deals 7 damage per hit
+        newMonster.attack(newPlayer)
+        del newMonster
         
     else:
         clearscreen()
@@ -60,6 +64,7 @@ def visit_shop(newPlayer):
         newPlayer.buy_potions()
                     
     elif choice == 'w':
+        #TODO: implement a purchase_weapon() function
         print "\nSorry we're currently out of weapons"
         sleep(2)
         visit_shop()

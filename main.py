@@ -7,8 +7,8 @@ import player
 from time import sleep
 
 #enables the debug menu option in the main menu
-DEBUG_MODE = "enabled"
-#DEBUG_MODE = "disabled"
+#DEBUG_MODE = "enabled"
+DEBUG_MODE = "disabled"
 
 if DEBUG_MODE == "enabled":
     import debug
@@ -54,11 +54,11 @@ def menu():
         sleep(2)
 
 #Starts the game
-print "Dungeon Quest v1.0\n"
-#name = raw_input("Who dares to enter the dungeon? ")
-name = "Brandon"
-#creates a new player with 100 health, 0 xp, 0 potions, 0 gold, and a dagger
-newPlayer = player.create(100, 0, 0, 0, "dagger", name)
+print "Dungeon Quest v1.1\n"
+name = raw_input("Who dares to enter the dungeon? ")
+newPlayer = player.create(100, 0, 0, 0, "dagger", name) #creates a new player with 100 health, 0 xp, 0 potions, 0 gold, and a dagger (that currently does nothing)
 
-while True:
+while newPlayer.health > 0:
     menu()
+else:
+    print "\nYou were slain! Maybe you should carry more health potions with you next time!"

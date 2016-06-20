@@ -18,22 +18,21 @@ class create(object):
 
     def find_gold(self):
         amount = randint(1,20)
-        print "\nYou found %d gold coins!" % amount
+        print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         self.gold += amount
         sleep(2)
         return self
     
     def find_potions(self):
-        amount = randint(1,3)
-        print "\nYou found %d potions!" % amount
-        self.potions += amount
+        print "\nYou found a health potion!"
+        self.potions += 1
+        print "You currently have %d potions in your backpack." % self.potions
         sleep(2)
         return self
     
     def buy_potions(self):
-        print "\nYou have %d pieces of gold." % self.gold
         print "Each potion costs 20 gold pieces and restores 10 HP."
-        amount = raw_input("\nHow many potions would you like to purchase? ")
+        amount = raw_input("\nHow many would you like to purchase? ")
         if self.gold >= (amount*10):
             self.gold = self.gold - (amount*10)
             print "\n%d potions have been added to your inventory." % int(amount)
@@ -71,11 +70,10 @@ class create(object):
         
     def low_health(self):
         print "\n*****DANGER*****\n"
-        choice = raw_input("\nYour health is currently at %d, would you like to use a Health Potion? (y or n) " % self.health)
+        choice = raw_input("\nYour health is currently at %d, and you currently have %d potions in your inventory. \nWould you like to use one? " % (self.health,self.potions))
         choice.lower()
-        if choice == 'y':
-            use_potion(self)
-            sleep(2)
+        if choice == 'y' or choice == 'yes':
+            self.use_potion(self)
             return self
         else:
             print "\nOk tough guy."
@@ -91,4 +89,15 @@ class create(object):
     def take_damage(self, damage):
         self.health -= damage
         print "Your health is now at %d" % self.health
+        sleep(2)
         return self
+
+    def deal_damage(self):
+        #TODO write class based off of damage of currently wielded weapon
+        #PreREQ: finish find_weapon()
+        pass
+    
+    def gain_xp(self):
+        #TODO gain XP when player kills a monster and implement leveling system
+        #PreREQ finish the fighting system
+        pass
