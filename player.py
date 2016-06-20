@@ -52,13 +52,6 @@ class create(object):
             print "\nSorry you don't have any more potions!"
         sleep(2)
         return self
-    
-    def find_weapon(self):
-        #TODO add dictionary of weapons and their damages
-        #TODO select a random weapon from that list and add it to the player's inventory'
-        print "\nYou found a weapon!"
-        sleep(2)
-        return self
         
     def list_inventory(self):
         actions.clearscreen()
