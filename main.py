@@ -56,7 +56,7 @@ def menu():
 #Starts the game
 print "Dungeon Quest v1.1\n"
 name = raw_input("Who dares to enter the dungeon? ")
-newPlayer = player.create(100, 0, 0, 0, "dagger", name) #creates a new player with 100 health, 0 xp, 0 potions, 0 gold, and a dagger (that currently does nothing)
+newPlayer = player.create(100,0,0,0,"dagger",name,0) #creates a new player with 100 health, 0 xp, 0 potions, 0 gold, a dagger, and the player has taken zero steps
 
 while newPlayer.health > 0:
     menu()

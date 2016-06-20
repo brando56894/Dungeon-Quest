@@ -10,11 +10,13 @@ import monsters
 def roll_dice(newPlayer):
     #TODO: add more roles since some options come up too often, also try to find a better random number generator
     roll = randint(1,6)
+    newPlayer.steps += amount
+    if newPlayer.steps >= 75:
+        print "Boss fight!"
+    elif newPlayer.steps >= 150:
+        print "Final Boss fight!"
     clearscreen
-    if roll == 1:
-        print "\nYou walked %d pace and..." % roll
-    else:
-        print "\nYou walked %d paces and..." % roll
+    print "\nYou walked %d paces and..." % roll
     sleep(1)
     
     if roll == 1:

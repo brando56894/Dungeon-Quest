@@ -8,13 +8,14 @@ from time import sleep
 
 class create(object):
   
-    def __init__(self, health, xp, potions, gold, weapons, name):
+    def __init__(self, health, xp, potions, gold, weapons, name, steps):
         self.health = health
         self.xp = xp
         self.potions = potions
         self.gold = gold
         self.weapons = weapons
         self.name = name
+        self.steps = steps
 
     def find_gold(self):
         amount = randint(1,20)
