@@ -18,8 +18,8 @@ class create(object):
 
     def find_gold(self):
         amount = randint(1,20)
-        print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         self.gold += amount
+        print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         sleep(2)
         return self
     
