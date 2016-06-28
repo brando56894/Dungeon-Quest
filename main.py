@@ -6,6 +6,8 @@ import actions
 import player
 from time import sleep
 
+version = 1.6 #Update each time a new feature is committed!
+
 #enables the debug menu option in the main menu
 #DEBUG_MODE = "enabled"
 DEBUG_MODE = "disabled"
@@ -54,9 +56,11 @@ def menu():
         sleep(2)
 
 #Starts the game
-print "Dungeon Quest v1.1\n"
-name = raw_input("Who dares to enter the dungeon? ")
-newPlayer = player.create(100, 0, 0, 0, "dagger", name) #creates a new player with 100 health, 0 xp, 0 potions, 0 gold, and a dagger (that currently does nothing)
+actions.clearscreen()
+print "Dungeon Quest v%.2f" % version
+name = raw_input("\nWho dares to enter the dungeon? ")
+#name="Brandon"
+newPlayer = player.create(name)
 
 while newPlayer.health > 0:
     menu()

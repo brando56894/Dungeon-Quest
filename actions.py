@@ -6,15 +6,18 @@ from time import sleep
 from random import randint
 import os
 import monsters
+import weapons
 
 def roll_dice(newPlayer):
-    #TODO: add more roles since some options come up too often, also try to find a better random number generator
+    #TODO: add more rolls since some options come up too often, also try to find a better random number generator
     roll = randint(1,6)
+    newPlayer.steps += roll
+    if newPlayer.steps >= 75:
+        print "Boss fight!"
+    elif newPlayer.steps >= 150:
+        print "Final Boss fight!"
     clearscreen
-    if roll == 1:
-        print "\nYou walked %d pace and..." % roll
-    else:
-        print "\nYou walked %d paces and..." % roll
+    print "\nYou walked %d paces and..." % roll
     sleep(1)
     
     if roll == 1:
@@ -23,13 +26,13 @@ def roll_dice(newPlayer):
         
     elif roll == 2:
         clearscreen()
-        newMonster = monsters.create(50,15,"Big Monster") #creates a monster named 'Big Monster' with 50 HP that deals 15 damage per hit
+        newMonster = monsters.create(35,15,"Big Monster") #creates a monster named 'Big Monster' with 50 HP that deals 15 damage per hit
         newMonster.attack(newPlayer)
         del newMonster
         
     elif roll == 3:
         clearscreen()
-        newPlayer.find_weapon() #TODO: make this actually do something
+        newPlayer.find_weapon()
         
     elif roll == 4:
         clearscreen()
@@ -37,7 +40,7 @@ def roll_dice(newPlayer):
         
     elif roll == 5:
         clearscreen()
-        newMonster = monsters.create(25,7,"Small Monster") #creates a monster named 'Small Monster' with 25 HP that deals 7 damage per hit
+        newMonster = monsters.create(20,7,"Small Monster") #creates a monster named 'Small Monster' with 25 HP that deals 7 damage per hit
         newMonster.attack(newPlayer)
         del newMonster
         
@@ -64,10 +67,7 @@ def visit_shop(newPlayer):
         newPlayer.buy_potions()
                     
     elif choice == 'w':
-        #TODO: implement a purchase_weapon() function
-        print "\nSorry we're currently out of weapons"
-        sleep(2)
-        visit_shop()
+        newPlayer.buy_weapon()
         
     elif choice == 'n':
         print "\nWhy did you come here then?!"
@@ -77,7 +77,7 @@ def visit_shop(newPlayer):
     else:
         print "Not a valid choice"
         sleep(2)
-        visit_shop()
+        visit_shop(newPlayer)
     
 def quit_game():
     print "\nGood Bye!\n"
