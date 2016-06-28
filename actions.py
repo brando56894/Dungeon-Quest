@@ -6,11 +6,12 @@ from time import sleep
 from random import randint
 import os
 import monsters
+import weapons
 
 def roll_dice(newPlayer):
-    #TODO: add more roles since some options come up too often, also try to find a better random number generator
+    #TODO: add more rolls since some options come up too often, also try to find a better random number generator
     roll = randint(1,6)
-    newPlayer.steps += amount
+    newPlayer.steps += roll
     if newPlayer.steps >= 75:
         print "Boss fight!"
     elif newPlayer.steps >= 150:
@@ -66,10 +67,8 @@ def visit_shop(newPlayer):
         newPlayer.buy_potions()
                     
     elif choice == 'w':
-        #TODO: implement a purchase_weapon() function
-        print "\nSorry we're currently out of weapons"
-        sleep(2)
-        visit_shop()
+        newWeapon = weapons.create(newPlayer)
+        newWeapon.buy(newPlayer)
         
     elif choice == 'n':
         print "\nWhy did you come here then?!"

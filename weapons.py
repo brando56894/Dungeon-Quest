@@ -2,13 +2,9 @@
 #~~weapons.py~~
 
 class create(object):
-    def find_weapon(self):
-        #TODO select a random weapon from that list and add it to the player's inventory'
-        available = {
-            "dagger": 5,
-            "sword": 25,
-            "pistol": 50            
-            }
-        print "\nYou found a weapon!"
-        sleep(2)
-        return self 
+    def __init__(self,name,damage):
+        self.damage = damage
+        self.name = name
+        
+    def __repr__(self):
+        return self.name

@@ -3,19 +3,25 @@
 #~~Player Functions~~
 
 from random import randint
-import actions
 from time import sleep
+import actions
+import weapons
 
 class create(object):
   
-    def __init__(self, health, xp, potions, gold, weapons, name, steps):
-        self.health = health
-        self.xp = xp
-        self.potions = potions
-        self.gold = gold
-        self.weapons = weapons
+    def __init__(self, name):
+        self.health = 100
+        self.xp = 0
+        self.potions = 0
+        self.gold = 0
+        self.weapons = []
         self.name = name
-        self.steps = steps
+        self.steps = 0
+        
+        self.add_weapon("dagger",5)
+        
+    def __repr__(self):
+        return self.name
 
     def find_gold(self):
         amount = randint(1,20)
@@ -60,6 +66,7 @@ class create(object):
         print "Exp. Points: %d" % self.xp
         print "Potions Held: %d" % self.potions
         print "Gold: %d pieces" % self.gold
+        print "Weapons: %s" % self.weapons
         sleep(4)
         
     def low_health(self):
@@ -88,10 +95,35 @@ class create(object):
 
     def deal_damage(self):
         #TODO write class based off of damage of currently wielded weapon
-        #PreREQ: finish find_weapon()
+        #PreREQ: finish add_weapon()
         pass
     
     def gain_xp(self):
         #TODO gain XP when player kills a monster and implement leveling system
         #PreREQ finish the fighting system
         pass
+
+    def find_weapon(self):
+        #TODO select a random weapon from that list and add it to the player's inventory'
+        print "\nYou found a weapon!"
+        sleep(2)
+        return self 
+    
+    def add_weapon(self,name,damage):
+        newWeapon = weapons.create(name,damage)
+        self.weapons.append(newWeapon)
+        return self
+    
+    def buy_weapon(self,player):
+        print "\nS)word: 25 Gold"
+        print "P)istol:  60 Gold"
+        print "R)ifle:   120 Gold"
+        choice = raw_input("Which one would you like to purchase? ")
+        choice = choice.lower()
+        if choice == 's':
+            self.gold -= 25
+        elif choice == 'p':
+            self.gold -= 60
+        else:
+            self.gold -= 120
+        return (self,player)
