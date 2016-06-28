@@ -2,7 +2,7 @@
 #
 #~~Player Functions~~
 
-from random import randint
+import random
 from time import sleep
 import actions
 import weapons
@@ -24,7 +24,7 @@ class create(object):
         return self.name
 
     def find_gold(self):
-        amount = randint(1,20)
+        amount = random.randint(1,20)
         self.gold += amount
         print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         sleep(2)
@@ -104,8 +104,16 @@ class create(object):
         pass
 
     def find_weapon(self):
-        #TODO select a random weapon from that list and add it to the player's inventory'
-        print "\nYou found a weapon!"
+        weapons = ["sword","pistol","rifle"]
+        found = random.choice(weapons)
+        print "\nYou found a %s!" % found
+        if found == "sword":
+            damage = 25
+        elif found == "pistol":
+            damage = 60
+        else:
+            damage = 120
+        self.add_weapon(found,damage)
         sleep(2)
         return self 
     
