@@ -3,6 +3,7 @@
 #~~monsters.py~~
 
 from time import sleep
+from random import randint
 import actions
 
 class create(object):
@@ -19,11 +20,32 @@ class create(object):
         choice = raw_input("\nDo you F)ight it or R)un away? ")
         choice = choice.lower()
         if choice == "f":
-            #TODO: create turn-based fighting class
-            print "\nYou decided to fight it. Bad idea! You took 15 damage."
+            print "\nYou decided to fight it. Bad idea!"
             newPlayer.take_damage(self.damage_dealt)
+            while self.health > 0: 
+                newPlayer.deal_damage(self)
+                sleep(1)
+                
+                #monster still attacks after being killed unless health is checked beforehand
+                if self.health > 0:
+                    self.deal_damage(newPlayer)
+                    sleep(1)
             return newPlayer
         else:
             print "\nYou decided to run away like a scared child!"
             sleep(2)
             return newPlayer
+    
+    def take_damage(self, damage_taken, newPlayer):
+        self.health -= damage_taken
+        print "\nThe %s took %d damage! Its health is now at %d" % (self.name,damage_taken,self.health)
+        if self.health <= 0:
+            print "\nYou killed the %s!" % self.name
+            newPlayer.gain_xp()
+        sleep(2)
+        return self
+    
+    def deal_damage(self, newPlayer):
+        print "\nThe %s attacked and dealt %d damage!" % (self.name, self.damage_dealt)
+        newPlayer.take_damage(self.damage_dealt)
+        return newPlayer

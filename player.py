@@ -17,6 +17,7 @@ class create(object):
         self.weapons = []
         self.name = name
         self.steps = 0
+        self.current_weapon = "dagger"
         
         self.add_weapon("dagger",5)
         
@@ -66,7 +67,7 @@ class create(object):
         print "Exp. Points: %d" % self.xp
         print "Potions Held: %d" % self.potions
         print "Gold: %d pieces" % self.gold
-        print "Weapons: %s" % self.weapons
+        print "Weapons: %s" % self.weapons[0:]
         sleep(4)
         
     def low_health(self):
@@ -90,18 +91,29 @@ class create(object):
     def take_damage(self, damage):
         self.health -= damage
         print "Your health is now at %d" % self.health
+        if self.health < 0:
+            print "\nYou were slain! Maybe you should carry more health potions with you next time!"
+            exit(0)
         sleep(2)
         return self
 
-    def deal_damage(self):
-        #TODO write class based off of damage of currently wielded weapon
-        #PreREQ: finish add_weapon()
-        pass
+    def deal_damage(self,monster):
+        if self.current_weapon == "dagger":
+            monster.take_damage(5, self)
+        
+        if self.current_weapon == "sword":
+            monster.take_damage(25, self)    
+        
+        if self.current_weapon == "pistol":
+            monster.take_damage(60, self)
+        
+        if self.current_weapon == "rifle":
+            monster.take_damage(120, self)
     
     def gain_xp(self):
-        #TODO gain XP when player kills a monster and implement leveling system
-        #PreREQ finish the fighting system
-        pass
+        gained = random.randint(1,35)
+        self.xp += gained
+        print "\nYou gained %d XP!" % gained
 
     def find_weapon(self):
         weapons = ["sword","pistol","rifle"]
@@ -148,3 +160,17 @@ class create(object):
             sleep(2)
             actions.visit_shop(self)
         return (self)
+    
+    def set_current_weapon(self):
+        print "\nCurrent Weapon: " + self.current_weapon
+        choice = raw_input("Use weapon: ")
+        choice = choice.lower()
+        if choice == "sword":
+            self.current_weapon = "sword"
+        elif choice == "pistol":
+            self.current_weapon = "pistol"
+        elif choice == "rifle":
+            self.current_weapon = "rifle"
+        else:
+            self.current_weapon = "dagger"
+        return self
