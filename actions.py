@@ -32,7 +32,7 @@ def roll_dice(newPlayer):
         
     elif roll == 3:
         clearscreen()
-        newPlayer.find_weapon() #TODO: make this actually do something
+        newPlayer.find_weapon()
         
     elif roll == 4:
         clearscreen()
