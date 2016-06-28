@@ -114,16 +114,29 @@ class create(object):
         self.weapons.append(newWeapon)
         return self
     
-    def buy_weapon(self,player):
-        print "\nS)word: 25 Gold"
+    def buy_weapon(self):
+        print "\nS)word:   25 Gold"
         print "P)istol:  60 Gold"
         print "R)ifle:   120 Gold"
-        choice = raw_input("Which one would you like to purchase? ")
+        choice = raw_input("\nWhich one would you like to purchase? ")
         choice = choice.lower()
-        if choice == 's':
+        if choice == 's'and self.gold >= 25:
             self.gold -= 25
-        elif choice == 'p':
+            self.add_weapon("sword",25)
+            print "\nA sword has been added to your inventory."
+            sleep(2)
+        elif choice == 'p' and self.gold >= 60:
             self.gold -= 60
-        else:
+            self.add_weapon("pistol",60)
+            print "\nA pistol has been added to your inventory."
+            sleep(2)
+        elif choice == 'r' and self.gold >= 120:
             self.gold -= 120
-        return (self,player)
+            self.add_weapon("rifle",120)
+            print "\nA rifle has been added to your inventory."
+            sleep(2)
+        else:
+            print "\nSorry you don't have enough gold for that purchase."
+            sleep(2)
+            actions.visit_shop(self)
+        return (self)

@@ -67,8 +67,7 @@ def visit_shop(newPlayer):
         newPlayer.buy_potions()
                     
     elif choice == 'w':
-        newWeapon = weapons.create(newPlayer)
-        newWeapon.buy(newPlayer)
+        newPlayer.buy_weapon()
         
     elif choice == 'n':
         print "\nWhy did you come here then?!"
@@ -78,7 +77,7 @@ def visit_shop(newPlayer):
     else:
         print "Not a valid choice"
         sleep(2)
-        visit_shop()
+        visit_shop(newPlayer)
     
 def quit_game():
     print "\nGood Bye!\n"
