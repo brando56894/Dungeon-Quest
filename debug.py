@@ -31,7 +31,7 @@ def menu(newPlayer):
         print "not implemented"        
     
     if choice == 'w':
-        newPlayer.add_weapon("sword",25)
+        newPlayer.find_weapon()
         
     if choice == 'p':
         newPlayer.find_potions()
