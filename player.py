@@ -19,6 +19,7 @@ class create(object):
         self.steps = 0
         self.current_weapon = "dagger"
         self.add_weapon("dagger",5)
+        self.dragon_attack = False
         
     def __repr__(self):
         return self.name
@@ -118,10 +119,18 @@ class create(object):
         if self.current_weapon == "rifle":
             monster.take_damage(120, self)
     
-    def gain_xp(self):
-        gained = random.randint(1,35)
+    def gain_xp(self,monster_name):
+        if monster_name == "Dragon":
+            gained = random.randint(40,150)
+        elif monster_name == "Small Monster":
+            gained = random.randint(1,35)
+        elif monster_name == "Big Monster":
+            gained = random.randint(15,50)
+        else:
+            gained = random.randint(1,30)
         self.xp += gained
         print "\nYou gained %d XP!" % gained
+        return self
 
     def find_weapon(self):
         weapons = ["sword","pistol","rifle"]
@@ -170,6 +179,7 @@ class create(object):
         return (self)
     
     def set_current_weapon(self):
+        #TODO: add logic to make sure the player has the weapon in their inventory
         print "\nCurrent Weapon: " + self.current_weapon
         choice = raw_input("Use weapon: ")
         choice = choice.lower()
