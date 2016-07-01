@@ -21,7 +21,6 @@ class create(object):
         choice = choice.lower()
         if choice == "f":
             print "\nYou decided to fight it. Bad idea!"
-            newPlayer.take_damage(self.damage_dealt)
             while self.health > 0: 
                 newPlayer.deal_damage(self)
                 sleep(1)
