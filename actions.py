@@ -12,9 +12,14 @@ def roll_dice(newPlayer):
     #TODO: add more rolls since some options come up too often, also try to find a better random number generator
     roll = randint(1,6)
     newPlayer.steps += roll
-    if newPlayer.steps >= 75:
-        print "Boss fight!"
-    elif newPlayer.steps >= 150:
+    if newPlayer.steps >= 50 and newPlayer.dragon_attack is False:
+        print "A dragon blocks your path! There looks to be no way around it.\nPrepare to fight!"
+        sleep(2)
+        dragon = monsters.create(200,25,"Dragon") #HP,damage_dealt,name
+        dragon.attack(newPlayer)
+        newPlayer.dragon_attack = True
+        return
+    elif newPlayer.steps >= 100:
         print "Final Boss fight!"
     clearscreen
     print "\nYou walked %d paces and..." % roll
@@ -26,7 +31,7 @@ def roll_dice(newPlayer):
         
     elif roll == 2:
         clearscreen()
-        newMonster = monsters.create(35,15,"Big Monster") #creates a monster named 'Big Monster' with 50 HP that deals 15 damage per hit
+        newMonster = monsters.create(35,15,"Big Monster") #HP,damage_dealt,name
         newMonster.attack(newPlayer)
         del newMonster
         
@@ -40,7 +45,7 @@ def roll_dice(newPlayer):
         
     elif roll == 5:
         clearscreen()
-        newMonster = monsters.create(20,7,"Small Monster") #creates a monster named 'Small Monster' with 25 HP that deals 7 damage per hit
+        newMonster = monsters.create(20,7,"Small Monster") #HP,damage_dealt,name
         newMonster.attack(newPlayer)
         del newMonster
         
