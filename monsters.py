@@ -40,7 +40,7 @@ class create(object):
         print "\nThe %s took %d damage! Its health is now at %d" % (self.name,damage_taken,self.health)
         if self.health <= 0:
             print "\nYou killed the %s!" % self.name
-            newPlayer.gain_xp()
+            newPlayer.gain_xp(self.name)
         sleep(2)
         return self
     
