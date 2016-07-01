@@ -44,12 +44,12 @@ class create(object):
         return self
     
     def buy_potions(self):
-        print "Each potion costs 20 gold pieces and restores 10 HP."
+        print "Each potion costs 20 gold pieces and restores 25 HP."
         amount = raw_input("\nHow many would you like to purchase? ")
         cost = int(amount) * 20
         if self.gold >= int(cost):
             self.gold = self.gold - int(cost)
-            self.potions += amount
+            self.potions += int(amount)
             print "\n%d potions have been added to your inventory." % int(amount)
             sleep(2)
             return self
@@ -61,7 +61,7 @@ class create(object):
     def use_potion(self):
         if self.potions > 0:
             self.potions -= 1
-            self.health += 10
+            self.health += 25
             print "\nYour health is now at %d" % self.health
         else:
             print "\nSorry you don't have any more potions!"
