@@ -37,8 +37,8 @@ def menu(newPlayer):
         newPlayer.find_potions()
         
     if choice == 'g':
-        #amount = int(raw_input("How much? "))
-        newPlayer.find_gold()
+        amount = int(raw_input("How much? "))
+        newPlayer.find_gold_debug(amount)
         
     if choice == 'l':
         newPlayer.list_inventory()
