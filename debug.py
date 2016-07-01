@@ -17,7 +17,7 @@ def menu(newPlayer):
     print "### Attacks:   M)onster B)oss  F)inal Boss         ###"
     print "### Find:      W)eapon G)old                       ###"
     print "### Misc:      V)isit Shop  C)hange Health         ###"
-    print "### Actions:   P)otion Actions R)oll Dice          ###"
+    print "### Actions:   P)otion Actions R)oll Dice S)teps   ###"
     print "### Inventory: L)ist Inventory                     ###"
     print "######################################################"
     choice = raw_input("\nChoice: ")
@@ -26,6 +26,11 @@ def menu(newPlayer):
     if choice == 'm':
         newMonster = monsters.create(25,15,"Big Monster") #(HP,damage_dealt,name)
         newMonster.attack(newPlayer)
+        
+    if choice == 's':
+        steps = int(raw_input("To what? "))
+        newPlayer.steps = steps
+        print "Step count set to %d" % newPlayer.steps
         
     if choice == 'b' or choice == 'f':
         print "not implemented"        
