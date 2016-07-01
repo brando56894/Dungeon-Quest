@@ -18,7 +18,6 @@ class create(object):
         self.name = name
         self.steps = 0
         self.current_weapon = "dagger"
-        
         self.add_weapon("dagger",5)
         
     def __repr__(self):
@@ -181,4 +180,6 @@ class create(object):
             self.current_weapon = "rifle"
         else:
             self.current_weapon = "dagger"
+        print "\nCurrent weapon has been changed to: %s" % self.current_weapon
+        sleep(2)
         return self
