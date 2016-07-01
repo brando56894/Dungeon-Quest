@@ -35,6 +35,12 @@ class create(object):
         sleep(2)
         return self
     
+    def find_gold_debug(self,amount):
+        self.gold += amount
+        print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
+        sleep(2)
+        return self
+    
     def find_potions(self):
         print "\nYou found a health potion!"
         self.potions += 1
@@ -45,8 +51,10 @@ class create(object):
     def buy_potions(self):
         print "Each potion costs 20 gold pieces and restores 10 HP."
         amount = raw_input("\nHow many would you like to purchase? ")
-        if self.gold >= (amount*10):
-            self.gold = self.gold - (amount*10)
+        cost = int(amount) * 20
+        sleep(3)
+        if self.gold >= int(cost):
+            self.gold = self.gold - int(cost)
             print "\n%d potions have been added to your inventory." % int(amount)
             sleep(2)
             return self
