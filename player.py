@@ -94,15 +94,14 @@ class create(object):
         print "Potions Held: %d" % self.potions
         print "Gold: %d pieces" % self.gold
         print "Current Weapon: %s" % self.current_weapon
-        """"
-        if self.has_pistol is True:
+        
+        if self.has_pistol is True and "pistol" not in self.weapons:
             self.weapons.append("pistol")
-        elif self.has_rifle is True:
+        elif self.has_rifle is True and "rifle" not in self.weapons:
             self.weapons.append("rifle")
-        elif self.has_sword is True:
+        elif self.has_sword is True and "sword" not in self.weapons:
             self.weapons.append("sword") 
-        """
-        print "Weapons: %s" % self.weapons[0:] #TODO: figure out how to display the currently held weapons
+        print "Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons)
         sleep(4)
         
     def low_health(self):
