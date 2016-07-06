@@ -17,11 +17,15 @@ def roll_dice(newPlayer):
         dragon.boss_attack(newPlayer)
         newPlayer.dragon_attack = True
         return
+    
     elif newPlayer.steps >= 100:
         basilisk = monsters.create(300,50,"Basilisk") #HP,damage_dealt,name
         basilisk.boss_attack(newPlayer)
         newPlayer.basilisk_attack = True
         return
+    
+    print "\nYou walked %d paces and..." % roll
+    sleep(1)
     
     if roll == 1:
         clearscreen()
