@@ -64,7 +64,7 @@ def visit_shop(newPlayer):
     print "You currently have %d gold coins." % newPlayer.gold
     print "\nP) Health Potions"
     print "W) Weapons"
-    print "N) Nothing"
+    print "N) Nothing/Leave Store"
     choice = raw_input("\nChoice: ")
     choice.lower()
 
@@ -75,7 +75,7 @@ def visit_shop(newPlayer):
         newPlayer.buy_weapon()
         
     elif choice == 'n':
-        print "\nWhy did you come here then?!"
+        print "\nThanks for stopping by!"
         sleep(2)
         return
     
