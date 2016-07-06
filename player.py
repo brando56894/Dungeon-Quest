@@ -28,11 +28,7 @@ class create(object):
         return self.name
 
     def find_gold(self):
-<<<<<<< HEAD
-        amount = randint(1,20)
-=======
         amount = random.randint(1,20)
->>>>>>> testing
         self.gold += amount
         print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         sleep(2)
@@ -211,7 +207,7 @@ class create(object):
         choice = choice.lower()
         if choice == "sword" and self.has_sword is True:
             self.current_weapon = "sword"
-        elif choice == "pistol" and self.has_sword is True:
+        elif choice == "pistol" and self.has_pistol is True:
             self.current_weapon = "pistol"            
         elif choice == "rifle" and self.has_rifle is True:
             self.current_weapon = "rifle"            
