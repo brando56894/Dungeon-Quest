@@ -172,7 +172,6 @@ class create(object):
         else:
             print "\nYou already own that weapon!"
             sleep(2)            
-            actions.visit_shop(self)
         return self
     
     def buy_weapon(self):
