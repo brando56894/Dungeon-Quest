@@ -25,12 +25,14 @@ class create(object):
         if choice == "f":
             print "\nYou decided to fight it. Bad idea!"
             while self.health > 0: 
+                print "\n***********************************************************"
                 newPlayer.deal_damage(self)
                 sleep(1)
                 
                 #monster still attacks after being killed unless health is checked beforehand
                 if self.health > 0:
                     self.deal_damage(newPlayer)
+                    #print "************************************************************"
                     sleep(1)
             return newPlayer
         else:
