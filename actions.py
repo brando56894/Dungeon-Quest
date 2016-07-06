@@ -13,18 +13,15 @@ def roll_dice(newPlayer):
     roll = randint(1,6)
     newPlayer.steps += roll
     if newPlayer.steps >= 50 and newPlayer.dragon_attack is False:
-        print "\nA dragon blocks your path! There looks to be no way around it.\nPrepare to fight!"
-        sleep(2)
         dragon = monsters.create(150,25,"Dragon") #HP,damage_dealt,name
-        dragon.dragon_attack(newPlayer)
+        dragon.boss_attack(newPlayer)
         newPlayer.dragon_attack = True
         return
     elif newPlayer.steps >= 100:
-        print "\nFinal Boss fight!"
-        sleep(2)
-    clearscreen
-    print "\nYou walked %d paces and..." % roll
-    sleep(1)
+        basilisk = monsters.create(300,50,"Basilisk") #HP,damage_dealt,name
+        basilisk.boss_attack(newPlayer)
+        newPlayer.basilisk_attack = True
+        return
     
     if roll == 1:
         clearscreen()
