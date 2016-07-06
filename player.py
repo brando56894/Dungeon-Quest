@@ -14,14 +14,17 @@ class create(object):
         self.xp = 0
         self.potions = 0
         self.gold = 0
-        self.weapons = []
+        self.weapons = ["dagger"]
         self.name = name
         self.steps = 0
         self.current_weapon = "dagger"
-        
         self.add_weapon("dagger",5)
+        self.dragon_attack = False
+        self.has_sword = False
+        self.has_pistol = False
+        self.has_rifle = False
         
-    def __repr__(self):
+    def __str__(self):
         return self.name
 
     def find_gold(self):
@@ -48,13 +51,27 @@ class create(object):
         sleep(2)
         return self
     
+    def find_weapon(self):
+        weapons = ["sword","pistol","rifle"]
+        found = random.choice(weapons)
+        print "\nYou found a %s!" % found
+        if found == "sword":
+            damage = 25
+        elif found == "pistol":
+            damage = 60
+        else:
+            damage = 120
+        self.add_weapon(found,damage)
+        sleep(2)
+        return self     
+    
     def buy_potions(self):
-        print "Each potion costs 20 gold pieces and restores 10 HP."
+        print "Each potion costs 20 gold pieces and restores 25 HP."
         amount = raw_input("\nHow many would you like to purchase? ")
         cost = int(amount) * 20
-        sleep(3)
         if self.gold >= int(cost):
             self.gold = self.gold - int(cost)
+            self.potions += int(amount)
             print "\n%d potions have been added to your inventory." % int(amount)
             sleep(2)
             return self
@@ -66,7 +83,7 @@ class create(object):
     def use_potion(self):
         if self.potions > 0:
             self.potions -= 1
-            self.health += 10
+            self.health += 25
             print "\nYour health is now at %d" % self.health
         else:
             print "\nSorry you don't have any more potions!"
@@ -79,7 +96,16 @@ class create(object):
         print "Exp. Points: %d" % self.xp
         print "Potions Held: %d" % self.potions
         print "Gold: %d pieces" % self.gold
-        print "Weapons: %s" % self.weapons[0:]
+        print "Current Weapon: %s" % self.current_weapon
+        """"
+        if self.has_pistol is True:
+            self.weapons.append("pistol")
+        elif self.has_rifle is True:
+            self.weapons.append("rifle")
+        elif self.has_sword is True:
+            self.weapons.append("sword") 
+        """
+        print "Weapons: %s" % self.weapons[0:] #TODO: figure out how to display the currently held weapons
         sleep(4)
         
     def low_health(self):
@@ -122,28 +148,34 @@ class create(object):
         if self.current_weapon == "rifle":
             monster.take_damage(120, self)
     
-    def gain_xp(self):
-        gained = random.randint(1,35)
+    def gain_xp(self,monster_name):
+        if monster_name == "Dragon":
+            gained = random.randint(40,150)
+        elif monster_name == "Small Monster":
+            gained = random.randint(1,35)
+        elif monster_name == "Big Monster":
+            gained = random.randint(15,50)
+        else:
+            gained = random.randint(1,30)
         self.xp += gained
         print "\nYou gained %d XP!" % gained
+        return self
 
-    def find_weapon(self):
-        weapons = ["sword","pistol","rifle"]
-        found = random.choice(weapons)
-        print "\nYou found a %s!" % found
-        if found == "sword":
-            damage = 25
-        elif found == "pistol":
-            damage = 60
-        else:
-            damage = 120
-        self.add_weapon(found,damage)
-        sleep(2)
-        return self 
-    
     def add_weapon(self,name,damage):
-        newWeapon = weapons.create(name,damage)
-        self.weapons.append(newWeapon)
+        if name == "pistol" and self.has_pistol is False:
+            newWeapon = weapons.create(name,damage)
+            self.has_pistol = True            
+        elif name == "rifle" and self.has_rifle is False:
+            newWeapon = weapons.create(name,damage)
+            self.has_rifle = True            
+        elif name == "sword" and self.has_sword is False:
+            newWeapon = weapons.create(name,damage)
+            self.has_sword = True            
+        elif name == "dagger":
+            newWeapon = weapons.create(name,damage)
+        else:
+            print "\nYou already own that weapon!"
+            sleep(2)            
         return self
     
     def buy_weapon(self):
@@ -177,12 +209,15 @@ class create(object):
         print "\nCurrent Weapon: " + self.current_weapon
         choice = raw_input("Use weapon: ")
         choice = choice.lower()
-        if choice == "sword":
+        if choice == "sword" and self.has_sword is True:
             self.current_weapon = "sword"
-        elif choice == "pistol":
-            self.current_weapon = "pistol"
-        elif choice == "rifle":
-            self.current_weapon = "rifle"
+        elif choice == "pistol" and self.has_sword is True:
+            self.current_weapon = "pistol"            
+        elif choice == "rifle" and self.has_rifle is True:
+            self.current_weapon = "rifle"            
         else:
             self.current_weapon = "dagger"
+            print "\nSorry you don't currently have that weapon in your inventory."
+        print "\nCurrent weapon has been changed to: %s" % self.current_weapon
+        sleep(2)
         return self
