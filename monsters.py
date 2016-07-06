@@ -41,11 +41,13 @@ class create(object):
             sleep(2)
             return newPlayer
     
-    def dragon_attack (self, newPlayer):
+    def boss_attack (self, newPlayer):
         actions.clearscreen()
-        print "\nYou were attacked by a %s!" % self.name
+        print "\nA %s blocks your path! There looks to be no way around it.\nPrepare to fight!" % self.name
+        sleep(2)
         newPlayer.take_damage(self.damage_dealt)
         while self.health > 0: 
+            print "\n***********************************************************"
             newPlayer.deal_damage(self)
             sleep(1)
             
