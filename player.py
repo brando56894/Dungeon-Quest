@@ -14,14 +14,17 @@ class create(object):
         self.xp = 0
         self.potions = 0
         self.gold = 0
-        self.weapons = []
+        self.weapons = ["dagger"]
         self.name = name
         self.steps = 0
         self.current_weapon = "dagger"
         self.add_weapon("dagger",5)
         self.dragon_attack = False
+        self.has_sword = False
+        self.has_pistol = False
+        self.has_rifle = False
         
-    def __repr__(self):
+    def __str__(self):
         return self.name
 
     def find_gold(self):
@@ -43,6 +46,20 @@ class create(object):
         print "You currently have %d potions in your backpack." % self.potions
         sleep(2)
         return self
+    
+    def find_weapon(self):
+        weapons = ["sword","pistol","rifle"]
+        found = random.choice(weapons)
+        print "\nYou found a %s!" % found
+        if found == "sword":
+            damage = 25
+        elif found == "pistol":
+            damage = 60
+        else:
+            damage = 120
+        self.add_weapon(found,damage)
+        sleep(2)
+        return self     
     
     def buy_potions(self):
         print "Each potion costs 20 gold pieces and restores 25 HP."
@@ -75,8 +92,16 @@ class create(object):
         print "Exp. Points: %d" % self.xp
         print "Potions Held: %d" % self.potions
         print "Gold: %d pieces" % self.gold
-        print "Weapons: %s" % self.weapons[0:]
         print "Current Weapon: %s" % self.current_weapon
+        """"
+        if self.has_pistol is True:
+            self.weapons.append("pistol")
+        elif self.has_rifle is True:
+            self.weapons.append("rifle")
+        elif self.has_sword is True:
+            self.weapons.append("sword") 
+        """
+        print "Weapons: %s" % self.weapons[0:] #TODO: figure out how to display the currently held weapons
         sleep(4)
         
     def low_health(self):
@@ -132,23 +157,22 @@ class create(object):
         print "\nYou gained %d XP!" % gained
         return self
 
-    def find_weapon(self):
-        weapons = ["sword","pistol","rifle"]
-        found = random.choice(weapons)
-        print "\nYou found a %s!" % found
-        if found == "sword":
-            damage = 25
-        elif found == "pistol":
-            damage = 60
-        else:
-            damage = 120
-        self.add_weapon(found,damage)
-        sleep(2)
-        return self 
-    
     def add_weapon(self,name,damage):
-        newWeapon = weapons.create(name,damage)
-        self.weapons.append(newWeapon)
+        if name == "pistol" and self.has_pistol is False:
+            newWeapon = weapons.create(name,damage)
+            self.has_pistol = True            
+        elif name == "rifle" and self.has_rifle is False:
+            newWeapon = weapons.create(name,damage)
+            self.has_rifle = True            
+        elif name == "sword" and self.has_sword is False:
+            newWeapon = weapons.create(name,damage)
+            self.has_sword = True            
+        elif name == "dagger":
+            newWeapon = weapons.create(name,damage)
+        else:
+            print "\nYou already own that weapon!"
+            sleep(2)            
+            actions.visit_shop(self)
         return self
     
     def buy_weapon(self):
@@ -179,18 +203,18 @@ class create(object):
         return (self)
     
     def set_current_weapon(self):
-        #TODO: add logic to make sure the player has the weapon in their inventory
         print "\nCurrent Weapon: " + self.current_weapon
         choice = raw_input("Use weapon: ")
         choice = choice.lower()
-        if choice == "sword":
+        if choice == "sword" and self.has_sword is True:
             self.current_weapon = "sword"
-        elif choice == "pistol":
-            self.current_weapon = "pistol"
-        elif choice == "rifle":
-            self.current_weapon = "rifle"
+        elif choice == "pistol" and self.has_sword is True:
+            self.current_weapon = "pistol"            
+        elif choice == "rifle" and self.has_rifle is True:
+            self.current_weapon = "rifle"            
         else:
             self.current_weapon = "dagger"
+            print "\nSorry you don't currently have that weapon in your inventory."
         print "\nCurrent weapon has been changed to: %s" % self.current_weapon
         sleep(2)
         return self
