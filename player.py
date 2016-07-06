@@ -43,7 +43,7 @@ class create(object):
     def find_potions(self):
         print "\nYou found a health potion!"
         self.potions += 1
-        print "You currently have %d potions in your backpack." % self.potions
+        print "You currently have %d potions in your inventory." % self.potions
         sleep(2)
         return self
     
@@ -62,7 +62,7 @@ class create(object):
         return self     
     
     def buy_potions(self):
-        print "Each potion costs 20 gold pieces and restores 25 HP."
+        print "\nEach potion costs 20 gold pieces and restores 25 HP."
         amount = raw_input("\nHow many would you like to purchase? ")
         cost = int(amount) * 20
         if self.gold >= int(cost):
@@ -126,7 +126,7 @@ class create(object):
         self.health -= damage
         print "Your health is now at %d" % self.health
         if self.health < 0:
-            print "\nYou were slain! Maybe you should carry more health potions with you next time!"
+            print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
             exit(0)
         sleep(2)
         return self
@@ -171,7 +171,7 @@ class create(object):
             newWeapon = weapons.create(name,damage)
         else:
             print "\nYou already own that weapon!"
-            sleep(2)            
+            sleep(1)            
         return self
     
     def buy_weapon(self):

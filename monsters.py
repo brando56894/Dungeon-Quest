@@ -23,6 +23,7 @@ class create(object):
         choice = raw_input("\nDo you F)ight it or R)un away? ")
         choice = choice.lower()
         if choice == "f":
+            actions.clearscreen()
             print "\nYou decided to fight it. Bad idea!"
             while self.health > 0: 
                 print "\n***********************************************************"
@@ -32,10 +33,10 @@ class create(object):
                 #monster still attacks after being killed unless health is checked beforehand
                 if self.health > 0:
                     self.deal_damage(newPlayer)
-                    #print "************************************************************"
                     sleep(1)
             return newPlayer
         else:
+            actions.clearscreen()
             print "\nYou decided to run away like a scared child!"
             sleep(2)
             return newPlayer

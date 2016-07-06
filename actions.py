@@ -13,14 +13,15 @@ def roll_dice(newPlayer):
     roll = randint(1,6)
     newPlayer.steps += roll
     if newPlayer.steps >= 50 and newPlayer.dragon_attack is False:
-        print "A dragon blocks your path! There looks to be no way around it.\nPrepare to fight!"
+        print "\nA dragon blocks your path! There looks to be no way around it.\nPrepare to fight!"
         sleep(2)
         dragon = monsters.create(150,25,"Dragon") #HP,damage_dealt,name
         dragon.dragon_attack(newPlayer)
         newPlayer.dragon_attack = True
         return
     elif newPlayer.steps >= 100:
-        print "Final Boss fight!"
+        print "\nFinal Boss fight!"
+        sleep(2)
     clearscreen
     print "\nYou walked %d paces and..." % roll
     sleep(1)
@@ -67,6 +68,7 @@ def visit_shop(newPlayer):
     print "N) Nothing/Leave Store"
     choice = raw_input("\nChoice: ")
     choice.lower()
+    clearscreen()
 
     if choice == 'p':
         newPlayer.buy_potions()
