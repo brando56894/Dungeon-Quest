@@ -68,5 +68,8 @@ newPlayer = player.create(name)
 
 while newPlayer.health > 0:
     menu()
+    if newPlayer.basilisk_attack is True:
+        print "\nCongratulations! You made it through the dungeon alive!\n"
+        exit(0)
 else:
-    print "\nYou were slain! Maybe you should carry more health potions with you next time!"
+    print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
