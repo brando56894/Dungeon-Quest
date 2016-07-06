@@ -20,6 +20,7 @@ class create(object):
         self.current_weapon = "dagger"
         self.add_weapon("dagger",5)
         self.dragon_attack = False
+        self.basilisk_attack = False
         self.has_sword = False
         self.has_pistol = False
         self.has_rifle = False
@@ -43,7 +44,7 @@ class create(object):
     def find_potions(self):
         print "\nYou found a health potion!"
         self.potions += 1
-        print "You currently have %d potions in your inventory." % self.potions
+        print "\nYou currently have %d potions in your inventory." % self.potions
         sleep(2)
         return self
     
@@ -124,7 +125,7 @@ class create(object):
     
     def take_damage(self, damage):
         self.health -= damage
-        print "Your health is now at %d" % self.health
+        print "\nYour health is now at %d" % self.health
         if self.health < 0:
             print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
             exit(0)
