@@ -5,7 +5,6 @@
 import random
 from time import sleep
 import actions
-import weapons
 
 class create(object):
   
@@ -159,16 +158,16 @@ class create(object):
 
     def add_weapon(self,name,damage):
         if name == "pistol" and self.has_pistol is False:
-            newWeapon = weapons.create(name,damage)
+            newWeapon = create_weapon(name,damage)
             self.has_pistol = True            
         elif name == "rifle" and self.has_rifle is False:
-            newWeapon = weapons.create(name,damage)
+            newWeapon = create_weapon(name,damage)
             self.has_rifle = True            
         elif name == "sword" and self.has_sword is False:
-            newWeapon = weapons.create(name,damage)
+            newWeapon = create_weapon(name,damage)
             self.has_sword = True            
         elif name == "dagger":
-            newWeapon = weapons.create(name,damage)
+            newWeapon = create_weapon(name,damage)
         else:
             print "\nYou already own that weapon!"
             sleep(1)            
@@ -217,3 +216,11 @@ class create(object):
         print "\nCurrent weapon has been changed to: %s" % self.current_weapon
         sleep(2)
         return self
+
+class create_weapon(object):
+    def __init__(self,name,damage):
+        self.damage = damage
+        self.name = name
+        
+    def __repr__(self):
+        return self.name
