@@ -19,7 +19,7 @@ def roll_dice(newPlayer):
         return
     
     elif newPlayer.steps >= 150:
-        basilisk = monsters.create(300,50,"Basilisk") #HP,damage_dealt,name
+        basilisk = monsters.create(300,40,"Basilisk") #HP,damage_dealt,name
         basilisk.boss_attack(newPlayer)
         newPlayer.basilisk_attack = True
         return
