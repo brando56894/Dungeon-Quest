@@ -38,11 +38,28 @@ def roll_dice(newPlayer):
         
     elif roll == 3:
         clearscreen()
-        newPlayer.find_weapon()
+        print "You found a locked door..."
+        if newPlayer.has_key is True:
+            print "You opened it with the key that you found"
+            newPlayer.find_weapon()
+        else:
+            print "But you can't open it since you don't have the key"
         
     elif roll == 4:
         clearscreen()
-        newPlayer.find_potions()
+        print "You stumbled upon a dead body, you look through it's backpack and find....'"
+        gold = random.randint(0,1)
+        potion = random.randint(0,1)
+        key = random.randint(0,1)
+        if gold == 1:
+            newPlayer.find_gold()
+        elif potion == 1:
+            newPlayer.find_potions()
+        elif key == 1:
+            print "You found a key, wonder what it opens..."
+            newPlayer.has_key = True
+        else:
+            print "Nothing...looks like someone else already got to it"
         
     elif roll == 5:
         clearscreen()
