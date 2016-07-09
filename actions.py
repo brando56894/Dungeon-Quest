@@ -3,15 +3,15 @@
 #~actions.py~
 
 from time import sleep
-from random import randint
+import random
 import os
 import monsters
-import weapons
 
 def roll_dice(newPlayer):
-    #TODO: add more rolls since some options come up too often, also try to find a better random number generator
-    roll = randint(1,6)
+    #TODO: add more rolls since some options come up too often
+    roll = random.randrange(1,6)
     newPlayer.steps += roll
+    
     if newPlayer.steps >= 50 and newPlayer.dragon_attack is False:
         dragon = monsters.create(150,25,"Dragon") #HP,damage_dealt,name
         dragon.boss_attack(newPlayer)
@@ -90,6 +90,11 @@ def visit_shop(newPlayer):
 def quit_game():
     print "\nGood Bye!\n"
     exit(0)
+    
+def save_game():
+    save = open("savegame.txt", "a")
+    save.write("newPlayer.health") #TODO: make this save the player object
+    save.close
     
 def clearscreen():
     os.system('cls' if os.name == 'nt' else 'clear')
