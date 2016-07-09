@@ -87,6 +87,7 @@ class create(object):
             amount = int(raw_input("\nHow many? "))
             raise_health = amount * 25
             self.health += raise_health
+            self.potions -= amount
             print "\nYour health is now at %d" % self.health
         else:
             print "\nSorry you don't have any more potions!"
@@ -135,7 +136,7 @@ class create(object):
         if self.health < 0:
             print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
             exit(0)
-        sleep(2)
+        sleep(1)
         return self
 
     def deal_damage(self,monster):
