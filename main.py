@@ -9,8 +9,8 @@ from time import sleep
 version = 1.9 #Update each time a new feature is committed!
 
 #enables the debug menu option in the main menu
-#DEBUG_MODE = "enabled"
-DEBUG_MODE = "disabled"
+DEBUG_MODE = "enabled"
+#DEBUG_MODE = "disabled"
 
 if DEBUG_MODE == "enabled":
     import debug
@@ -25,6 +25,7 @@ def menu():
     print "** C: Change Weapon  **"
     print "** V: Visit Shop     **"
     print "** U: Use Potion     **"
+    print "** S: Save Game      **"
     print "** Q: Quit           **"
     if DEBUG_MODE == "enabled":
         print "** D: Debug Menu     **"
@@ -47,6 +48,9 @@ def menu():
     
     elif choice == 'u':
         newPlayer.use_potion()
+        
+    elif choice == 's':
+        actions.save_game()
     
     elif choice == 'q':
         actions.quit_game()
@@ -63,13 +67,17 @@ def menu():
 actions.clearscreen()
 print "Dungeon Quest v%.2f" % version
 name = raw_input("\nWho dares to enter the dungeon? ")
-#name="Brandon"
 newPlayer = player.create(name)
 
 while newPlayer.health > 0:
     menu()
     if newPlayer.basilisk_attack is True:
         print "\nCongratulations! You made it through the dungeon alive!\n"
+        exit(0)
+    elif newPlayer.run_away > 5:
+        clearscreen()
+        print "\nYou're too much of a wimp to make it though the dungeon alive!"
+        print "Don't show your face here again until you toughen yourself up!\n"
         exit(0)
 else:
     print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"

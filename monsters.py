@@ -42,6 +42,7 @@ class create(object):
             actions.clearscreen()
             print "\nYou decided to run away like a scared child!"
             sleep(2)
+            newPlayer.run_away += 1
             return newPlayer
     
     def boss_attack (self, newPlayer):

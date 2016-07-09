@@ -23,6 +23,7 @@ class create(object):
         self.has_sword = False
         self.has_pistol = False
         self.has_rifle = False
+        self.run_away = 0
         
     def __str__(self):
         return self.name
