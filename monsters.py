@@ -25,6 +25,7 @@ class create(object):
         if choice == "f":
             actions.clearscreen()
             print "\nYou decided to fight it. Bad idea!"
+            #TODO: add a check to make sure the player is using the best weapon in their inventory
             while self.health > 0: 
                 print "\n***********************************************************"
                 newPlayer.deal_damage(self)
@@ -34,6 +35,8 @@ class create(object):
                 if self.health > 0:
                     self.deal_damage(newPlayer)
                     sleep(1)
+                
+                newPlayer.low_health() #gives the player a chance to use a potion when health is at 60 or below
             return newPlayer
         else:
             actions.clearscreen()
