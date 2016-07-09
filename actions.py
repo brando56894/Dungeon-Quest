@@ -33,9 +33,8 @@ def roll_dice(newPlayer):
         
     elif roll == 2:
         clearscreen()
-        newMonster = monsters.create(35,15,"Demon") #HP,damage_dealt,name
-        newMonster.attack(newPlayer)
-        del newMonster
+        print "You stepped on a booby trap!"
+        newPlayer.take_damage(random.randint(1,7))
         
     elif roll == 3:
         clearscreen()
@@ -47,10 +46,23 @@ def roll_dice(newPlayer):
         
     elif roll == 5:
         clearscreen()
-        newMonster = monsters.create(20,7,"Gremlin") #HP,damage_dealt,name
-        newMonster.attack(newPlayer)
-        del newMonster
+        monster_names = ["Gremlin", "Demon", "Zombie"]
+        choice = random.choice(monster_names)
+        if choice == "Gremlin":
+            newMonster = monsters.create(random.randint(10,15), random.randint(1,7),"Gremlin") #HP,damage_dealt,name
+            newMonster.attack(newPlayer)
+            del newMonster
         
+        elif choice == "Demon":
+            newMonster = monsters.create(random.randint(15,25), random.randint(7,15),"Demon") #HP,damage_dealt,name
+            newMonster.attack(newPlayer)
+            del newMonster
+        
+        else:
+            newMonster = monsters.create(random.randint(25,35), random.randint(10,20),"Zombie") #HP,damage_dealt,name
+            newMonster.attack(newPlayer)
+            del newMonster            
+            
     else:
         clearscreen()
         print "\nYou're safe for the moment!"

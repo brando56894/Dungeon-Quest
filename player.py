@@ -158,6 +158,8 @@ class create(object):
             gained = random.randint(1,35)
         elif monster_name == "Demon":
             gained = random.randint(15,50)
+        elif monster_name == "Zombie":
+            gained = random.randint(16,75)
         else:
             gained = random.randint(1,30)
         self.xp += gained
