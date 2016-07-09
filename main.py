@@ -6,7 +6,7 @@ import actions
 import player
 from time import sleep
 
-version = 1.9 #Update each time a new feature is committed!
+version = 1.10 #Update each time a new feature is committed!
 
 #enables the debug menu option in the main menu
 DEBUG_MODE = "enabled"
