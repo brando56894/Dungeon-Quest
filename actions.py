@@ -12,13 +12,13 @@ def roll_dice(newPlayer):
     roll = random.randrange(1,6)
     newPlayer.steps += roll
     
-    if newPlayer.steps >= 50 and newPlayer.dragon_attack is False:
+    if newPlayer.steps >= 100 and newPlayer.dragon_attack is False:
         dragon = monsters.create(150,25,"Dragon") #HP,damage_dealt,name
         dragon.boss_attack(newPlayer)
         newPlayer.dragon_attack = True
         return
     
-    elif newPlayer.steps >= 100:
+    elif newPlayer.steps >= 150:
         basilisk = monsters.create(300,50,"Basilisk") #HP,damage_dealt,name
         basilisk.boss_attack(newPlayer)
         newPlayer.basilisk_attack = True
@@ -95,6 +95,8 @@ def save_game():
     save = open("savegame.txt", "a")
     save.write("newPlayer.health") #TODO: make this save the player object
     save.close
+    
+#TODO: implement load_game()
     
 def clearscreen():
     os.system('cls' if os.name == 'nt' else 'clear')
