@@ -147,9 +147,9 @@ class create(object):
     def gain_xp(self,monster_name):
         if monster_name == "Dragon":
             gained = random.randint(40,150)
-        elif monster_name == "Small Monster":
+        elif monster_name == "Gremlin":
             gained = random.randint(1,35)
-        elif monster_name == "Big Monster":
+        elif monster_name == "Demon":
             gained = random.randint(15,50)
         else:
             gained = random.randint(1,30)
