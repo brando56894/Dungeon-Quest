@@ -9,7 +9,7 @@ import actions
 class create(object):
   
     def __init__(self, name):
-        self.health = 100
+        self.health = 125
         self.xp = 0 #TODO: use gained XP to gain levels
         self.potions = 0
         self.gold = 0
@@ -17,7 +17,7 @@ class create(object):
         self.name = name
         self.steps = 0
         self.current_weapon = "dagger"
-        self.add_weapon("dagger",5)
+        self.add_weapon("dagger",12)
         self.dragon_attack = False
         self.basilisk_attack = False
         self.has_sword = False
