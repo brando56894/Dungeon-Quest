@@ -104,16 +104,17 @@ class create(object):
         sleep(4)
         
     def low_health(self):
-        print "\n*****DANGER*****\n"
-        choice = raw_input("\nYour health is currently at %d, and you currently have %d potions in your inventory. \nWould you like to use one? " % (self.health,self.potions))
-        choice.lower()
-        if choice == 'y' or choice == 'yes':
-            self.use_potion(self)
-            return self
-        else:
-            print "\nOk tough guy."
-            sleep(2)
-            return self
+        if self.health <= 60 and self.potions > 0:
+            print "\n*****DANGER*****\n"
+            choice = raw_input("\nYour health is currently at %d, and you currently have %d potions in your inventory. \nWould you like to use one? " % (self.health,self.potions))
+            choice.lower()
+            if choice == 'y' or choice == 'yes':
+                self.use_potion()
+                return self
+            else:
+                print "\nOk tough guy."
+                sleep(2)
+                return self
     
     def set_health(self, newHealth):
         self.health = newHealth
