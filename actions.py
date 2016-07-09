@@ -33,7 +33,7 @@ def roll_dice(newPlayer):
         
     elif roll == 2:
         clearscreen()
-        newMonster = monsters.create(35,15,"Big Monster") #HP,damage_dealt,name
+        newMonster = monsters.create(35,15,"Demon") #HP,damage_dealt,name
         newMonster.attack(newPlayer)
         del newMonster
         
@@ -47,7 +47,7 @@ def roll_dice(newPlayer):
         
     elif roll == 5:
         clearscreen()
-        newMonster = monsters.create(20,7,"Small Monster") #HP,damage_dealt,name
+        newMonster = monsters.create(20,7,"Gremlin") #HP,damage_dealt,name
         newMonster.attack(newPlayer)
         del newMonster
         
