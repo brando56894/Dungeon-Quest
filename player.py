@@ -29,7 +29,7 @@ class create(object):
         return self.name
 
     def find_gold(self):
-        amount = random.randint(1,20)
+        amount = random.randint(5,40)
         self.gold += amount
         print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         sleep(2)
