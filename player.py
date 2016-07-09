@@ -10,7 +10,7 @@ class create(object):
   
     def __init__(self, name):
         self.health = 100
-        self.xp = 0
+        self.xp = 0 #TODO: use gained XP to gain levels
         self.potions = 0
         self.gold = 0
         self.weapons = ["dagger"]
@@ -63,7 +63,8 @@ class create(object):
         return self     
     
     def buy_potions(self):
-        print "\nEach potion costs 20 gold pieces and restores 25 HP."
+        print "\nGold: %d" % self.gold
+        print "Each potion costs 20 gold pieces and restores 25 HP."
         amount = raw_input("\nHow many would you like to purchase? ")
         cost = int(amount) * 20
         if self.gold >= int(cost):
@@ -78,9 +79,14 @@ class create(object):
             actions.visit_shop(self)
     
     def use_potion(self):
-        if self.potions > 0:
+        if self.potions > 0 and self.potions < 2:
             self.potions -= 1
             self.health += 25
+            print "\nYour health is now at %d" % self.health
+        elif self.potions > 1:
+            amount = int(raw_input("\nHow many? "))
+            raise_health = amount * 25
+            self.health += raise_health
             print "\nYour health is now at %d" % self.health
         else:
             print "\nSorry you don't have any more potions!"
