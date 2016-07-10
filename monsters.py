@@ -27,8 +27,8 @@ class create(object):
             #TODO: add a check to make sure the player is using the best weapon in their inventory
             while self.health > 0: 
                 print "\n***********************************************************"
-                weapon = newPlayer.current_weapon
-                weapon.deal_damage()  
+                #newWeapon = newPlayer.current_weapon
+                newWeapon.deal_damage()  
                 sleep(1)
                 
                 #monster still attacks after being killed unless health is checked beforehand
