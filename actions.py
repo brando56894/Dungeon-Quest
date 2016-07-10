@@ -12,12 +12,14 @@ def roll_dice(newPlayer):
     roll = random.randrange(1,6)
     newPlayer.steps += roll
     
+    #mid-game boss
     if newPlayer.steps >= 100 and newPlayer.dragon_attack is False:
         dragon = monsters.create(150,25,"Dragon") #HP,damage_dealt,name
         dragon.boss_attack(newPlayer)
         newPlayer.dragon_attack = True
         return
     
+    #final boss
     elif newPlayer.steps >= 150:
         basilisk = monsters.create(300,40,"Basilisk") #HP,damage_dealt,name
         basilisk.boss_attack(newPlayer)
@@ -47,19 +49,18 @@ def roll_dice(newPlayer):
         
     elif roll == 4:
         clearscreen()
-        print "You stumbled upon a dead body, you look through it's backpack and find....'"
-        gold = random.randint(0,1)
-        potion = random.randint(0,1)
-        key = random.randint(0,1)
-        if gold == 1:
+        print "You stumbled upon a dead body, you look through it's backpack....'"
+        number = random.randint(0,3)
+        if number == 1:
             newPlayer.find_gold()
-        elif potion == 1:
+        elif number == 2:
             newPlayer.find_potions()
-        elif key == 1:
-            print "You found a key, wonder what it opens..."
+        elif number == 3:
+            print "\nYou found a key, wonder what it opens..."
             newPlayer.has_key = True
         else:
-            print "Nothing...looks like someone else already got to it"
+            print "\nYou didn't find anything...looks like someone else already got to it"
+        sleep(5)
         
     elif roll == 5:
         clearscreen()
@@ -67,17 +68,17 @@ def roll_dice(newPlayer):
         choice = random.choice(monster_names)
         if choice == "Gremlin":
             newMonster = monsters.create(random.randint(10,15), random.randint(1,7),"Gremlin") #HP,damage_dealt,name
-            newMonster.attack(newPlayer)
+            newMonster.attack(newPlayer, newWeapon)
             del newMonster
         
         elif choice == "Demon":
             newMonster = monsters.create(random.randint(15,25), random.randint(7,15),"Demon") #HP,damage_dealt,name
-            newMonster.attack(newPlayer)
+            newMonster.attack(newPlayer, newWeapon)
             del newMonster
         
         else:
             newMonster = monsters.create(random.randint(25,35), random.randint(10,20),"Zombie") #HP,damage_dealt,name
-            newMonster.attack(newPlayer)
+            newMonster.attack(newPlayer, newWeapon)
             del newMonster            
             
     else:

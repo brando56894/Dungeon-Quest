@@ -11,7 +11,7 @@ import monsters
 import actions
 from time import sleep
 
-def menu(newPlayer):
+def menu(newPlayer, newWeapon):
     actions.clearscreen()
     print "\n1. monster methods"
     print "2. player methods"
@@ -21,7 +21,7 @@ def menu(newPlayer):
     choice = choice.lower()
     
     if choice == "1":
-        monster_methods(newPlayer)
+        monster_methods(newPlayer, newWeapon)
     elif choice == "2":
         player_methods(newPlayer)
     elif choice == "3":
@@ -31,7 +31,7 @@ def menu(newPlayer):
         sleep(2)
     return
     
-def monster_methods(newPlayer):
+def monster_methods(newPlayer, newWeapon):
     print "\n1. create()"
     print "2. take_damage()"
     print "3. deal_damage()"
@@ -53,7 +53,7 @@ def monster_methods(newPlayer):
         newMonster.deal_damage(newPlayer)
     elif choice == '4':
         newMonster = monsters.create(25,15,"Big Monster")
-        newMonster.attack(newPlayer)
+        newMonster.attack(newPlayer, newWeapon)
     else:
         print "Not a valid choice"
         sleep(2)
@@ -94,7 +94,6 @@ def player_methods(newPlayer):
     elif choice == '8':
         health = int(raw_input("To what? "))
         newPlayer.set_health(health)
-        sleep(2)
     elif choice == '9':
         damage = int(raw_input("How much? "))
         newPlayer.take_damage(damage)

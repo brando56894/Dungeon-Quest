@@ -15,8 +15,7 @@ class create(object):
     def __str__(self):
         return self.name
 
-    def attack (self, newPlayer):
-        #TODO: create monsters with different names/health/damage to keep things interesting
+    def attack (self, newPlayer, newWeapon):
         actions.clearscreen()
         print "\nYou were attacked by a %s!" % self.name
         newPlayer.take_damage(self.damage_dealt)
@@ -28,7 +27,8 @@ class create(object):
             #TODO: add a check to make sure the player is using the best weapon in their inventory
             while self.health > 0: 
                 print "\n***********************************************************"
-                newPlayer.deal_damage(self)
+                weapon = newPlayer.current_weapon
+                weapon.deal_damage()  
                 sleep(1)
                 
                 #monster still attacks after being killed unless health is checked beforehand
@@ -59,6 +59,7 @@ class create(object):
             if self.health > 0:
                 self.deal_damage(newPlayer)
                 sleep(1)
+            newPlayer.low_health()
         return newPlayer
     
     def take_damage(self, damage_taken, newPlayer):

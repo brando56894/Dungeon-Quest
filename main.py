@@ -25,7 +25,7 @@ def menu():
     print "** C: Change Weapon  **"
     print "** V: Visit Shop     **"
     print "** U: Use Potion     **"
-    print "** S: Save Game      **"
+    #print "** S: Save Game      **"
     print "** Q: Quit           **"
     if DEBUG_MODE == "enabled":
         print "** D: Debug Menu     **"
@@ -56,7 +56,7 @@ def menu():
         actions.quit_game()
         
     elif choice == 'd':
-        debug.menu(newPlayer)
+        debug.menu(newPlayer, newWeapon)
     
     else:
         print ("\nYou didn't select a valid choice.")
@@ -68,6 +68,7 @@ actions.clearscreen()
 print "Dungeon Quest v%.2f" % version
 name = raw_input("\nWho dares to enter the dungeon? ")
 newPlayer = player.create(name)
+newWeapon = player.CreateWeapon("dagger", 12)
 
 while newPlayer.health > 0:
     menu()

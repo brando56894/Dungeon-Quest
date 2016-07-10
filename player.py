@@ -17,7 +17,6 @@ class create(object):
         self.name = name
         self.steps = 0
         self.current_weapon = "dagger"
-        self.add_weapon("dagger",12)
         self.dragon_attack = False
         self.basilisk_attack = False
         self.has_sword = False
@@ -43,9 +42,8 @@ class create(object):
         return self
     
     def find_potions(self):
-        print "\nYou found a health potion!"
         self.potions += 1
-        print "\nYou currently have %d potions in your inventory." % self.potions
+        print "\nYou found a health potion! You now have %d potions in your inventory." % self.potions
         sleep(2)
         return self
     
@@ -139,19 +137,6 @@ class create(object):
             exit(0)
         sleep(1)
         return self
-
-    def deal_damage(self,monster):
-        if self.current_weapon == "dagger":
-            monster.take_damage(5, self)
-        
-        if self.current_weapon == "sword":
-            monster.take_damage(25, self)    
-        
-        if self.current_weapon == "pistol":
-            monster.take_damage(60, self)
-        
-        if self.current_weapon == "rifle":
-            monster.take_damage(120, self)
     
     def gain_xp(self,monster_name):
         if monster_name == "Dragon":
@@ -170,16 +155,16 @@ class create(object):
 
     def add_weapon(self,name,damage):
         if name == "pistol" and self.has_pistol is False:
-            newWeapon = create_weapon(name,damage)
+            newWeapon = CreateWeapon(name,damage)
             self.has_pistol = True            
         elif name == "rifle" and self.has_rifle is False:
-            newWeapon = create_weapon(name,damage)
+            newWeapon = CreateWeapon(name,damage)
             self.has_rifle = True            
         elif name == "sword" and self.has_sword is False:
-            newWeapon = create_weapon(name,damage)
+            newWeapon = CreateWeapon(name,damage)
             self.has_sword = True            
         elif name == "dagger":
-            newWeapon = create_weapon(name,damage)
+            newWeapon = self.CreateWeapon(name,damage)
         else:
             print "\nYou already own that weapon!"
             sleep(1)            
@@ -229,10 +214,13 @@ class create(object):
         sleep(2)
         return self
 
-class create_weapon(object):
+class CreateWeapon(object):
     def __init__(self,name,damage):
         self.damage = damage
         self.name = name
         
     def __repr__(self):
         return self.name
+    
+    def deal_damage(self):
+        monster.take_damage(self.damage, self)
