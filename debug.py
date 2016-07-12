@@ -1,17 +1,14 @@
 #!/usr/bin/python2
 #~~debug.py~~
+#This will allow you to call functions directly in order to test them out
 
-"""
-This will allow you to call functions
-directly in order to test them out
-"""
 
 import player
 import monsters
 import actions
 from time import sleep
 
-def menu(newPlayer, newWeapon):
+def menu(Player, Weapon):
     actions.clearscreen()
     print "\n1. monster methods"
     print "2. player methods"
@@ -21,45 +18,54 @@ def menu(newPlayer, newWeapon):
     choice = choice.lower()
     
     if choice == "1":
-        monster_methods(newPlayer, newWeapon)
+        monster_methods(Player, Weapon)
     elif choice == "2":
-        player_methods(newPlayer)
+        player_methods(Player)
     elif choice == "3":
-        actions_functions(newPlayer)
+        actions_functions(Player)
     else:
         print "Not a valid choice"
         sleep(2)
     return
     
-def monster_methods(newPlayer, newWeapon):
+def monster_methods(Player, Weapon):
     print "\n1. create()"
     print "2. take_damage()"
     print "3. deal_damage()"
     print "4. attack()"
+    print "5. Monster object attributes"
+    print "6. Weapon object attributes"
     
     choice = raw_input("\nWhich method? ")
     
     if choice == '1':
-        newMonster = monsters.create(25,15,"Big Monster") #(HP,damage_dealt,name)
-        print "Created %s that deals %d damage and has %d health" % (newMonster.name,newMonster.damage_dealt,newMonster.health)
+        Monster = monsters.create(25,15,"Big Monster") #(HP,damage_dealt,name)
+        print "Created %s that deals %d damage and has %d health" % (Monster.name,Monster.damage_dealt,Monster.health)
         sleep(2)
     elif choice == '2':
-        newMonster = monsters.create(25,15,"Big Monster")
+        Monster = monsters.create(25,15,"Big Monster")
         damage = int(raw_input("How much? "))
-        newMonster.take_damage(damage,newPlayer)
+        Monster.take_damage(damage,Player)
     elif choice == '3':
-        newMonster = monsters.create(25,15,"Big Monster")
+        Monster = monsters.create(25,15,"Big Monster")
         #damage = int(raw_input("How much? ")) 
-        newMonster.deal_damage(newPlayer)
+        Monster.deal_damage(Player)
     elif choice == '4':
-        newMonster = monsters.create(25,15,"Big Monster")
-        newMonster.attack(newPlayer, newWeapon)
+        Monster = monsters.create(25,15,"Big Monster")
+        Monster.attack(Player, Weapon)
+    elif choice == '5':
+        Monster = monsters.create(25,15,"Big Monster")
+        print Monster
+        sleep(3)
+    elif choice == '6':
+        print Weapon
+        sleep(3)
     else:
         print "Not a valid choice"
         sleep(2)
     return
     
-def player_methods(newPlayer):
+def player_methods(Player):
     print "\n1. find_gold()"
     print "2. find_gold_debug()"
     print "3. find_potions()"
@@ -75,53 +81,57 @@ def player_methods(newPlayer):
     print "13. buy_weapon()"
     print "14. set_current_weapon()"
     print "15. set step count"
+    print "16. Player object attributes"
     
     choice = raw_input("\nWhich method? ")
     
     if choice == '1':
-        newPlayer.find_gold()
+        Player.find_gold()
     elif choice == '2':
         amount = int(raw_input("How much? "))
-        newPlayer.find_gold_debug(amount)
+        Player.find_gold_debug(amount)
     elif choice == '3':
-        newPlayer.find_potions()
+        Player.find_potions()
     elif choice == '4':
-        newPlayer.find_weapon()
+        Player.find_weapon()
     elif choice == '6':
-        newPlayer.list_inventory()
+        Player.list_inventory()
     elif choice == '7':
-        newPlayer.low_health()
+        Player.low_health()
     elif choice == '8':
         health = int(raw_input("To what? "))
-        newPlayer.set_health(health)
+        Player.set_health(health)
     elif choice == '9':
         damage = int(raw_input("How much? "))
-        newPlayer.take_damage(damage)
+        Player.take_damage(damage)
     elif choice == '10':
         damage = int(raw_input("How much? "))
-        newPlayer.deal_damage(damage)        
+        Player.deal_damage(damage)        
     elif choice == '11':
         monster = raw_input("Which monster did you kill? ")
-        newPlayer.gain_xp(monster)
+        Player.gain_xp(monster)
     elif choice == '12':
         name = raw_input("Weapon name? ")
         damage = raw_input("Weapon damage? ")
-        newPlayer.add_weapon(name,damage)
+        Player.add_weapon(name,damage)
     elif choice == '13':
-        newPlayer.buy_weapon()
+        Player.buy_weapon()
     elif choice == '14':
-        newPlayer.set_current_weapon()
+        Player.set_current_weapon()
     elif choice == '15':
         steps = int(raw_input("To what? "))
-        newPlayer.steps = steps
-        print "Step count set to %d" % newPlayer.steps
+        Player.steps = steps
+        print "Step count set to %d" % Player.steps
         sleep(2)
+    elif choice == '16':
+        print Player
+        sleep(7)
     else:
         print "Not a valid choice"
         sleep(2)
     return
         
-def actions_functions(newPlayer):
+def actions_functions(Player):
     print "\n1. roll_dice()"
     print "2. visit_shop()"
     
