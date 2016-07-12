@@ -35,7 +35,7 @@ def menu():
     choice = choice.lower()
     
     if choice == 'r':
-        actions.roll_dice(newPlayer)
+        actions.roll_dice(newPlayer,newWeapon)
     
     elif choice == 'l':
         newPlayer.list_inventory()
@@ -67,7 +67,7 @@ def menu():
 actions.clearscreen()
 print "Dungeon Quest v%.2f" % version
 name = raw_input("\nWho dares to enter the dungeon? ")
-newPlayer = player.create(name)
+newPlayer = player.CreatePlayer(name)
 newWeapon = player.CreateWeapon("dagger", 12)
 
 while newPlayer.health > 0:
