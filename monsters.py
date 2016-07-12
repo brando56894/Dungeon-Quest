@@ -13,12 +13,12 @@ class create(object):
         self.name = name
         
     def __str__(self):
-        return self.name
+        return "\nName: %s\nDamage Dealt: %d\nHealth: %d" % (self.name,self.damage_dealt,self.health)
 
-    def attack (self, newPlayer, newWeapon):
+    def attack (self, Player, Weapon):
         actions.clearscreen()
         print "\nYou were attacked by a %s!" % self.name
-        newPlayer.take_damage(self.damage_dealt)
+        Player.take_damage(self.damage_dealt)
         choice = raw_input("\nDo you F)ight it or R)un away? ")
         choice = choice.lower()
         if choice == "f":
@@ -27,51 +27,51 @@ class create(object):
             #TODO: add a check to make sure the player is using the best weapon in their inventory
             while self.health > 0: 
                 print "\n***********************************************************"
-                #newWeapon = newPlayer.current_weapon
-                newWeapon.deal_damage()  
+                #Weapon = Player.current_weapon
+                Weapon.deal_damage(self,Player)  
                 sleep(1)
                 
                 #monster still attacks after being killed unless health is checked beforehand
                 if self.health > 0:
-                    self.deal_damage(newPlayer)
+                    self.deal_damage(Player)
                     sleep(1)
                 
-                newPlayer.low_health() #gives the player a chance to use a potion when health is at 60 or below
-            return newPlayer
+                Player.low_health() #gives the player a chance to use a potion when health is at 60 or below
+            return Player
         else:
             actions.clearscreen()
             print "\nYou decided to run away like a scared child!"
             sleep(2)
-            newPlayer.run_away += 1
-            return newPlayer
+            Player.run_away += 1
+            return Player
     
-    def boss_attack (self, newPlayer):
+    def boss_attack (self, Player):
         actions.clearscreen()
         print "\nA %s blocks your path! There looks to be no way around it.\nPrepare to fight!" % self.name
         sleep(2)
-        newPlayer.take_damage(self.damage_dealt)
+        Player.take_damage(self.damage_dealt)
         while self.health > 0: 
             print "\n***********************************************************"
-            newPlayer.deal_damage(self)
+            Player.deal_damage(self)
             sleep(1)
             
             #monster still attacks after being killed unless health is checked beforehand
             if self.health > 0:
-                self.deal_damage(newPlayer)
+                self.deal_damage(Player)
                 sleep(1)
-            newPlayer.low_health()
-        return newPlayer
+            Player.low_health()
+        return Player
     
-    def take_damage(self, damage_taken, newPlayer):
+    def take_damage(self, damage_taken, Player):
         self.health -= damage_taken
         print "\nThe %s took %d damage! Its health is now at %d" % (self.name,damage_taken,self.health)
         if self.health <= 0:
             print "\nYou killed the %s!" % self.name
-            newPlayer.gain_xp(self.name)
+            Player.gain_xp(self.name)
         sleep(2)
-        return self
+        return Player
     
-    def deal_damage(self, newPlayer):
+    def deal_damage(self, Player):
         print "\nThe %s attacked and dealt %d damage!" % (self.name, self.damage_dealt)
-        newPlayer.take_damage(self.damage_dealt)
-        return newPlayer
+        Player.take_damage(self.damage_dealt)
+        return Player
