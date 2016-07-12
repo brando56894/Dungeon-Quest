@@ -7,7 +7,7 @@ from time import sleep
 import actions
 import monsters
 
-class create(object):
+class CreatePlayer(object):
   
     def __init__(self, name):
         self.health = 125
@@ -45,7 +45,6 @@ class create(object):
     def find_potions(self):
         self.potions += 1
         print "\nYou found a health potion! You now have %d potions in your inventory." % self.potions
-        sleep(2)
         return self
     
     def find_weapon(self):
@@ -59,7 +58,6 @@ class create(object):
         else:
             damage = 120
         self.add_weapon(found,damage)
-        sleep(2)
         return self     
     
     def buy_potions(self):
@@ -84,6 +82,7 @@ class create(object):
             self.health += 25
             print "\nYour health is now at %d" % self.health
         elif self.potions > 1:
+            print "\nYou currently have %d potions" % self.potions
             amount = int(raw_input("\nHow many? "))
             raise_health = amount * 25
             self.health += raise_health
@@ -136,7 +135,7 @@ class create(object):
         if self.health < 0:
             print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
             exit(0)
-        sleep(1)
+        sleep(2)
         return self
     
     def gain_xp(self,monster_name):
@@ -168,7 +167,7 @@ class create(object):
             newWeapon = self.CreateWeapon(name,damage)
         else:
             print "\nYou already own that weapon!"
-            sleep(1)            
+        sleep(2)            
         return self
     
     def buy_weapon(self):
