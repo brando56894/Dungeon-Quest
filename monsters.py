@@ -6,7 +6,7 @@ from time import sleep
 from random import randint
 import actions
 
-class create(object):
+class CreateMonster(object):
     def  __init__(self, health, damage_dealt, name):
         self.health = health
         self.damage_dealt = damage_dealt
@@ -45,14 +45,14 @@ class create(object):
             Player.run_away += 1
             return Player
     
-    def boss_attack (self, Player):
+    def boss_attack (self,Player,Weapon):
         actions.clearscreen()
-        print "\nA %s blocks your path! There looks to be no way around it.\nPrepare to fight!" % self.name
+        print "\nA %s blocks your path! There looks to be no way around it.\n\nPrepare to fight!" % self.name
         sleep(2)
         Player.take_damage(self.damage_dealt)
         while self.health > 0: 
             print "\n***********************************************************"
-            Player.deal_damage(self)
+            Weapon.deal_damage(self,Player)
             sleep(1)
             
             #monster still attacks after being killed unless health is checked beforehand
