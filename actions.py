@@ -7,23 +7,23 @@ import random
 import os
 import monsters
 
-def roll_dice(newPlayer):
+def roll_dice(Player,Weapon):
     #TODO: add more rolls since some options come up too often
     roll = random.randrange(1,6)
-    newPlayer.steps += roll
+    Player.steps += roll
     
     #mid-game boss
-    if newPlayer.steps >= 100 and newPlayer.dragon_attack is False:
-        dragon = monsters.create(150,25,"Dragon") #HP,damage_dealt,name
-        dragon.boss_attack(newPlayer)
-        newPlayer.dragon_attack = True
+    if Player.steps >= 100 and Player.dragon_attack is False:
+        dragon = monsters.CreateMonster(150,25,"Dragon") #HP,damage_dealt,name
+        dragon.boss_attack(Player,Weapon)
+        Player.dragon_attack = True
         return
     
     #final boss
-    elif newPlayer.steps >= 150:
-        basilisk = monsters.create(300,40,"Basilisk") #HP,damage_dealt,name
-        basilisk.boss_attack(newPlayer)
-        newPlayer.basilisk_attack = True
+    elif Player.steps >= 150:
+        basilisk = monsters.CreateMonster(300,40,"Basilisk") #HP,damage_dealt,name
+        basilisk.boss_attack(Player,Weapon)
+        Player.basilisk_attack = True
         return
     
     print "\nYou walked %d paces and..." % roll
@@ -31,33 +31,35 @@ def roll_dice(newPlayer):
     
     if roll == 1:
         clearscreen()
-        newPlayer.find_gold()
+        Player.find_gold()
         
     elif roll == 2:
         clearscreen()
-        print "You stepped on a booby trap!"
-        newPlayer.take_damage(random.randint(1,7))
+        print "\nYou stepped on a booby trap!"
+        Player.take_damage(random.randint(1,7))
         
     elif roll == 3:
         clearscreen()
-        print "You found a locked door..."
-        if newPlayer.has_key is True:
-            print "You opened it with the key that you found"
-            newPlayer.find_weapon()
+        print "\nYou found a locked door..."
+        if Player.has_key is True:
+            print "\nYou opened it with the key that you found"
+            Player.find_weapon()
         else:
-            print "But you can't open it since you don't have the key"
+            print "\nBut you can't open it since you don't have the key"
+            sleep(2)
         
     elif roll == 4:
         clearscreen()
-        print "You stumbled upon a dead body, you look through it's backpack....'"
+        print "\nYou stumbled upon a dead body, you look through it's backpack....'"
+        sleep(1)
         number = random.randint(0,3)
         if number == 1:
-            newPlayer.find_gold()
+            Player.find_gold()
         elif number == 2:
-            newPlayer.find_potions()
+            Player.find_potions()
         elif number == 3:
             print "\nYou found a key, wonder what it opens..."
-            newPlayer.has_key = True
+            Player.has_key = True
         else:
             print "\nYou didn't find anything...looks like someone else already got to it"
         sleep(5)
@@ -67,33 +69,33 @@ def roll_dice(newPlayer):
         monster_names = ["Gremlin", "Demon", "Zombie"]
         choice = random.choice(monster_names)
         if choice == "Gremlin":
-            newMonster = monsters.create(random.randint(10,15), random.randint(1,7),"Gremlin") #HP,damage_dealt,name
-            newMonster.attack(newPlayer, newWeapon)
+            newMonster = monsters.CreateMonster(random.randint(10,15), random.randint(1,7),"Gremlin") #HP,damage_dealt,name
+            newMonster.attack(Player, Weapon)
             del newMonster
         
         elif choice == "Demon":
-            newMonster = monsters.create(random.randint(15,25), random.randint(7,15),"Demon") #HP,damage_dealt,name
-            newMonster.attack(newPlayer, newWeapon)
+            newMonster = monsters.CreateMonster(random.randint(15,25), random.randint(7,15),"Demon") #HP,damage_dealt,name
+            newMonster.attack(Player, Weapon)
             del newMonster
         
         else:
-            newMonster = monsters.create(random.randint(25,35), random.randint(10,20),"Zombie") #HP,damage_dealt,name
-            newMonster.attack(newPlayer, newWeapon)
+            newMonster = monsters.CreateMonster(random.randint(25,35), random.randint(10,20),"Zombie") #HP,damage_dealt,name
+            newMonster.attack(Player, Weapon)
             del newMonster            
             
     else:
         clearscreen()
         print "\nYou're safe for the moment!"
-        print "Take a minute to catch your breath"
-        if newPlayer.health <= 60 and newPlayer.potions > 0:
-            newPlayer.low_health()
+        print "\nTake a minute to catch your breath"
+        if Player.health <= 60 and Player.potions > 0:
+            Player.low_health()
         sleep(2)
         
        
-def visit_shop(newPlayer):
+def visit_shop(Player):
     clearscreen()
     print "\nWhat would you like to purchase?"
-    print "You currently have %d gold coins." % newPlayer.gold
+    print "You currently have %d gold coins." % Player.gold
     print "\nP) Health Potions"
     print "W) Weapons"
     print "N) Nothing/Leave Store"
@@ -102,10 +104,10 @@ def visit_shop(newPlayer):
     clearscreen()
 
     if choice == 'p':
-        newPlayer.buy_potions()
+        Player.buy_potions()
                     
     elif choice == 'w':
-        newPlayer.buy_weapon()
+        Player.buy_weapon()
         
     elif choice == 'n':
         print "\nThanks for stopping by!"
@@ -113,9 +115,9 @@ def visit_shop(newPlayer):
         return
     
     else:
-        print "Not a valid choice"
+        print "\nNot a valid choice"
         sleep(2)
-        visit_shop(newPlayer)
+        visit_shop(Player)
     
 def quit_game():
     print "\nGood Bye!\n"
@@ -123,7 +125,7 @@ def quit_game():
     
 def save_game():
     save = open("savegame.txt", "a")
-    save.write("newPlayer.health") #TODO: make this save the player object
+    save.write("Player.health") #TODO: make this save the player object
     save.close
     
 #TODO: implement load_game()
