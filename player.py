@@ -5,6 +5,7 @@
 import random
 from time import sleep
 import actions
+import monsters
 
 class create(object):
   
@@ -25,8 +26,8 @@ class create(object):
         self.run_away = 0
         self.has_key = False
         
-    def __str__(self):
-        return self.name
+    def __repr__(self):
+        return "\nName: %s\nHealth: %d\nXP: %d\nPotions: %d\nGold: %d\nWeapons: %s\nSteps: %d\nCurrent Weapon: %s\nDragon Attack: %s\nBasiliskAttack: %s\nHas Sword: %s\nHas Pistol: %s\nHas Rifle: %s\nTimes Run Away: %d\nHas Key: %s" % (self.name,self.health,self.xp,self.potions,self.gold,self.weapons,self.steps,self.current_weapon,self.dragon_attack,self.basilisk_attack,self.has_sword,self.has_pistol,self.has_rifle,self.run_away,self.has_key)
 
     def find_gold(self):
         amount = random.randint(5,40)
@@ -220,7 +221,7 @@ class CreateWeapon(object):
         self.name = name
         
     def __repr__(self):
-        return self.name
+        return "\nName: %s\nDamage Dealt: %d" % (self.name,self.damage)
     
-    def deal_damage(self):
-        monster.take_damage(self.damage, self)
+    def deal_damage(self,Monster,Player):
+        Monster.take_damage(self.damage, Player)
