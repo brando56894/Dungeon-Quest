@@ -20,7 +20,7 @@ def menu(Player, Weapon):
     if choice == "1":
         monster_methods(Player, Weapon)
     elif choice == "2":
-        player_methods(Player)
+        player_methods(Player,Weapon)
     elif choice == "3":
         actions_functions(Player)
     else:
@@ -65,7 +65,7 @@ def monster_methods(Player, Weapon):
         sleep(2)
     return
     
-def player_methods(Player):
+def player_methods(Player,Weapon):
     print "\n1. find_gold()"
     print "2. find_gold_debug()"
     print "3. find_potions()"
@@ -117,7 +117,7 @@ def player_methods(Player):
     elif choice == '13':
         Player.buy_weapon()
     elif choice == '14':
-        Player.set_current_weapon()
+        Player.set_current_weapon(Weapon)
     elif choice == '15':
         steps = int(raw_input("To what? "))
         Player.steps = steps
