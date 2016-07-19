@@ -51,7 +51,7 @@ class CreateMonster(object):
         Player.take_damage(self.damage_dealt)
         while self.health > 0: 
             print "\n***********************************************************"
-            Player.deal_damage(self,Player)
+            Player.deal_damage(self)
             sleep(1)
             
             #monster still attacks after being killed unless health is checked beforehand
