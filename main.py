@@ -38,7 +38,7 @@ def menu(Player):
         actions.roll_dice(Player)
     
     elif choice == 'l':
-        newPlayer.list_inventory(Player)
+        newPlayer.list_inventory()
     
     elif choice == 'c':
         newPlayer.set_current_weapon()

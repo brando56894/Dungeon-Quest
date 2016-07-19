@@ -31,7 +31,7 @@ class CreatePlayer(object):
         return "\nName: %s\nHealth: %d\nXP: %d\nPotions: %d\nGold: %d\nWeapons: %s\nSteps: %d\nCurrent Weapon: %s\nDragon Attack: %s\nBasiliskAttack: %s\nHas Sword: %s\nHas Pistol: %s\nHas Rifle: %s\nTimes Run Away: %d\nHas Key: %s" % (self.name,self.health,self.xp,self.potions,self.gold,self.weapons,self.steps,self.current_weapon,self.dragon_attack,self.basilisk_attack,self.has_sword,self.has_pistol,self.has_rifle,self.run_away,self.has_key)
 
     def find_gold(self):
-        amount = random.randint(5,40)
+        amount = random.randint(1,25)
         self.gold += amount
         print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         sleep(2)
@@ -94,7 +94,7 @@ class CreatePlayer(object):
         sleep(2)
         return self
         
-    def list_inventory(self,Weapon):
+    def list_inventory(self):
         actions.clearscreen()
         print "\nName: "+self.name
         print "Exp. Points: %d" % self.xp
@@ -198,7 +198,8 @@ class CreatePlayer(object):
     
     def set_current_weapon(self): 
         print "\nCurrent Weapon: " + self.current_weapon
-        choice = raw_input("Use weapon: ")
+        print "Available Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons)
+        choice = raw_input("\nUse weapon: ")
         choice = choice.lower()
         if choice == "sword" and self.has_sword is True:
             self.damage_dealt = 25

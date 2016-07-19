@@ -121,7 +121,7 @@ def player_methods(Player):
         sleep(2)
     elif choice == '16':
         print Player
-        sleep(7)
+        sleep(9)
     else:
         print "\nNot a valid choice"
         sleep(2)
