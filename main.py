@@ -15,9 +15,9 @@ DEBUG_MODE = "enabled"
 if DEBUG_MODE == "enabled":
     import debug
 
-def menu(Player,Weapon):
+def menu(Player):
     actions.clearscreen()
-    print "Current Health: %d" % newPlayer.health
+    print "Current Health: %d" % Player.health
     print "\nWhat would you like to do?\n"
     print "***********************"
     print "** R: Roll Dice      **"
@@ -35,16 +35,16 @@ def menu(Player,Weapon):
     choice = choice.lower()
     
     if choice == 'r':
-        actions.roll_dice(newPlayer,newWeapon)
+        actions.roll_dice(Player)
     
     elif choice == 'l':
-        newPlayer.list_inventory(Weapon)
+        newPlayer.list_inventory(Player)
     
     elif choice == 'c':
-        newPlayer.set_current_weapon(Weapon)
+        newPlayer.set_current_weapon()
     
     elif choice == 'v':
-        actions.visit_shop(newPlayer)
+        actions.visit_shop(Player)
     
     elif choice == 'u':
         newPlayer.use_potion()
@@ -56,7 +56,7 @@ def menu(Player,Weapon):
         actions.quit_game()
         
     elif choice == 'd':
-        debug.menu(newPlayer, newWeapon)
+        debug.menu(Player)
     
     else:
         print ("\nYou didn't select a valid choice.")
@@ -66,12 +66,12 @@ def menu(Player,Weapon):
 #Starts the game
 actions.clearscreen()
 print "Dungeon Quest v%.2f" % version
-name = raw_input("\nWho dares to enter the dungeon? ")
-newWeapon = player.CreateWeapon("dagger", 12)
-newPlayer = player.CreatePlayer(name,newWeapon)
+#name = raw_input("\nWho dares to enter the dungeon? ")
+name = "Bran"
+newPlayer = player.CreatePlayer(name)
 
 while newPlayer.health > 0:
-    menu(newPlayer,newWeapon)
+    menu(newPlayer)
     if newPlayer.basilisk_attack is True:
         print "\nCongratulations! You made it through the dungeon alive!\n"
         exit(0)

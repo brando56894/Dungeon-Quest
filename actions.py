@@ -7,7 +7,7 @@ import random
 import os
 import monsters
 
-def roll_dice(Player,Weapon):
+def roll_dice(Player):
     #TODO: add more rolls since some options come up too often
     roll = random.randrange(1,6)
     Player.steps += roll
@@ -15,14 +15,14 @@ def roll_dice(Player,Weapon):
     #mid-game boss
     if Player.steps >= 100 and Player.dragon_attack is False:
         dragon = monsters.CreateMonster(150,25,"Dragon") #HP,damage_dealt,name
-        dragon.boss_attack(Player,Weapon)
+        dragon.boss_attack(Player)
         Player.dragon_attack = True
         return
     
     #final boss
     elif Player.steps >= 150:
         basilisk = monsters.CreateMonster(300,40,"Basilisk") #HP,damage_dealt,name
-        basilisk.boss_attack(Player,Weapon)
+        basilisk.boss_attack(Player)
         Player.basilisk_attack = True
         return
     
@@ -50,7 +50,7 @@ def roll_dice(Player,Weapon):
         
     elif roll == 4:
         clearscreen()
-        print "\nYou stumbled upon a dead body, you look through it's backpack....'"
+        print "\nYou stumbled upon a dead body, you look through it's backpack...."
         sleep(1)
         number = random.randint(0,3)
         if number == 1:
@@ -70,17 +70,17 @@ def roll_dice(Player,Weapon):
         choice = random.choice(monster_names)
         if choice == "Gremlin":
             newMonster = monsters.CreateMonster(random.randint(10,15), random.randint(1,7),"Gremlin") #HP,damage_dealt,name
-            newMonster.attack(Player, Weapon)
+            newMonster.attack(Player)
             del newMonster
         
         elif choice == "Demon":
             newMonster = monsters.CreateMonster(random.randint(15,25), random.randint(7,15),"Demon") #HP,damage_dealt,name
-            newMonster.attack(Player, Weapon)
+            newMonster.attack(Player)
             del newMonster
         
         else:
             newMonster = monsters.CreateMonster(random.randint(25,35), random.randint(10,20),"Zombie") #HP,damage_dealt,name
-            newMonster.attack(Player, Weapon)
+            newMonster.attack(Player)
             del newMonster            
             
     else:

@@ -9,7 +9,7 @@ import monsters
 
 class CreatePlayer(object):
   
-    def __init__(self, name, Weapon):
+    def __init__(self, name):
         self.health = 125
         self.xp = 0 #TODO: use gained XP to gain levels
         self.potions = 0
@@ -17,7 +17,8 @@ class CreatePlayer(object):
         self.weapons = ["dagger"]
         self.name = name
         self.steps = 0
-        self.current_weapon = Weapon
+        self.damage_dealt = 12
+        self.current_weapon = "dagger"
         self.dragon_attack = False
         self.basilisk_attack = False
         self.has_sword = False
@@ -99,7 +100,7 @@ class CreatePlayer(object):
         print "Exp. Points: %d" % self.xp
         print "Potions Held: %d" % self.potions
         print "Gold: %d pieces" % self.gold
-        print "Current Weapon: %s" % Weapon.name
+        print "Current Weapon: %s" % self.current_weapon
         
         if self.has_pistol is True and "pistol" not in self.weapons:
             self.weapons.append("pistol")
@@ -138,6 +139,9 @@ class CreatePlayer(object):
         sleep(2)
         return self
     
+    def deal_damage(self,Monster):
+        Monster.take_damage(self.damage_dealt,self)
+        
     def gain_xp(self,monster_name):
         if monster_name == "Dragon":
             gained = random.randint(40,150)
@@ -155,20 +159,15 @@ class CreatePlayer(object):
 
     def add_weapon(self,name,damage):
         if name == "pistol" and self.has_pistol is False:
-            Weapon = CreateWeapon(name,damage)
             self.has_pistol = True            
         elif name == "rifle" and self.has_rifle is False:
-            Weapon = CreateWeapon(name,damage)
             self.has_rifle = True            
         elif name == "sword" and self.has_sword is False:
-            Weapon = CreateWeapon(name,damage)
             self.has_sword = True            
-        elif name == "dagger":
-            Weapon = self.CreateWeapon(name,damage)
         else:
             print "\nYou already own that weapon!"
         sleep(2)            
-        return (self,Weapon)
+        return (self)
     
     def buy_weapon(self):
         print "\nS)word:   25 Gold"
@@ -197,30 +196,24 @@ class CreatePlayer(object):
             actions.visit_shop(self)
         return (self)
     
-    def set_current_weapon(self,Weapon): #TODO: fix this so that it works with the Weapon object
-        print "\nCurrent Weapon: " + Weapon.name
+    def set_current_weapon(self): 
+        print "\nCurrent Weapon: " + self.current_weapon
         choice = raw_input("Use weapon: ")
         choice = choice.lower()
         if choice == "sword" and self.has_sword is True:
-            Weapon = CreateWeapon("sword",25)
+            self.damage_dealt = 25
+            self.current_weapon = "sword"
         elif choice == "pistol" and self.has_pistol is True:
-            Weapon = CreateWeapon("pistol",60)
+            self.damage_dealt = 60
+            self.current_weapon = "pistol"
         elif choice == "rifle" and self.has_rifle is True:
-            Weapon = CreateWeapon("rifle",120)
+            self.damage_dealt = 120
+            self.current_weapon = "rifle"
+        elif choice == "dagger":
+            self.damage_dealt = 12
+            self.current_weapon = "dagger"
         else:
-            Weapon = CreateWeapon("dagger",12)
             print "\nSorry you don't currently have that weapon in your inventory."
-        print "\nCurrent weapon has been changed to: %s" % Weapon.name
+        print "\nCurrent weapon has been changed to: %s" % self.current_weapon
         sleep(2)
-        return (self,Weapon)
-
-class CreateWeapon(object):
-    def __init__(self,name,damage):
-        self.damage = damage
-        self.name = name
-        
-    def __repr__(self):
-        return "\nName: %s\nDamage Dealt: %d" % (self.name,self.damage)
-    
-    def deal_damage(self,Monster,Player):
-        Monster.take_damage(self.damage, Player)
+        return self

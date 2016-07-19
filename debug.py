@@ -8,7 +8,7 @@ import monsters
 import actions
 from time import sleep
 
-def menu(Player, Weapon):
+def menu(Player):
     actions.clearscreen()
     print "\n1. monster methods"
     print "2. player methods"
@@ -18,9 +18,9 @@ def menu(Player, Weapon):
     choice = choice.lower()
     
     if choice == "1":
-        monster_methods(Player, Weapon)
+        monster_methods(Player)
     elif choice == "2":
-        player_methods(Player,Weapon)
+        player_methods(Player)
     elif choice == "3":
         actions_functions(Player)
     else:
@@ -28,44 +28,40 @@ def menu(Player, Weapon):
         sleep(2)
     return
     
-def monster_methods(Player, Weapon):
+def monster_methods(Player):
     print "\n1. create()"
     print "2. take_damage()"
     print "3. deal_damage()"
     print "4. attack()"
     print "5. Monster object attributes"
-    print "6. Weapon object attributes"
     
     choice = raw_input("\nWhich method? ")
     
     if choice == '1':
-        Monster = monsters.create(25,15,"Big Monster") #(HP,damage_dealt,name)
+        Monster = monsters.CreateMonster(25,15,"Big Monster") #(HP,damage_dealt,name)
         print "Created %s that deals %d damage and has %d health" % (Monster.name,Monster.damage_dealt,Monster.health)
         sleep(2)
     elif choice == '2':
-        Monster = monsters.create(25,15,"Big Monster")
+        Monster = monsters.CreateMonster(25,15,"Big Monster")
         damage = int(raw_input("How much? "))
         Monster.take_damage(damage,Player)
     elif choice == '3':
-        Monster = monsters.create(25,15,"Big Monster")
+        Monster = monsters.CreateMonster(25,15,"Big Monster")
         #damage = int(raw_input("How much? ")) 
         Monster.deal_damage(Player)
     elif choice == '4':
-        Monster = monsters.create(25,15,"Big Monster")
-        Monster.attack(Player, Weapon)
+        Monster = monsters.CreateMonster(25,15,"Big Monster")
+        Monster.attack(Player)
     elif choice == '5':
-        Monster = monsters.create(25,15,"Big Monster")
+        Monster = monsters.CreateMonster(25,15,"Big Monster")
         print Monster
-        sleep(3)
-    elif choice == '6':
-        print Weapon
         sleep(3)
     else:
         print "Not a valid choice"
         sleep(2)
     return
     
-def player_methods(Player,Weapon):
+def player_methods(Player):
     print "\n1. find_gold()"
     print "2. find_gold_debug()"
     print "3. find_potions()"
@@ -88,7 +84,7 @@ def player_methods(Player,Weapon):
     if choice == '1':
         Player.find_gold()
     elif choice == '2':
-        amount = int(raw_input("How much? "))
+        amount = int(raw_input("\nHow much? "))
         Player.find_gold_debug(amount)
     elif choice == '3':
         Player.find_potions()
@@ -99,19 +95,19 @@ def player_methods(Player,Weapon):
     elif choice == '7':
         Player.low_health()
     elif choice == '8':
-        health = int(raw_input("To what? "))
+        health = int(raw_input("\nTo what? "))
         Player.set_health(health)
     elif choice == '9':
-        damage = int(raw_input("How much? "))
+        damage = int(raw_input("\nHow much? "))
         Player.take_damage(damage)
     elif choice == '10':
-        damage = int(raw_input("How much? "))
+        damage = int(raw_input("\nHow much? "))
         Player.deal_damage(damage)        
     elif choice == '11':
-        monster = raw_input("Which monster did you kill? ")
+        monster = raw_input("\nWhich monster did you kill? ")
         Player.gain_xp(monster)
     elif choice == '12':
-        name = raw_input("Weapon name? ")
+        name = raw_input("\nWeapon name? ")
         damage = raw_input("Weapon damage? ")
         Player.add_weapon(name,damage)
     elif choice == '13':
@@ -119,7 +115,7 @@ def player_methods(Player,Weapon):
     elif choice == '14':
         Player.set_current_weapon(Weapon)
     elif choice == '15':
-        steps = int(raw_input("To what? "))
+        steps = int(raw_input("\nTo what? "))
         Player.steps = steps
         print "Step count set to %d" % Player.steps
         sleep(2)
@@ -127,7 +123,7 @@ def player_methods(Player,Weapon):
         print Player
         sleep(7)
     else:
-        print "Not a valid choice"
+        print "\nNot a valid choice"
         sleep(2)
     return
         

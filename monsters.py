@@ -15,7 +15,7 @@ class CreateMonster(object):
     def __str__(self):
         return "\nName: %s\nDamage Dealt: %d\nHealth: %d" % (self.name,self.damage_dealt,self.health)
 
-    def attack (self, Player, Weapon):
+    def attack (self, Player):
         actions.clearscreen()
         print "\nYou were attacked by a %s!" % self.name
         Player.take_damage(self.damage_dealt)
@@ -27,8 +27,7 @@ class CreateMonster(object):
             #TODO: add a check to make sure the player is using the best weapon in their inventory
             while self.health > 0: 
                 print "\n***********************************************************"
-                #Weapon = Player.current_weapon
-                Weapon.deal_damage(self,Player)  
+                Player.deal_damage(self)  
                 sleep(1)
                 
                 #monster still attacks after being killed unless health is checked beforehand
@@ -45,14 +44,14 @@ class CreateMonster(object):
             Player.run_away += 1
             return Player
     
-    def boss_attack (self,Player,Weapon):
+    def boss_attack (self,Player):
         actions.clearscreen()
         print "\nA %s blocks your path! There looks to be no way around it.\n\nPrepare to fight!" % self.name
         sleep(2)
         Player.take_damage(self.damage_dealt)
         while self.health > 0: 
             print "\n***********************************************************"
-            Weapon.deal_damage(self,Player)
+            Player.deal_damage(self,Player)
             sleep(1)
             
             #monster still attacks after being killed unless health is checked beforehand
