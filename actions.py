@@ -62,7 +62,7 @@ def roll_dice(Player):
             Player.has_key = True
         else:
             print "\nYou didn't find anything...looks like someone else already got to it"
-        sleep(5)
+        sleep(2)
         
     elif roll == 5:
         clearscreen()
