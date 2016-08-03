@@ -30,8 +30,7 @@ def menu():
         print "** D: Debug Menu     **"
     print "***********************"
     
-    choice = raw_input("\nChoice: ") 
-    choice = choice.lower()
+    choice = raw_input("\nChoice: ").lower()
     
     if choice == 'r':
         actions.roll_dice(newPlayer)
