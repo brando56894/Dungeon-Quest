@@ -6,7 +6,7 @@ import actions
 import player
 from time import sleep
 
-version = 1.10 #Update each time a new feature is committed!
+version = 1.11 
 
 #enables the debug menu option in the main menu
 DEBUG_MODE = "enabled"
@@ -20,42 +20,47 @@ def menu(Player):
     print "Current Health: %d" % Player.health
     print "\nWhat would you like to do?\n"
     print "***********************"
-    print "** R: Roll Dice      **"
-    print "** L: List Inventory **"
-    print "** C: Change Weapon  **"
-    print "** V: Visit Shop     **"
-    print "** U: Use Potion     **"
-    #print "** S: Save Game      **"
-    print "** Q: Quit           **"
+    print "** 1: Roll Dice      **"
+    print "** 2: List Inventory **"
+    print "** 3: Change Weapon  **"
+    print "** 4: Visit Shop     **"
+    print "** 5: Use Potion     **"
+    print "** 6: Save Game      **"
+    print "** 7: Load Game      **"
+    print "** 8: Quit           **"
     if DEBUG_MODE == "enabled":
-        print "** D: Debug Menu     **"
+        print "** 0: Debug Menu     **"
     print "***********************"
     
     choice = raw_input("\nChoice: ") 
-    choice = choice.lower()
     
-    if choice == 'r':
+    if choice == '1':
         actions.roll_dice(Player)
     
-    elif choice == 'l':
+    elif choice == '2':
         newPlayer.list_inventory()
     
-    elif choice == 'c':
+    elif choice == '3':
         newPlayer.set_current_weapon()
     
-    elif choice == 'v':
+    elif choice == '4':
         actions.visit_shop(Player)
     
-    elif choice == 'u':
+    elif choice == '5':
         newPlayer.use_potion()
         
-    elif choice == 's':
-        actions.save_game()
+    elif choice == '6':
+        actions.save_game(newPlayer)
+        
+    elif choice == '7':
+        print "doesn't work yet..."
+        sleep(2)
+        #actions.load_game
     
-    elif choice == 'q':
+    elif choice == '8':
         actions.quit_game()
         
-    elif choice == 'd':
+    elif choice == '0':
         debug.menu(Player)
     
     else:
