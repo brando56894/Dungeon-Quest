@@ -6,6 +6,7 @@ from time import sleep
 import random
 import os
 import monsters
+import pickle
 
 def roll_dice(Player):
     #TODO: add more rolls since some options come up too often
@@ -123,12 +124,18 @@ def quit_game():
     print "\nGood Bye!\n"
     exit(0)
     
-def save_game():
-    save = open("savegame.txt", "a")
-    save.write("Player.health") #TODO: make this save the player object
-    save.close
+def save_game(Player):
+    with open("savegame.pkl",'wb') as output:
+        pickle.dump(Player,output,pickle.HIGHEST_PROTOCOL)
+    print "\nGame saved!"
+    sleep(1)
     
-#TODO: implement load_game()
+def load_game(): #TODO: fix me!
+    with open('savegame.pkl','rb') as input:
+        Player = pickle.load(input)
+    print "\nSaved game has been loaded!"
+    sleep(2)
+    return Player
     
 def clearscreen():
     os.system('cls' if os.name == 'nt' else 'clear')
