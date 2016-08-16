@@ -173,8 +173,7 @@ class CreatePlayer(object):
         print "\nS)word:   25 Gold"
         print "P)istol:  60 Gold"
         print "R)ifle:   120 Gold"
-        choice = raw_input("\nWhich one would you like to purchase? ")
-        choice = choice.lower()
+        choice = raw_input("\nWhich one would you like to purchase? ").lower()
         if choice == 's'and self.gold >= 25:
             self.gold -= 25
             self.add_weapon("sword",25)
@@ -199,8 +198,7 @@ class CreatePlayer(object):
     def set_current_weapon(self): 
         print "\nCurrent Weapon: " + self.current_weapon
         print "Available Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons)
-        choice = raw_input("\nUse weapon: ")
-        choice = choice.lower()
+        choice = raw_input("\nUse weapon: ").lower()
         if choice == "sword" and self.has_sword is True:
             self.damage_dealt = 25
             self.current_weapon = "sword"

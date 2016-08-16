@@ -100,8 +100,7 @@ def visit_shop(Player):
     print "\nP) Health Potions"
     print "W) Weapons"
     print "N) Nothing/Leave Store"
-    choice = raw_input("\nChoice: ")
-    choice.lower()
+    choice = raw_input("\nChoice: ").lower()
     clearscreen()
 
     if choice == 'p':

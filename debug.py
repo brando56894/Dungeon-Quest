@@ -14,8 +14,7 @@ def menu(Player):
     print "2. player methods"
     print "3. actions functions"
 
-    choice = raw_input("\nChoice: ")
-    choice = choice.lower()
+    choice = raw_input("\nChoice: ").lower()
     
     if choice == "1":
         monster_methods(Player)
