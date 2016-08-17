@@ -2,7 +2,7 @@
 #
 #~~Player Functions~~
 
-import random
+from superRandom import superRandint, superChoice
 from time import sleep
 import actions
 import monsters
@@ -31,7 +31,7 @@ class CreatePlayer(object):
         return "\nName: %s\nHealth: %d\nXP: %d\nPotions: %d\nGold: %d\nWeapons: %s\nSteps: %d\nCurrent Weapon: %s\nDragon Attack: %s\nBasiliskAttack: %s\nHas Sword: %s\nHas Pistol: %s\nHas Rifle: %s\nTimes Run Away: %d\nHas Key: %s" % (self.name,self.health,self.xp,self.potions,self.gold,self.weapons,self.steps,self.current_weapon,self.dragon_attack,self.basilisk_attack,self.has_sword,self.has_pistol,self.has_rifle,self.run_away,self.has_key)
 
     def find_gold(self):
-        amount = random.randint(1,25)
+        amount = superRandint(1,25)
         self.gold += amount
         print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         sleep(2)
@@ -50,7 +50,7 @@ class CreatePlayer(object):
     
     def find_weapon(self):
         weapons = ["sword","pistol","rifle"]
-        found = random.choice(weapons)
+        found = superChoice(weapons)
         print "\nYou found a %s!" % found
         if found == "sword":
             damage = 25
@@ -144,15 +144,15 @@ class CreatePlayer(object):
         
     def gain_xp(self,monster_name):
         if monster_name == "Dragon":
-            gained = random.randint(40,150)
+            gained = superRandint(40,150)
         elif monster_name == "Gremlin":
-            gained = random.randint(1,35)
+            gained = superRandint(1,35)
         elif monster_name == "Demon":
-            gained = random.randint(15,50)
+            gained = superRandint(15,50)
         elif monster_name == "Zombie":
-            gained = random.randint(16,75)
+            gained = superRandint(16,75)
         else:
-            gained = random.randint(1,30)
+            gained = superRandint(1,30)
         self.xp += gained
         print "\nYou gained %d XP!" % gained
         return self

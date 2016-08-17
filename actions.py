@@ -3,13 +3,13 @@
 #~actions.py~
 
 from time import sleep
-import random
+from superRandom import *
 import os
 import monsters
 
 def roll_dice(Player):
     #TODO: add more rolls since some options come up too often
-    roll = random.randrange(1,6)
+    roll = superRandrange(1,6)
     Player.steps += roll
     
     #mid-game boss
@@ -36,7 +36,7 @@ def roll_dice(Player):
     elif roll == 2:
         clearscreen()
         print "\nYou stepped on a booby trap!"
-        Player.take_damage(random.randint(1,7))
+        Player.take_damage(superRandint(1,7))
         
     elif roll == 3:
         clearscreen()
@@ -52,7 +52,7 @@ def roll_dice(Player):
         clearscreen()
         print "\nYou stumbled upon a dead body, you look through it's backpack...."
         sleep(1)
-        number = random.randint(0,3)
+        number = superRandint(0,3)
         if number == 1:
             Player.find_gold()
         elif number == 2:
@@ -67,19 +67,19 @@ def roll_dice(Player):
     elif roll == 5:
         clearscreen()
         monster_names = ["Gremlin", "Demon", "Zombie"]
-        choice = random.choice(monster_names)
+        choice = superChoice(monster_names)
         if choice == "Gremlin":
-            newMonster = monsters.CreateMonster(random.randint(10,15), random.randint(1,7),"Gremlin") #HP,damage_dealt,name
+            newMonster = monsters.CreateMonster(superRandint(10,15), superRandint(1,7),"Gremlin") #HP,damage_dealt,name
             newMonster.attack(Player)
             del newMonster
         
         elif choice == "Demon":
-            newMonster = monsters.CreateMonster(random.randint(15,25), random.randint(7,15),"Demon") #HP,damage_dealt,name
+            newMonster = monsters.CreateMonster(superRandint(15,25), superRandint(7,15),"Demon") #HP,damage_dealt,name
             newMonster.attack(Player)
             del newMonster
         
         else:
-            newMonster = monsters.CreateMonster(random.randint(25,35), random.randint(10,20),"Zombie") #HP,damage_dealt,name
+            newMonster = monsters.CreateMonster(superRandint(25,35), superRandint(10,20),"Zombie") #HP,damage_dealt,name
             newMonster.attack(Player)
             del newMonster            
             

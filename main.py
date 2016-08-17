@@ -15,11 +15,28 @@ DEBUG_MODE = "enabled"
 if DEBUG_MODE == "enabled":
     import debug
 
+cache = None
+
 def menu(Player):
+    global cache
+
+    choices = {
+            'r': actions.roll_dice,
+            'l': newPlayer.list_inventory,
+            'c': newPlayer.set_current_weapon,
+            'v': actions.visit_shop,
+            'u': newPlayer.use_potion,
+            's': actions.save_game,
+            'q': actions.quit_game,
+            'd': debug.menu,
+            '': cache,
+            }
+
     actions.clearscreen()
     print "Current Health: %d" % Player.health
     print "\nWhat would you like to do?\n"
     print "***********************"
+    print "** Enter: Prev Action**"
     print "** R: Roll Dice      **"
     print "** L: List Inventory **"
     print "** C: Change Weapon  **"
@@ -31,37 +48,56 @@ def menu(Player):
         print "** D: Debug Menu     **"
     print "***********************"
     
-    choice = raw_input("\nChoice: ") 
-    choice = choice.lower()
-    
-    if choice == 'r':
-        actions.roll_dice(Player)
-    
-    elif choice == 'l':
-        newPlayer.list_inventory()
-    
-    elif choice == 'c':
-        newPlayer.set_current_weapon()
-    
-    elif choice == 'v':
-        actions.visit_shop(Player)
-    
-    elif choice == 'u':
-        newPlayer.use_potion()
-        
-    elif choice == 's':
-        actions.save_game()
-    
-    elif choice == 'q':
-        actions.quit_game()
-        
-    elif choice == 'd':
-        debug.menu(Player)
-    
-    else:
-        print ("\nYou didn't select a valid choice.")
-        print ("Please choose again.")
+    choice = raw_input("\nChoice: ").lower()
+
+    if not choice and not cache:
+        print "\nThere is no previous action."
+        print "Please choose again."
         sleep(2)
+    else:
+        try:
+            if choices[choice] != cache:
+                cache = choices[choice]
+            choices[choice]()
+        except TypeError:
+            if choices[choice] != cache:
+                cache = choices[choice]
+            choices[choice](Player)
+        except KeyError:
+            print ("\nYou didn't select a valid choice.")
+            print ("Please choose again.")
+            sleep(2)
+   # 
+   # if choice == 'r':
+   #     actions.roll_dice(Player)
+   # 
+   # elif choice == 'l':
+   #     newPlayer.list_inventory()
+   # 
+   # elif choice == 'c':
+   #     newPlayer.set_current_weapon()
+   # 
+   # elif choice == 'v':
+   #     actions.visit_shop(Player)
+   # 
+   # elif choice == 'u':
+   #     newPlayer.use_potion()
+   #     
+   # elif choice == 's':
+   #     actions.save_game()
+   # 
+   # elif choice == 'q':
+   #     actions.quit_game()
+   #     
+   # elif choice == 'd':
+   #     debug.menu(Player)
+   # 
+   # elif choice == '':
+   #     pass
+   # else:
+   #     print ("\nYou didn't select a valid choice.")
+   #     print ("Please choose again.")
+   #     sleep(2)
 
 #Starts the game
 actions.clearscreen()
