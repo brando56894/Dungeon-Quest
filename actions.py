@@ -3,14 +3,15 @@
 #~actions.py~
 
 from time import sleep
-import random
+from superRandom import *
 import os
 import monsters
 import pickle
 
 def roll_dice(Player):
     #TODO: add more rolls since some options come up too often
-    roll = random.randrange(1,6)
+    #If zork-style gameplay is enabled, this will no longer be a problem
+    roll = superRandrange(1,6)
     Player.steps += roll
     
     #mid-game boss
@@ -30,17 +31,15 @@ def roll_dice(Player):
     print "\nYou walked %d paces and..." % roll
     sleep(1)
     
+    clearscreen()
     if roll == 1:
-        clearscreen()
         Player.find_gold()
         
     elif roll == 2:
-        clearscreen()
         print "\nYou stepped on a booby trap!"
-        Player.take_damage(random.randint(1,7))
+        Player.take_damage(superRandint(1,7))
         
     elif roll == 3:
-        clearscreen()
         print "\nYou found a locked door..."
         if Player.has_key is True:
             print "\nYou opened it with the key that you found"
@@ -50,10 +49,9 @@ def roll_dice(Player):
             sleep(2)
         
     elif roll == 4:
-        clearscreen()
         print "\nYou stumbled upon a dead body, you look through it's backpack...."
         sleep(1)
-        number = random.randint(0,3)
+        number = superRandint(0,3)
         if number == 1:
             Player.find_gold()
         elif number == 2:
@@ -66,28 +64,26 @@ def roll_dice(Player):
         sleep(2)
         
     elif roll == 5:
-        clearscreen()
         monster_names = ["Gremlin", "Demon", "Zombie"]
-        choice = random.choice(monster_names)
+        choice = superChoice(monster_names)
         if choice == "Gremlin":
-            newMonster = monsters.CreateMonster(random.randint(10,15), random.randint(1,7),"Gremlin") #HP,damage_dealt,name
+            newMonster = monsters.CreateMonster(superRandint(10,15), superRandint(1,7),"Gremlin") #HP,damage_dealt,name
             newMonster.attack(Player)
             del newMonster
         
         elif choice == "Demon":
-            newMonster = monsters.CreateMonster(random.randint(15,25), random.randint(7,15),"Demon") #HP,damage_dealt,name
+            newMonster = monsters.CreateMonster(superRandint(15,25), superRandint(7,15),"Demon") #HP,damage_dealt,name
             newMonster.attack(Player)
             del newMonster
         
         else:
-            newMonster = monsters.CreateMonster(random.randint(25,35), random.randint(10,20),"Zombie") #HP,damage_dealt,name
+            newMonster = monsters.CreateMonster(superRandint(25,35), superRandint(10,20),"Zombie") #HP,damage_dealt,name
             newMonster.attack(Player)
             del newMonster            
             
     else:
-        clearscreen()
-        print "\nYou're safe for the moment!"
-        print "\nTake a minute to catch your breath"
+        print ("\nYou're safe for the moment!\n"
+                "\nTake a minute to catch your breath")
         if Player.health <= 60 and Player.potions > 0:
             Player.low_health()
         sleep(2)
@@ -95,11 +91,18 @@ def roll_dice(Player):
        
 def visit_shop(Player):
     clearscreen()
+<<<<<<< HEAD
     print "\nWhat would you like to purchase?"
     print "You currently have %d gold coins." % Player.gold
     print "\nP) Health Potions"
     print "W) Weapons"
     print "N) Nothing/Leave Store"
+=======
+    print ("\nWhat would you like to purchase?\n"
+            "You currently have %d gold coins.\n"
+            "\nP) Health Potions\n""W) Weapons\n"
+            "N) Nothing/Leave Store", %(Player.gold))
+>>>>>>> 2e75a91c270953bbae6ba3c46c22e154a47db69d
     choice = raw_input("\nChoice: ").lower()
     clearscreen()
 
@@ -123,6 +126,7 @@ def quit_game():
     print "\nGood Bye!\n"
     exit(0)
     
+<<<<<<< HEAD
 def save_game(Player):
     with open("savegame.pkl",'wb') as output:
         pickle.dump(Player,output,pickle.HIGHEST_PROTOCOL)
@@ -135,6 +139,17 @@ def load_game(): #TODO: fix me!
     print "\nSaved game has been loaded!"
     sleep(2)
     return Player
+=======
+def save_game():
+    #kivy makes this quicker and easier
+    #objects can't be saved directly
+    #but their attributes can be saved and they can be rebuilt
+    with open("savegame.txt", "a") as save;
+        save.write("Player.health") #TODO: make this save the player object
+    
+#TODO: implement load_game()
+#kivy also makes this quicker and easier
+>>>>>>> 2e75a91c270953bbae6ba3c46c22e154a47db69d
     
 def clearscreen():
     os.system('cls' if os.name == 'nt' else 'clear')

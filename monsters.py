@@ -3,7 +3,7 @@
 #~~monsters.py~~
 
 from time import sleep
-from random import randint
+#from random import randint
 import actions
 
 class CreateMonster(object):
