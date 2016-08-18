@@ -10,12 +10,11 @@ from time import sleep
 
 def menu(Player):
     actions.clearscreen()
-    print "\n1. monster methods"
-    print "2. player methods"
-    print "3. actions functions"
+    print ("\n1. monster methods"
+            "2. player methods\n"
+            "3. actions functions")
 
-    choice = raw_input("\nChoice: ")
-    choice = choice.lower()
+    choice = raw_input("\nChoice: ").lower()
     
     if choice == "1":
         monster_methods(Player)
@@ -29,11 +28,11 @@ def menu(Player):
     return
     
 def monster_methods(Player):
-    print "\n1. create()"
-    print "2. take_damage()"
-    print "3. deal_damage()"
-    print "4. attack()"
-    print "5. Monster object attributes"
+    print ("\n1. create()"
+            "2. take_damage()\n"
+            "3. deal_damage()\n"
+            "4. attack()\n"
+            "5. Monster object attributes")
     
     choice = raw_input("\nWhich method? ")
     
@@ -62,22 +61,22 @@ def monster_methods(Player):
     return
     
 def player_methods(Player):
-    print "\n1. find_gold()"
-    print "2. find_gold_debug()"
-    print "3. find_potions()"
-    print "4. find_weapon()"
-    print "5. use_potion()"
-    print "6. list_inventory()"
-    print "7. low_health()"
-    print "8. set_health()"
-    print "9. take_damage()"
-    print "10. deal_damage()"
-    print "11. gain_xp()"
-    print "12. add_weapon()"
-    print "13. buy_weapon()"
-    print "14. set_current_weapon()"
-    print "15. set step count"
-    print "16. Player object attributes"
+    print ("\n1. find_gold()\n"
+            "2. find_gold_debug()\n"
+            "3. find_potions()\n"
+            "4. find_weapon()\n"
+            "5. use_potion()\n"
+            "6. list_inventory()\n"
+            "7. low_health()\n"
+            "8. set_health()\n"
+            "9. take_damage()\n"
+            "10. deal_damage()\n"
+            "11. gain_xp()\n"
+            "12. add_weapon()\n"
+            "13. buy_weapon()\n"
+            "14. set_current_weapon()\n"
+            "15. set step count\n"
+            "16. Player object attributes")
     
     choice = raw_input("\nWhich method? ")
     
@@ -128,8 +127,8 @@ def player_methods(Player):
     return
         
 def actions_functions(Player):
-    print "\n1. roll_dice()"
-    print "2. visit_shop()"
+    print ("\n1. roll_dice()"
+            "2. visit_shop()")
     
     choice = raw_input("\nWhich function? ")
     
