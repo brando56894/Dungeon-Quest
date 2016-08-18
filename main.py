@@ -32,7 +32,11 @@ def menu(Player):
         print "** 0: Debug Menu     **"
     print "***********************"
     
+<<<<<<< HEAD
     choice = raw_input("\nChoice: ") 
+=======
+    choice = raw_input("\nChoice: ").lower()
+>>>>>>> 848a2c6b492894ad05b5dd6a5d2b8ceb3a03f324
     
     if choice == '1':
         actions.roll_dice(Player)
