@@ -15,11 +15,29 @@ DEBUG_MODE = "enabled"
 if DEBUG_MODE == "enabled":
     import debug
 
-cache = None
+cache = None #place to remember last function
 
 def menu(Player):
     global cache
 
+    actions.clearscreen()
+    startScreen = ("Current Health: %d"
+            "\nWhat would you like to do?\n"
+            "***********************\n"
+            "** Enter: Prev Action**\n"
+            "** R: Roll Dice      **\n"
+            "** L: List Inventory **\n"
+            "** C: Change Weapon  **\n"
+            "** V: Visit Shop     **\n"
+            "** U: Use Potion     **\n"
+            "** S: Save Game      **\n"
+            "** Q: Quit           **\n" %(Player.health))
+    if DEBUG_MODE == "enabled":
+        print "%s** D: Debug Menu     **" %(startScreen)
+    print "***********************"
+    
+    choice = raw_input("\nChoice: ").lower()
+    #using this method helps clean up all those logic gates
     choices = {
             'r': actions.roll_dice,
             'l': newPlayer.list_inventory,
@@ -29,30 +47,12 @@ def menu(Player):
             's': actions.save_game,
             'q': actions.quit_game,
             'd': debug.menu,
-            '': cache,
+            '': cache, #for convenience
             }
 
-    actions.clearscreen()
-    print "Current Health: %d" % Player.health
-    print "\nWhat would you like to do?\n"
-    print "***********************"
-    print "** Enter: Prev Action**"
-    print "** R: Roll Dice      **"
-    print "** L: List Inventory **"
-    print "** C: Change Weapon  **"
-    print "** V: Visit Shop     **"
-    print "** U: Use Potion     **"
-    #print "** S: Save Game      **"
-    print "** Q: Quit           **"
-    if DEBUG_MODE == "enabled":
-        print "** D: Debug Menu     **"
-    print "***********************"
-    
-    choice = raw_input("\nChoice: ").lower()
-
     if not choice and not cache:
-        print "\nThere is no previous action."
-        print "Please choose again."
+        print ("\nThere is no previous action.\n"
+                "Please choose again.")
         sleep(2)
     else:
         try:
@@ -64,40 +64,9 @@ def menu(Player):
                 cache = choices[choice]
             choices[choice](Player)
         except KeyError:
-            print ("\nYou didn't select a valid choice.")
-            print ("Please choose again.")
+            print ("\nYou didn't select a valid choice.\n"
+                    "Please choose again.")
             sleep(2)
-   # 
-   # if choice == 'r':
-   #     actions.roll_dice(Player)
-   # 
-   # elif choice == 'l':
-   #     newPlayer.list_inventory()
-   # 
-   # elif choice == 'c':
-   #     newPlayer.set_current_weapon()
-   # 
-   # elif choice == 'v':
-   #     actions.visit_shop(Player)
-   # 
-   # elif choice == 'u':
-   #     newPlayer.use_potion()
-   #     
-   # elif choice == 's':
-   #     actions.save_game()
-   # 
-   # elif choice == 'q':
-   #     actions.quit_game()
-   #     
-   # elif choice == 'd':
-   #     debug.menu(Player)
-   # 
-   # elif choice == '':
-   #     pass
-   # else:
-   #     print ("\nYou didn't select a valid choice.")
-   #     print ("Please choose again.")
-   #     sleep(2)
 
 #Starts the game
 actions.clearscreen()
@@ -113,8 +82,7 @@ while newPlayer.health > 0:
         exit(0)
     elif newPlayer.run_away > 5:
         clearscreen()
-        print "\nYou're too much of a wimp to make it though the dungeon alive!"
-        print "Don't show your face here again until you toughen yourself up!\n"
+        print ("\nYou're too much of a wimp to make it though the dungeon alive!\n"
+                "Don't show your face here again until you toughen yourself up!\n")
         exit(0)
-else:
-    print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
+print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
