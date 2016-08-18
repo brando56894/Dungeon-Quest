@@ -9,6 +9,7 @@ import monsters
 
 def roll_dice(Player):
     #TODO: add more rolls since some options come up too often
+    #If zork-style gameplay is enabled, this will no longer be a problem
     roll = superRandrange(1,6)
     Player.steps += roll
     
@@ -29,17 +30,15 @@ def roll_dice(Player):
     print "\nYou walked %d paces and..." % roll
     sleep(1)
     
+    clearscreen()
     if roll == 1:
-        clearscreen()
         Player.find_gold()
         
     elif roll == 2:
-        clearscreen()
         print "\nYou stepped on a booby trap!"
         Player.take_damage(superRandint(1,7))
         
     elif roll == 3:
-        clearscreen()
         print "\nYou found a locked door..."
         if Player.has_key is True:
             print "\nYou opened it with the key that you found"
@@ -49,7 +48,6 @@ def roll_dice(Player):
             sleep(2)
         
     elif roll == 4:
-        clearscreen()
         print "\nYou stumbled upon a dead body, you look through it's backpack...."
         sleep(1)
         number = superRandint(0,3)
@@ -65,7 +63,6 @@ def roll_dice(Player):
         sleep(2)
         
     elif roll == 5:
-        clearscreen()
         monster_names = ["Gremlin", "Demon", "Zombie"]
         choice = superChoice(monster_names)
         if choice == "Gremlin":
@@ -84,9 +81,8 @@ def roll_dice(Player):
             del newMonster            
             
     else:
-        clearscreen()
-        print "\nYou're safe for the moment!"
-        print "\nTake a minute to catch your breath"
+        print ("\nYou're safe for the moment!\n"
+                "\nTake a minute to catch your breath")
         if Player.health <= 60 and Player.potions > 0:
             Player.low_health()
         sleep(2)
@@ -94,13 +90,11 @@ def roll_dice(Player):
        
 def visit_shop(Player):
     clearscreen()
-    print "\nWhat would you like to purchase?"
-    print "You currently have %d gold coins." % Player.gold
-    print "\nP) Health Potions"
-    print "W) Weapons"
-    print "N) Nothing/Leave Store"
-    choice = raw_input("\nChoice: ")
-    choice.lower()
+    print ("\nWhat would you like to purchase?\n"
+            "You currently have %d gold coins.\n"
+            "\nP) Health Potions\n""W) Weapons\n"
+            "N) Nothing/Leave Store", %(Player.gold))
+    choice = raw_input("\nChoice: ").lower()
     clearscreen()
 
     if choice == 'p':
@@ -124,11 +118,14 @@ def quit_game():
     exit(0)
     
 def save_game():
-    save = open("savegame.txt", "a")
-    save.write("Player.health") #TODO: make this save the player object
-    save.close
+    #kivy makes this quicker and easier
+    #objects can't be saved directly
+    #but their attributes can be saved and they can be rebuilt
+    with open("savegame.txt", "a") as save;
+        save.write("Player.health") #TODO: make this save the player object
     
 #TODO: implement load_game()
+#kivy also makes this quicker and easier
     
 def clearscreen():
     os.system('cls' if os.name == 'nt' else 'clear')
