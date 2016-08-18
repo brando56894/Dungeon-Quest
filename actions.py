@@ -91,18 +91,10 @@ def roll_dice(Player):
        
 def visit_shop(Player):
     clearscreen()
-<<<<<<< HEAD
-    print "\nWhat would you like to purchase?"
-    print "You currently have %d gold coins." % Player.gold
-    print "\nP) Health Potions"
-    print "W) Weapons"
-    print "N) Nothing/Leave Store"
-=======
     print ("\nWhat would you like to purchase?\n"
             "You currently have %d gold coins.\n"
             "\nP) Health Potions\n""W) Weapons\n"
             "N) Nothing/Leave Store", %(Player.gold))
->>>>>>> 2e75a91c270953bbae6ba3c46c22e154a47db69d
     choice = raw_input("\nChoice: ").lower()
     clearscreen()
 
@@ -126,7 +118,6 @@ def quit_game():
     print "\nGood Bye!\n"
     exit(0)
     
-<<<<<<< HEAD
 def save_game(Player):
     with open("savegame.pkl",'wb') as output:
         pickle.dump(Player,output,pickle.HIGHEST_PROTOCOL)
@@ -139,17 +130,6 @@ def load_game(): #TODO: fix me!
     print "\nSaved game has been loaded!"
     sleep(2)
     return Player
-=======
-def save_game():
-    #kivy makes this quicker and easier
-    #objects can't be saved directly
-    #but their attributes can be saved and they can be rebuilt
-    with open("savegame.txt", "a") as save;
-        save.write("Player.health") #TODO: make this save the player object
-    
-#TODO: implement load_game()
-#kivy also makes this quicker and easier
->>>>>>> 2e75a91c270953bbae6ba3c46c22e154a47db69d
     
 def clearscreen():
     os.system('cls' if os.name == 'nt' else 'clear')
