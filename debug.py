@@ -10,7 +10,7 @@ from time import sleep
 
 def menu(Player):
     actions.clearscreen()
-    print ("\n1. monster methods"
+    print ("\n1. monster methods\n"
             "2. player methods\n"
             "3. actions functions")
 
@@ -28,7 +28,7 @@ def menu(Player):
     return
     
 def monster_methods(Player):
-    print ("\n1. create()"
+    print ("\n1. create()\n"
             "2. take_damage()\n"
             "3. deal_damage()\n"
             "4. attack()\n"
@@ -127,7 +127,7 @@ def player_methods(Player):
     return
         
 def actions_functions(Player):
-    print ("\n1. roll_dice()"
+    print ("\n1. roll_dice()\n"
             "2. visit_shop()")
     
     choice = raw_input("\nWhich function? ")

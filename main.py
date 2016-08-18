@@ -21,7 +21,7 @@ def menu(Player):
     global cache
 
     actions.clearscreen()
-    startScreen = ("Current Health: %d"
+    startScreen = ("Current Health: %d\n"
             "\nWhat would you like to do?\n"
             "***********************\n"
             "** Enter: Prev Action**\n"

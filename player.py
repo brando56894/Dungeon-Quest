@@ -28,7 +28,18 @@ class CreatePlayer(object):
         self.has_key = False
         
     def __repr__(self):
-        return "\nName: %s\nHealth: %d\nXP: %d\nPotions: %d\nGold: %d\nWeapons: %s\nSteps: %d\nCurrent Weapon: %s\nDragon Attack: %s\nBasiliskAttack: %s\nHas Sword: %s\nHas Pistol: %s\nHas Rifle: %s\nTimes Run Away: %d\nHas Key: %s" % (self.name,self.health,self.xp,self.potions,self.gold,self.weapons,self.steps,self.current_weapon,self.dragon_attack,self.basilisk_attack,self.has_sword,self.has_pistol,self.has_rifle,self.run_away,self.has_key)
+        return ("\nName: %s\nHealth: %d\nXP: %d\nPotions: "
+                "%d\nGold: %d\nWeapons: %s\nSteps: %d\nCurr"
+                "ent Weapon: %s\nDragon Attack: %s\nBasili"
+                "skAttack: %s\nHas Sword: %s\nHas Pistol: "
+                "%s\nHas Rifle: %s\nTimes Run Away: %d\nHa"
+                "s Key: %s" % (self.name,self.health,self.xp,
+                    self.potions,self.gold,self.weapons,
+                    self.steps,self.current_weapon,
+                    self.dragon_attack,self.basilisk_attack,
+                    self.has_sword,self.has_pistol,self.has_rifle,
+                    self.run_away,self.has_key)
+                )
 
     def find_gold(self):
         amount = superRandint(1,25)
@@ -96,11 +107,13 @@ class CreatePlayer(object):
         
     def list_inventory(self):
         actions.clearscreen()
-        print "\nName: "+self.name
-        print "Exp. Points: %d" % self.xp
-        print "Potions Held: %d" % self.potions
-        print "Gold: %d pieces" % self.gold
-        print "Current Weapon: %s" % self.current_weapon
+        print ("\nName: %s\n"
+                "Exp. Points: %d\n"
+                "Potions Held: %d\n"
+                "Gold: %d pieces\n"
+                "Current Weapon: %s" %(self.name, self.xp,
+                    self.potions, self.gold, self.current_weapon)
+                )
         
         if self.has_pistol is True and "pistol" not in self.weapons:
             self.weapons.append("pistol")
@@ -114,7 +127,10 @@ class CreatePlayer(object):
     def low_health(self):
         if self.health <= 60 and self.potions > 0:
             print "\n*****DANGER*****\n"
-            choice = raw_input("\nYour health is currently at %d, and you currently have %d potions in your inventory. \nWould you like to use one? " % (self.health,self.potions))
+            choice = raw_input("\nYour health is currently at %d, a"
+                    "nd you currently have %d potions in your inven"
+                    "tory. \nWould you like to use one? " % (self.health,self.potions)
+                    )
             choice.lower()
             if choice == 'y' or choice == 'yes':
                 self.use_potion()

@@ -19,8 +19,7 @@ class CreateMonster(object):
         actions.clearscreen()
         print "\nYou were attacked by a %s!" % self.name
         Player.take_damage(self.damage_dealt)
-        choice = raw_input("\nDo you F)ight it or R)un away? ")
-        choice = choice.lower()
+        choice = raw_input("\nDo you F)ight it or R)un away? ").lower()
         if choice == "f":
             actions.clearscreen()
             print "\nYou decided to fight it. Bad idea!"
