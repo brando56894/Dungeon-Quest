@@ -21,57 +21,6 @@ def menu(Player):
     global cache
 
     actions.clearscreen()
-<<<<<<< HEAD
-    print "Current Health: %d" % Player.health
-    print "\nWhat would you like to do?\n"
-    print "***********************"
-    print "** 1: Roll Dice      **"
-    print "** 2: List Inventory **"
-    print "** 3: Change Weapon  **"
-    print "** 4: Visit Shop     **"
-    print "** 5: Use Potion     **"
-    print "** 6: Save Game      **"
-    print "** 7: Load Game      **"
-    print "** 8: Quit           **"
-    if DEBUG_MODE == "enabled":
-        print "** 0: Debug Menu     **"
-    print "***********************"
-    
-    choice = raw_input("\nChoice: ").lower()
-    
-    if choice == '1':
-        actions.roll_dice(Player)
-    
-    elif choice == '2':
-        newPlayer.list_inventory()
-    
-    elif choice == '3':
-        newPlayer.set_current_weapon()
-    
-    elif choice == '4':
-        actions.visit_shop(Player)
-    
-    elif choice == '5':
-        newPlayer.use_potion()
-        
-    elif choice == '6':
-        actions.save_game(newPlayer)
-        
-    elif choice == '7':
-        print "doesn't work yet..."
-        sleep(2)
-        #actions.load_game
-    
-    elif choice == '8':
-        actions.quit_game()
-        
-    elif choice == '0':
-        debug.menu(Player)
-    
-    else:
-        print ("\nYou didn't select a valid choice.")
-        print ("Please choose again.")
-=======
     startScreen = ("Current Health: %d\n"
             "\nWhat would you like to do?\n"
             "***********************\n"
@@ -104,7 +53,6 @@ def menu(Player):
     if not choice and not cache:
         print ("\nThere is no previous action.\n"
                 "Please choose again.")
->>>>>>> 2e75a91c270953bbae6ba3c46c22e154a47db69d
         sleep(2)
     else:
         try:
