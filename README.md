@@ -12,3 +12,7 @@ The current features are as follows:
 * Mid-game boss and Final boss
 * Non-interactive attack system (only initially gives you the choice to fight or run away, all other turns are automated)
 * Player gains experience based upon which monster was killed, will be used later for leveling up character
+
+To start the game simply execute main.py with Python v2.x (preferably 2.7.x), the game will not work at all with Python 3
+
+You can also enable debug mode by setting **DEBUG_MODE = "enabled"** in main.py (just comment or uncomment)
