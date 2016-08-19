@@ -57,6 +57,7 @@ class CreatePlayer(object):
     def find_potions(self):
         self.potions += 1
         print "\nYou found a health potion! You now have %d potions in your inventory." % self.potions
+        sleep(2)
         return self
     
     def find_weapon(self):
