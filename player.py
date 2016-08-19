@@ -60,6 +60,7 @@ class CreatePlayer(object):
         return self
     
     def find_weapon(self):
+        #TODO: add more weapons
         weapons = ["sword","pistol","rifle"]
         found = superChoice(weapons)
         print "\nYou found a %s!" % found
@@ -213,7 +214,9 @@ class CreatePlayer(object):
     
     def set_current_weapon(self): 
         print "\nCurrent Weapon: " + self.current_weapon
-        print "Available Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons)
+        #doesn't show correct weapons immediately after a new weapon is found
+        #even if weapon is in inventory, method itself works perfectly.
+        print "Available Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons) 
         choice = raw_input("\nUse weapon: ").lower()
         if choice == "sword" and self.has_sword is True:
             self.damage_dealt = 25
