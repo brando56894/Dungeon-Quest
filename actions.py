@@ -118,7 +118,7 @@ def visit_shop(Player):
     
 def quit_game():
     print "\nGood Bye!\n"
-    exit(0)
+    return 0
     
 def save_game(Player):
     with open("savegame.pkl",'wb') as output:

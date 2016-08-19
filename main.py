@@ -58,7 +58,9 @@ def menu(Player):
         try:
             if choices[choice] != cache:
                 cache = choices[choice]
-            choices[choice]()
+            x = choices[choice]()
+            if x == 0:
+                return 0
         except TypeError:
             if choices[choice] != cache:
                 cache = choices[choice]
@@ -76,13 +78,15 @@ name = "Bran"
 newPlayer = player.CreatePlayer(name)
 
 while newPlayer.health > 0:
-    menu(newPlayer)
+    if menu(newPlayer) == 0:
+        break
     if newPlayer.basilisk_attack is True:
         print "\nCongratulations! You made it through the dungeon alive!\n"
-        exit(0)
+        break
     elif newPlayer.run_away > 5:
         clearscreen()
         print ("\nYou're too much of a wimp to make it though the dungeon alive!\n"
                 "Don't show your face here again until you toughen yourself up!\n")
-        exit(0)
-print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
+        break
+if not newPlayer.health:
+    print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
