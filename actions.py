@@ -60,9 +60,10 @@ def roll_dice(Player):
         elif number == 3:
             print "\nYou found a key, wonder what it opens..."
             Player.has_key = True
+            sleep(2)
         else:
             print "\nYou didn't find anything...looks like someone else already got to it"
-        sleep(2)
+            sleep(2)
         
     elif roll == 5:
         monster_names = ["Gremlin", "Demon", "Zombie"]
