@@ -23,18 +23,18 @@ def menu(Player):
     actions.clearscreen()
     startScreen = ("Current Health: %d\n"
             "\nWhat would you like to do?\n"
-            "***********************\n"
-            "** Enter: Prev Action**\n"
-            "** R: Roll Dice      **\n"
-            "** L: List Inventory **\n"
-            "** C: Change Weapon  **\n"
-            "** V: Visit Shop     **\n"
-            "** U: Use Potion     **\n"
-            "** S: Save Game      **\n"
-            "** Q: Quit           **\n" %(Player.health))
+            "***************************\n"
+            "** Enter: Prev Action    **\n"
+            "** R:     Roll Dice      **\n"
+            "** L:     List Inventory **\n"
+            "** C:     Change Weapon  **\n"
+            "** V:     Visit Shop     **\n"
+            "** U:     Use Potion     **\n"
+            "** S:     Save Game      **\n"
+            "** Q:     Quit           **\n" %(Player.health))
     if DEBUG_MODE == "enabled":
-        print "%s** D: Debug Menu     **" %(startScreen)
-    print "***********************"
+        print "%s** D:     Debug Menu     **" %(startScreen)
+    print "***************************"
     
     choice = raw_input("\nChoice: ").lower()
     #using this method helps clean up all those logic gates
