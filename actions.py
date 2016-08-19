@@ -44,6 +44,7 @@ def roll_dice(Player):
         if Player.has_key is True:
             print "\nYou opened it with the key that you found"
             Player.find_weapon()
+            Player.has_key = False
         else:
             print "\nBut you can't open it since you don't have the key"
             sleep(2)
