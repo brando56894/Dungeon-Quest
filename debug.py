@@ -133,7 +133,7 @@ def actions_functions(Player):
     choice = raw_input("\nWhich function? ")
     
     if choice == '1':
-        actions.roll_dice()
+        actions.roll_dice(Player)
     elif choice == '2':
         actions.visit_shop()
     else:
