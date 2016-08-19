@@ -16,7 +16,7 @@ def roll_dice(Player):
     
     #mid-game boss
     if Player.steps >= 100 and Player.dragon_attack is False:
-        dragon = monsters.CreateMonster(150,25,"Dragon") #HP,damage_dealt,name
+        dragon = monsters.CreateMonster(200,25,"Dragon") #HP,damage_dealt,name
         dragon.boss_attack(Player)
         Player.dragon_attack = True
         return
