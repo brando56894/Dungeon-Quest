@@ -94,7 +94,7 @@ def visit_shop(Player):
     print ("\nWhat would you like to purchase?\n"
             "You currently have %d gold coins.\n"
             "\nP) Health Potions\n""W) Weapons\n"
-            "N) Nothing/Leave Store", %(Player.gold))
+            "N) Nothing/Leave Store" %(Player.gold))
     choice = raw_input("\nChoice: ").lower()
     clearscreen()
 
