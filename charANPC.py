@@ -3,10 +3,11 @@
 #~charANPC.py~
 
 from superRandom import superChoice
+from weapons import *
 
 class charANPC(object):
 
-    def __init__(self):
+    def __init__(self, build):
         self.stats = {
                 "hp": 10, #health points
                 "maxHP": 10,
@@ -23,9 +24,16 @@ class charANPC(object):
                 }
         self.lvl = 1
         self.inventory = {}
-        self.equipment = []
+        self.equipped = {}
+        self.skills = []
+        self.weapons = []
+        self.regAtk = {}
+        self.name = ''
 
-    def statModifier(self, statMod):
+    def build(self, build):
+        pass
+
+    def statModifier(self, statMod, reverse = False):
         '''
         statMod is a dictionary with the following syntax:
         {stat_to_be_modified:modification,...}
@@ -34,13 +42,21 @@ class charANPC(object):
         for sM in statMod:
             stat = sM
             mod = statMod[stat]
-            if isinstance(mod, float):
-                statMod[stat] *= mod
+            if not reverse:
+                if isinstance(mod, float):
+                    statMod[stat] *= mod
+                else:
+                    statMod[stat] += mod
             else:
-                statMod[stat] += mod
+                if isinstance(mod, float):
+                    statMod[stat] /= mod
+                else:
+                    statMod[stat] -= mod
             if stat in ("hp", "mp", "sp"):
-                if self.stats[stat] > self.stats["max" + stat.upper()]:
-                    self.stats[stat] = self.stats["max" + stat.upper()]
+                if self.stats[stat] > self.stats["max" +
+                        stat.upper()]:
+                    self.stats[stat] = self.stats["max" +
+                            stat.upper()]
                 elif self.stats[stat] < 0:
                     self.stats[stat] = 0
 
@@ -55,6 +71,11 @@ class charANPC(object):
 
     def spHandle(self, skill):
         pass
+
+    def equip(self, weapon, dequip = False):
+        weapon = Weapon(weapon)
+        self.regAtk = weapon.regAtk
+        self.statModifier(weapon.mods, dequip)
 
     def checkIfDead(self):
         if self.stats["hp"] == 0:
