@@ -6,7 +6,7 @@
 weapons = {
     "sword": {
         "type": "blade",
-        "mods": {"str": 5, "def": 3},
+        "mods": {"str": 7, "def": 3},
         "handsNeeded": 1,
         },
     "pistol": {
@@ -16,7 +16,7 @@ weapons = {
         },
     "rifle": {
         "type": "gun",
-        "mods": {"str": 30, "def": -5, "spe": -5},
+        "mods": {"str": 15, "def": -5, "spe": -5},
         "handsNeeded": 2,
         },
     "dagger": {
@@ -31,7 +31,7 @@ weapons = {
         },
     "crossbow": {
         "type": "bow",
-        "mods": {"str": 20, "spe": 5},
+        "mods": {"str": 12, "spe": 5},
         "handsNeeded": 2,
         },
     "staff": {
@@ -41,7 +41,7 @@ weapons = {
         },
     "gauntlet": {
         "type": "fist",
-        "mods": {"str": 5, "def": -5, "spe": 3},
+        "mods": {"str": 10, "def": -5, "spe": 3},
         "handsNeeded": 1,
         },
     "bare": {

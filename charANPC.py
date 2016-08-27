@@ -11,8 +11,8 @@ class CharANPC(object):
 
     def __init__(self, build):
         self.stats = {
-                "hp": 10, #health points
-                "maxHP": 10,
+                "hp": 200, #health points
+                "maxHP": 50,
                 "sp": 10, #skill points
                 "maxSP": 10,
                 "mp": 10, #magic points
@@ -52,8 +52,18 @@ class CharANPC(object):
 
     def build(self, build):
         self.name = build["name"]
+        equipment = build.get("equipment", {})
+        skillSet = build.get("skills", {})
         for hand in ("rightHand", "leftHand"):
-            self.equip(build["equipment"].pop(hand, "bare"), hand)
+            self.equip(build["equipment"].get(hand, "bare"), hand)
+        for part, item in equipment.items():
+            if part not in ("rightHand", "leftHand") and item:
+                self.equip(item, part)
+            elif part in ("rightHand", "leftHand"):
+                self.equip(item if item else 'bare', part)
+        for part, skillList in skillSet.items():
+            for skill in skillList:
+                self.addSkill(part, skill)
 
     def statModifier(self, statMod, reverse = False):
         '''
@@ -93,14 +103,13 @@ class CharANPC(object):
             self.statModifier({stat:mod})
 
     def SPMPHandle(self, atk):
-        SPMPNeeded = atk.pop("mpUsed", 0)
+        SPMPNeeded = atk.get("mpUsed", 0)
         if SPMPNeeded:
             stat = "mp"
         else:
-            SPMPNeeded = atk.pop("spUsed", 0)
+            SPMPNeeded = atk.get("spUsed", 0)
             stat = "sp"
         if SPMPNeeded > self.stats[stat]:
-            print atk
             return False
         self.statModifier({stat: -SPMPNeeded})
         return True
@@ -156,8 +165,10 @@ class CharANPC(object):
         self.skills[skillName] = skill
 
     def formatAtk(self, atk, targetName = ''):
-        if targetName:
+        if "target" not in atk or isinstance(atk["target"], str):
             atk["target"] = targetName
+        else:
+            targetName = 'targetName'
         atk = self.formatStringInDict(atk, targetName)
         return atk
 
@@ -179,7 +190,8 @@ class CharANPC(object):
                             else 'regAtk' if word == 'atkName'
                             else word)
                     newStr += afterWord
-                dic[key] = newStr
+                dic[key] = (newStr[:len(newStr) - 1] if
+                        newStr[len(newStr) - 1] == ' ' else newStr)
         return dic
 
 
@@ -194,5 +206,5 @@ class ANPC(CharANPC):
             notTeam = enemies
         notTeam = allies if self.name not in allies else enemies
         skill = superChoice(self.skills.values())
-        atk = deepcopy(skill) if self.SPMPHandle(skill) else self.regAtk
-        return self.formatAtk(atk, superChoice(notTeam))
+        atk = skill if self.SPMPHandle(skill) else self.regAtk
+        return self.formatAtk(deepcopy(atk), superChoice(notTeam))
