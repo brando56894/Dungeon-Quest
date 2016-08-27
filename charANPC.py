@@ -4,6 +4,8 @@
 
 from superRandom import superChoice
 from equipment import Equipment
+from skills import skills
+from copy import deepcopy
 
 class CharANPC(object):
 
@@ -21,6 +23,8 @@ class CharANPC(object):
                 "ma": 10, #magic attack
                 "spe": 10, #speed
                 "lck": 10, #luck
+                "acc": 100, #accuracy
+                "eva": 100, #evasion
                 "exp": 0, #experience
                 "gol": 0, #gold
                 }
@@ -36,13 +40,13 @@ class CharANPC(object):
         self.regAtk = {
                 "baseAtk": 60,
                 "baseAcc": 95,
-                "atkString": "name attacked targetName!"
+                "atkStr": "name attacked targetName!"
                 }
-        self.skills = []
+        self.skills = {"regAtk": self.regAtk}
         self.checkIfDead = lambda: (True if not self.stats["hp"]
                 else False)
         self.checkIfLucky = lambda: superChoice([
-            superChoice((1,2)) for x in range(self.stats["lck"])
+            superChoice((1,1,1,2)) for x in range(self.stats["lck"])
             ])
         self.build(build)
 
@@ -78,17 +82,28 @@ class CharANPC(object):
                 elif self.stats[stat] < 0:
                     self.stats[stat] = 0
 
-    def spRegen(self):
-        full = stats["maxSP"]
-        now = stats["sp"]
-        lck = checkIfLucky()
-        if not now:
-            now += 1
-        mod = lck * .25 * full / now
-        self.statModifier({"sp":mod})
+    def SPMPRegen(self):
+        for stat in ("mp", "sp"):
+            full = self.stats["max" + stat.upper()]
+            now = self.stats[stat]
+            lck = self.checkIfLucky()
+            if not now:
+                now += 1
+            mod = lck * .25 * full / now
+            self.statModifier({stat:mod})
 
-    def spHandle(self, skill):
-        pass
+    def SPMPHandle(self, atk):
+        SPMPNeeded = atk.pop("mpUsed", 0)
+        if SPMPNeeded:
+            stat = "mp"
+        else:
+            SPMPNeeded = atk.pop("spUsed", 0)
+            stat = "sp"
+        if SPMPNeeded > self.stats[stat]:
+            print atk
+            return False
+        self.statModifier({stat: -SPMPNeeded})
+        return True
 
     def equip(self, equipment, whereToPut,
             dequip = False, selfSent = False):
@@ -135,3 +150,49 @@ class CharANPC(object):
                     self.equipment[whereToPut] = None
                     if not selfSent:
                         self.equip("bare", whereToPut)
+
+    def addSkill(self, weapon, skillName):
+        skill = skills[weapon][skillName]
+        self.skills[skillName] = skill
+
+    def formatAtk(self, atk, targetName = ''):
+        if targetName:
+            atk["target"] = targetName
+        atk = self.formatStringInDict(atk, targetName)
+        return atk
+
+    def formatStringInDict(self, dic, targetName):
+        for key in dic:
+            if isinstance(dic[key], dict):
+                dic[key] = self.formatStringInDict(dic[key], targetName)
+            if (isinstance(dic[key], str) and
+                    len(dic[key].split()) > 1):
+                newStr = ''
+                for word in dic[key].split():
+                    afterWord = ' '
+                    for x in ("'s", "!"):
+                        if x in word:
+                            afterWord = "%s " %(x)
+                            word = word[:len(word) - len(x)]
+                    newStr += (targetName if word == 'targetName'
+                            else self.name if word == 'name'
+                            else 'regAtk' if word == 'atkName'
+                            else word)
+                    newStr += afterWord
+                dic[key] = newStr
+        return dic
+
+
+
+class Player(CharANPC):
+    pass
+
+class ANPC(CharANPC):
+    
+    def AIAtk(self, allies, enemies):
+        if self.name in allies:
+            notTeam = enemies
+        notTeam = allies if self.name not in allies else enemies
+        skill = superChoice(self.skills.values())
+        atk = deepcopy(skill) if self.SPMPHandle(skill) else self.regAtk
+        return self.formatAtk(atk, superChoice(notTeam))
