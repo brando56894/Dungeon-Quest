@@ -2,7 +2,7 @@
 #
 #~charANPC.py~
 
-from superRandom import superChoice
+from superRandom import super_choice
 from equipment import Equipment
 from skills import skills
 from copy import deepcopy
@@ -12,11 +12,11 @@ class CharANPC(object):
     def __init__(self, build):
         self.stats = {
                 "hp": 200, #health points
-                "maxHP": 50,
+                "max_hp": 200,
                 "sp": 10, #skill points
-                "maxSP": 10,
+                "max_sp": 10,
                 "mp": 10, #magic points
-                "maxMP": 10,
+                "max_mp": 10,
                 "def": 10, #defense
                 "str": 10, #strength
                 "md": 10, #magic defence
@@ -32,48 +32,47 @@ class CharANPC(object):
         self.inventory = {}
         self.equipment = {
                 "head": None,
-                "rightHand": None,
-                "leftHand": None,
+                "right_hand": None,
+                "left_hand": None,
                 "body": None,
                 "legs": None
                 }
-        self.regAtk = {
-                "baseAtk": 60,
-                "baseAcc": 95,
-                "atkStr": "name attacked targetName!"
+        self.reg_atk = {
+                "base_atk": 60,
+                "base_acc": 95,
+                "atk_str": "name attacked target_name!"
                 }
-        self.skills = {"regAtk": self.regAtk}
-        self.checkIfDead = lambda: (True if not self.stats["hp"]
+        self.skills = {"reg_atk": self.reg_atk}
+        self.check_if_dead = lambda: (True if not self.stats["hp"]
                 else False)
-        self.checkIfLucky = lambda: superChoice([
-            superChoice((1,1,1,2)) for x in range(self.stats["lck"])
+        self.check_if_lucky = lambda: super_choice([
+            super_choice((1,1,1,2)) for x in range(self.stats["lck"])
             ])
         self.build(build)
 
     def build(self, build):
         self.name = build["name"]
         equipment = build.get("equipment", {})
-        skillSet = build.get("skills", {})
-        for hand in ("rightHand", "leftHand"):
+        skill_set = build.get("skills", {})
+        for hand in ("right_hand", "left_hand"):
             self.equip(build["equipment"].get(hand, "bare"), hand)
         for part, item in equipment.items():
-            if part not in ("rightHand", "leftHand") and item:
+            if part not in ("right_hand", "left_hand") and item:
                 self.equip(item, part)
-            elif part in ("rightHand", "leftHand"):
+            elif part in ("right_hand", "left_hand"):
                 self.equip(item if item else 'bare', part)
-        for part, skillList in skillSet.items():
-            for skill in skillList:
-                self.addSkill(part, skill)
+        for skill in skill_set:
+            self.add_skill(skill)
 
-    def statModifier(self, statMod, reverse = False):
+    def stat_modifier(self, stat_mod, reverse = False):
         '''
-        statMod is a dictionary with the following syntax:
+        stat_mod is a dictionary with the following syntax:
         {stat_to_be_modified:modification,...}
         '''
 
-        for sM in statMod:
+        for sM in stat_mod:
             stat = sM
-            mod = statMod[stat]
+            mod = stat_mod[stat]
             if not reverse:
                 if isinstance(mod, float):
                     self.stats[stat] *= mod
@@ -85,113 +84,116 @@ class CharANPC(object):
                 else:
                     self.stats[stat] -= mod
             if stat in ("hp", "mp", "sp"):
-                if self.stats[stat] > self.stats["max" +
-                        stat.upper()]:
-                    self.stats[stat] = self.stats["max" +
-                            stat.upper()]
+                if self.stats[stat] > self.stats["max_" +
+                        stat]:
+                    self.stats[stat] = self.stats["max_" +
+                            stat]
                 elif self.stats[stat] < 0:
                     self.stats[stat] = 0
 
-    def SPMPRegen(self):
+    def SPMP_regen(self):
         for stat in ("mp", "sp"):
-            full = self.stats["max" + stat.upper()]
+            full = self.stats["max_" + stat]
             now = self.stats[stat]
-            lck = self.checkIfLucky()
+            lck = self.check_if_lucky()
             if not now:
                 now += 1
             mod = lck * .25 * full / now
-            self.statModifier({stat:mod})
+            self.stat_modifier({stat:mod})
 
-    def SPMPHandle(self, atk):
-        SPMPNeeded = atk.get("mpUsed", 0)
-        if SPMPNeeded:
+    def SPMP_handle(self, atk):
+        SPMP_needed = atk.get("mp_used", 0)
+        if SPMP_needed:
             stat = "mp"
         else:
-            SPMPNeeded = atk.get("spUsed", 0)
+            SPMP_needed = atk.get("sp_used", 0)
             stat = "sp"
-        if SPMPNeeded > self.stats[stat]:
+        if SPMP_needed > self.stats[stat]:
             return False
-        self.statModifier({stat: -SPMPNeeded})
+        self.stat_modifier({stat: -SPMP_needed})
         return True
 
-    def equip(self, equipment, whereToPut,
-            dequip = False, selfSent = False):
-        #selfSent boolean is for when the method calls itself
-        #whereToPut is irrelevent for 2 handed weapons so anything
+    def equip(self, equipment, where_to_put,
+            dequip = False, self_sent = False):
+        #self_sent boolean is for when the method calls itself
+        #where_to_put is irrelevent for 2 handed weapons so anything
         #can be put there if the weapon in question needs 2 hands
 
         if not isinstance(equipment, Equipment):
             equipment = Equipment(equipment)
-        self.statModifier(equipment.mods, dequip)
-        if equipment.equipType == "armour":
+        self.stat_modifier(equipment.mods, dequip)
+        if equipment.equip_type == "armour":
             if not dequip:
-                if self.equipment[whereToPut]:
-                    self.equip(self.equipment[whereToPut],
-                            whereToPut, True, True)
-                self.equipment[whereToPut] = equipment
+                if self.equipment[where_to_put]:
+                    self.equip(self.equipment[where_to_put],
+                            where_to_put, True, True)
+                self.equipment[where_to_put] = equipment
             else:
-                self.equipment[whereToPut] = None
-                if "Hand" in whereToPut and not selfSent:
-                    self.equip("bare", whereToPut)
+                self.equipment[where_to_put] = None
+                if "hand" in where_to_put and not self_sent:
+                    self.equip("bare", where_to_put)
         else:
-            handsNeeded = equipment.handsNeeded
+            hands_needed = equipment.hands_needed
             if not dequip:
-                if handsNeeded == 2:
+                if hands_needed == 2:
                     for h in ("right", "left"):
-                        if self.equipment[h + "Hand"]:
+                        if self.equipment[h + "_hand"]:
                             self.equip(
-                                    self.equipment[h + "Hand"],
-                                    whereToPut, True, True)
-                            self.equipment[h + "Hand"] = equipment
+                                    self.equipment[h + "_hand"],
+                                    where_to_put, True, True)
+                            self.equipment[h + "_hand"] = equipment
                 else:
-                    if self.equipment[whereToPut]:
-                        self.equip(self.equipment[whereToPut],
-                                whereToPut, True, True)
-                    self.equipment[whereToPut] = equipment
+                    if self.equipment[where_to_put]:
+                        self.equip(self.equipment[where_to_put],
+                                where_to_put, True, True)
+                    self.equipment[where_to_put] = equipment
             else:
-                if handsNeeded == 2:
+                if hands_needed == 2:
                     for h in ("right", "left"):
-                        if selfSent:
-                            self.equipment[h + "Hand"] = None
+                        if self_sent:
+                            self.equipment[h + "_hand"] = None
                         else:
-                            self.equip("bare", h + "Hand")
+                            self.equip("bare", h + "_hand")
                 else:
-                    self.equipment[whereToPut] = None
-                    if not selfSent:
-                        self.equip("bare", whereToPut)
+                    self.equipment[where_to_put] = None
+                    if not self_sent:
+                        self.equip("bare", where_to_put)
 
-    def addSkill(self, weapon, skillName):
-        skill = skills[weapon][skillName]
-        self.skills[skillName] = skill
+    def add_skill(self, skill_name):
+        for key, values in skills.items():
+            if skill_name in values:
+                skill = skills[key][skill_name]
+                break
+        self.skills[skill_name] = skill
 
-    def formatAtk(self, atk, targetName = ''):
+    def format_atk(self, atk, target_name = ''):
         if "target" not in atk or isinstance(atk["target"], str):
-            atk["target"] = targetName
+            atk["target"] = target_name
         else:
-            targetName = 'targetName'
-        atk = self.formatStringInDict(atk, targetName)
+            target_name = 'target_name'
+        atk = self.format_string_in_dict(atk, target_name)
         return atk
 
-    def formatStringInDict(self, dic, targetName):
+    def format_string_in_dict(self, dic, target_name):
         for key in dic:
             if isinstance(dic[key], dict):
-                dic[key] = self.formatStringInDict(dic[key], targetName)
+                dic[key] = self.format_string_in_dict(dic[key], target_name)
             if (isinstance(dic[key], str) and
                     len(dic[key].split()) > 1):
-                newStr = ''
+                new_str = ''
                 for word in dic[key].split():
-                    afterWord = ' '
+                    after_word = ' '
                     for x in ("'s", "!"):
                         if x in word:
-                            afterWord = "%s " %(x)
+                            after_word = "%s " %(x)
                             word = word[:len(word) - len(x)]
-                    newStr += (targetName if word == 'targetName'
+                    new_str += (target_name if word == 'target_name'
                             else self.name if word == 'name'
-                            else 'regAtk' if word == 'atkName'
+                            else 'reg_atk' if word == 'atk_name'
                             else word)
-                    newStr += afterWord
-                dic[key] = (newStr[:len(newStr) - 1] if
-                        newStr[len(newStr) - 1] == ' ' else newStr)
+                    new_str += after_word
+                dic[key] = (new_str[:len(new_str) - 1] if
+                        new_str[len(new_str) - 1] == ' ' else new_str)
         return dic
 
 
@@ -201,10 +203,10 @@ class Player(CharANPC):
 
 class ANPC(CharANPC):
     
-    def AIAtk(self, allies, enemies):
+    def AI_atk(self, allies, enemies):
         if self.name in allies:
-            notTeam = enemies
-        notTeam = allies if self.name not in allies else enemies
-        skill = superChoice(self.skills.values())
-        atk = skill if self.SPMPHandle(skill) else self.regAtk
-        return self.formatAtk(deepcopy(atk), superChoice(notTeam))
+            not_team = enemies
+        not_team = allies if self.name not in allies else enemies
+        skill = super_choice(self.skills.values())
+        atk = skill if self.SPMP_handle(skill) else self.reg_atk
+        return self.format_atk(deepcopy(atk), super_choice(not_team))

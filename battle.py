@@ -3,84 +3,22 @@
 #~battle.py
 
 from random import random
-from superRandom import superRandint
+from superRandom import super_randint
 from charANPC import ANPC
 from skills import skills
 from copy import deepcopy
 
-'''
-
-atkDict = {
-    * = tested via 1000 autoTests and 10 supervised test
-
-    *"target": 0 for character-defined target,
-                1 for character,
-                2 for character allies,
-                3 for character enemies,
-                4 for atk-defined (i.e counter atk)
-    *"baseAtk": percentage of strength used,
-    *"baseAcc": percent accuracy of atk,
-    *"atkStr": "string printed when attack is launched",
-    *"spUsed": sp used for attack,
-    *"mod": {"stat to be modified": modification,...},
-    *"modString": "string to be reported upon mod",
-    *"mpUsed": mp used for attack, 0 for physical attack,
-    *"skipToFront": boolean True for skip False for no skip,
-    *"waitForHit": {
-        "recieveDmg": boolean True if dmg will be accepted False if dmg will not be accecpted,
-        "recieveStr": "string that will be printed when hit and recieveDmg == False"
-        "counterAtk":boolean True if counter atk False if not,
-        "counterAtkStr": "string that will be printed upon counter strike"
-    },
-    *"waitForNextTurn": {
-        "recieveDmg": boolean True if dmg will be accepted False if dmg will not be accecpted,
-        "waitTurns": must be >= 1 how many turns will be skipped,
-        "waitStr": "string reported everyone skipped turn",
-        "afterWaitStr": "string reported after wait"
-    },
-    *"multiHit": {
-        "numHits": 0 for random >0 for specific amount of turns,
-        "repeatStr": "string to be reapeated after every hit"
-    },
-    "*targetLoseTurn": "string to appear when target loses turn",
-    "*absorb": {
-        "statBenfit": "stat that will benefit from absorption",
-        "factor": percent of damage absorbed
-    },
-    #yet to be implemented
-    "statusEffect": {
-        "type": "type of status effect",
-        "severity": 1 for normal
-                    2 for mildly sever
-                    3 for very sever
-    }
-}
-
-The following must be defined:
-    baseAcc, atkStr
-
-Only include in atkDict variables that are defined in atk or must be defined
-
-'''
 everyone = {}
 faction = {}
 order = []
-targetLoseTurn = {}
-waitForNextTurn = {}
-waitForHit = {}
-charAtkDicts = {}
-statusEffects = {}
+target_lose_turn = {}
+wait_for_next_turn = {}
+wait_for_hit = {}
+char_atk_dicts = {}
+status_effects = {}
 quiet = False
 
-def cleanUp():
-    #reset these dictionaries after each round
-    global targetLoseTurn, waitForHit
-    for charName in waitForHit:
-        sendToScreen(charName + "'s attack failed.")
-    waitForHit = {}
-    targetLoseTurn = {}
-
-def sendToScreen(messege):
+def send_to_screen(messege):
     '''
     this is in perperation for gui
     '''
@@ -89,227 +27,8 @@ def sendToScreen(messege):
     if not quiet:
         print messege
 
-#apply any status effects
-def applyStatusEffects(character, effect):
-    pass
-
-#collect attacks
-def collectAtks(player):
-    global everyone, charAtkDicts, faction, waitForNextTurn
-    allies = faction["allies"]
-    enemies = faction["enemies"]
-    for e in everyone:
-        charAtkDicts[e] = (waitForNextTurn[e] if e in
-                waitForNextTurn else everyone[e].AIAtk(
-                    allies, enemies) if e == player
-                else everyone[e].AIAtk(allies, enemies))
-
-#decide play order
-def decideOrder():
-    global faction, order
-    everyoneAlive = faction["allies"] + faction["enemies"]
-    priority = filter(
-            lambda x: charAtkDicts[x].get(
-                "skipToFront", False), everyoneAlive)
-    order = filter(
-            lambda x: True if x not in priority else False,
-            everyoneAlive)
-    for l in (order, priority):
-        l.sort(key = lambda x: everyone[x].stats["spe"] *
-                everyone[x].checkIfLucky())
-    order = priority + order
-
-#attack phase
-def attack(charName, atkDict):
-    global everyone, waitForHit, waitForNextTurn, faction
-    character = everyone[charName]
-    targetName = atkDict.get("target")
-    if character.checkIfDead():
-        return 0
-    sendToScreen(atkDict["atkStr"])
-    if "waitForHit" in atkDict:
-        waitForHit[charName] = atkDict
-    elif "waitForNextTurn" in atkDict:
-        if charName in waitForNextTurn:
-            atk = waitForNextTurn[charName]
-            waitDict = atk["waitForNextTurn"]
-            turns = waitDict["waitTurns"]
-            if turns:
-                waitDict["waitTurns"] -= 1
-            else:
-                atk["atkStr"] = atk["waitForNextTurn"][
-                        "afterWaitStr"]
-                del atk["waitForNextTurn"]
-                del waitForNextTurn[charName]
-                attack(charName, atk)
-        else:
-            atk = atkDict
-            atk["atkStr"] = atk["waitForNextTurn"][
-                    "waitStr"]
-            atk["waitForNextTurn"]["waitTurns"] -= 1
-            waitForNextTurn[charName] = atk
-    elif "multiHit" in atkDict:
-        multDict = atkDict.get("multiHit")
-        numHits = (multDict["numHits"] if multDict["numHits"]
-                else superRandint(2,5))
-        repeatStr = multDict["repeatStr"]
-        for times in range(numHits):
-            newStr = ''
-            for word in repeatStr.split():
-                newWord = word
-                if "#" in word:
-                    newWord = "#" + str(times + 1) + word[1:]
-                newStr += newWord + ' '
-            sendToScreen(newStr[:len(newStr) - 1])
-            atkHandler(charName, targetName, atkDict)
-    elif isinstance(targetName, int) and targetName != 4:
-        for side in faction:
-            if charName in faction[side]:
-                team = faction[side]
-            else:
-                notTeam = faction[side]
-        lis = ([charName] if targetName == 1 else
-                team if targetName == 2 else
-                notTeam if targetName == 3 else
-                [])
-        for char in lis:
-            atkHandler(charName, char,
-                    character.formatStringInDict(
-                        deepcopy(atkDict), char))
-    else:
-        atkHandler(charName, targetName, atkDict)
-
-def atkHandler(charName, targetName, atkDict):
-    global waitForHit, waitForNextTurn
-    if (everyone[targetName].checkIfDead() and
-            "waitForNextTurn" not in atkDict):
-        sendToScreen(charName + "'s attack failed.")
-        return 0
-    elif charName in targetLoseTurn:
-        sendToScreen(targetLoseTurn[charName])
-        return 0
-    elif not checkAcc(charName, targetName, atkDict):
-        sendToScreen(charName + " missed!")
-    else:
-        if targetName in waitForHit:
-            targetAtk = waitForHit.pop(targetName)
-            waitDict = targetAtk.pop("waitForHit")
-            recieveDmg = waitDict["recieveDmg"]
-            counterAtk = waitDict.get("counterAtk", False)
-            if recieveDmg:
-                modAtk(charName, targetName, atkDict)
-            else:
-                recieveStr = waitDict["recieveStr"]
-                sendToScreen(recieveStr)
-            if counterAtk:
-                targetAtk["atkStr"] = waitDict[
-                        "counterStr"]
-                targetAtk["target"] = charName
-                attack(targetName, targetAtk)
-        elif targetName in waitForNextTurn:
-            recieveDmg = waitForNextTurn[targetName][
-                    "waitForNextTurn"]["recieveDmg"]
-            if recieveDmg:
-                modAtk(charName, targetName, atkDict)
-            else:
-                sendToScreen(charName + " missed!")
-        else:
-            modAtk(charName, targetName, atkDict)
-
-def modAtk(charName, targetName, atkDict):
-    global everyone, targetLoseTurn
-    target = everyone[targetName]
-    modDict = atkDict.get("mod", {})
-    lose = atkDict.get("targetLoseTurn", False)
-    if lose:
-        targetLoseTurn[targetName] = lose
-    if modDict:
-        modString = atkDict.get("modStr")
-    else:
-        modString = ''
-    dmg = calcDmg(charName, targetName, atkDict)
-    if dmg:
-        modDict["hp"] = dmg
-        sendToScreen("%s took %d damage!" %(targetName, -dmg))
-    absorbDict = atkDict.get("absorb", False)
-    if absorbDict:
-        absorb(charName, dmg, absorbDict)
-    target.statModifier(modDict)
-    if modString:
-        sendToScreen(modString)
-    buryIfDead(targetName)
-
-def absorb(charName, dmg, absorbDict):
-    global everyone
-    character = everyone[charName]
-    stat = absorbDict["statBenefit"]
-    factor = absorbDict["factor"]
-    mod = int(round((factor / 100.0) * -dmg))
-    character.statModifier({stat: mod})
-    sendToScreen("%s gained %d %s!" %(charName, mod, stat))
-
-def statusEffect():
-    pass
-
-def checkAcc(charName, targetName, atkDict):
-    global everyone
-    character = everyone[charName]
-    target = everyone[targetName]
-    baseAcc = atkDict.get("baseAcc")
-    charAcc = character.stats["acc"]
-    targetEva = target.stats["eva"]
-    acc = (baseAcc/100.0) * (charAcc/targetEva)
-    #make sure target is not on same team
-    team = (faction["allies"] if charName in faction[
-        "allies"] else faction["enemies"])
-    sameTeam = True if targetName in team else False
-    r = random()
-    if not r < acc and not sameTeam:
-        return False
-    return True
-
-def calcDmg(charName, targetName, atkDict):
-    global everyone
-    character = everyone[charName]
-    target = everyone[targetName]
-    magAtk = atkDict.get("mpUsed", 0)
-    atk = character.stats["ma" if magAtk else "str"]
-    defe = target.stats["md" if magAtk else "def"]
-    lck = character.checkIfLucky()
-    #defending character is given advantage
-    atkDefRatio = ((atk * 1.0) / (defe * 2.0)) * lck
-    baseAtk = (atkDict.get("baseAtk", 0) / 100.0) * atk
-    if not baseAtk:
-        return 0
-    if lck == 2:
-        sendToScreen('That\'s gonna leave a mark!')
-    return int(round(-1 * (atkDefRatio + baseAtk)
-        * atkDefRatio))
-
-def buryIfDead(charName):
-    global everyone, faction
-    character = everyone[charName]
-    if character.checkIfDead():
-        sendToScreen("%s died." %(charName))
-        for side in faction:
-            if charName in faction[side]:
-                faction[side].remove(charName)
-                break
-
-#check for end status
-def checkIfEnd(player):
-    enemies = faction["enemies"]
-    if everyone[player].checkIfDead():
-        return True
-    elif not enemies:
-        return True
-    return False
-
-def calcReward(player, allies, enemies):
-    pass
-
 def battle(player, allies, enemies):
-    global everyone, charAtkDicts, statusEffects, faction, order
+    global everyone, char_atk_dicts, status_effects, faction, order
     allies.append(player)
     #throwing around strings is alot faster than
     #throwing around big objects
@@ -320,98 +39,309 @@ def battle(player, allies, enemies):
     player = player.name
     faction["allies"] = allies
     faction["enemies"] = enemies
-    #rewards = calcReward(player, allies, enemies)
+    rewards = calc_reward(player, allies, enemies)
 
-    #battle flow
     count = 0
-    while not checkIfEnd(player):
+    while not check_if_end(player):
         count += 1
-        #for sE in statusEffects:
-        #    applyStatusEffects(sE, statusEffects[sE])
-        collectAtks(player)
-        decideOrder()
-        sendToScreen('\nround ' + str(count))
+        #for sE in status_effects:
+        #    apply_status_effects(sE, status_effects[sE])
+        collect_atks(player)
+        decide_order()
+        send_to_screen('\nround ' + str(count))
         for c in order:
-            attack(c, charAtkDicts[c])
-            if checkIfEnd(player):
+            attack(c, char_atk_dicts[c])
+            if check_if_end(player):
                 break
         for e in everyone:
-            everyone[e].SPMPRegen()
-        cleanUp()
+            everyone[e].SPMP_regen()
+        clean_up()
 
-    #checkIfLoseWin
     player = everyone[player]
-    if player.checkIfDead():
-        sendToScreen("You died.")
+    if player.check_if_dead():
+        send_to_screen("You died.")
         return 0
     else:
-        sendToScreen("You win!")
+        send_to_screen("You win!")
         return 1
         #win
         #rewards
+
+def calc_reward(player, allies, enemies):
+    #yet to be implemented
+    pass
+
+def clean_up():
+    #reset these dictionaries after each round
+    global target_lose_turn, wait_for_hit
+    for char_name in wait_for_hit:
+        send_to_screen(char_name + "'s attack failed.")
+    for dic in (wait_for_hit, target_lose_turn):
+        if dic:
+            dic = {}
+
+#apply any status effects
+#def apply_status_effects(character, effect):
+#    pass
+
+def collect_atks(player):
+    global everyone, char_atk_dicts, faction, wait_for_next_turn
+    allies = faction["allies"]
+    enemies = faction["enemies"]
+    for e in everyone:
+        char_atk_dicts[e] = (wait_for_next_turn[e] if e in
+                wait_for_next_turn else everyone[e].AI_atk(
+                    allies, enemies) if e == player
+                else everyone[e].AI_atk(allies, enemies))
+
+def decide_order():
+    global faction, order
+    everyone_alive = faction["allies"] + faction["enemies"]
+    priority = filter(
+            lambda x: char_atk_dicts[x].get(
+                "skip_to_front", False), everyone_alive)
+    order = filter(
+            lambda x: True if x not in priority else False,
+            everyone_alive)
+    for l in (order, priority):
+        l.sort(key = lambda x: everyone[x].stats["spe"] *
+                everyone[x].check_if_lucky())
+    order = priority + order
+
+def attack(char_name, atk_dict):
+    global everyone, wait_for_hit, wait_for_next_turn, faction
+    character = everyone[char_name]
+    target_name = atk_dict.get("target")
+    if character.check_if_dead():
+        return 0
+    send_to_screen(atk_dict["atk_str"])
+    if "wait_for_hit" in atk_dict:
+        wait_for_hit[char_name] = atk_dict
+    elif "wait_for_next_turn" in atk_dict:
+        if char_name in wait_for_next_turn:
+            atk = wait_for_next_turn[char_name]
+            wait_dict = atk["wait_for_next_turn"]
+            turns = wait_dict["wait_turns"]
+            if turns:
+                wait_dict["wait_turns"] -= 1
+            else:
+                atk["atk_str"] = atk["wait_for_next_turn"][
+                        "after_wait_str"]
+                del atk["wait_for_next_turn"]
+                del wait_for_next_turn[char_name]
+                attack(char_name, atk)
+        else:
+            atk = atk_dict
+            atk["atk_str"] = atk["wait_for_next_turn"][
+                    "wait_str"]
+            atk["wait_for_next_turn"]["wait_turns"] -= 1
+            wait_for_next_turn[char_name] = atk
+    elif "multi_hit" in atk_dict:
+        mult_dict = atk_dict.get("multi_hit")
+        num_hits = (mult_dict["num_hits"] if mult_dict["num_hits"]
+                else super_randint(2,5))
+        repeat_str = mult_dict["repeat_str"]
+        for times in range(num_hits):
+            new_str = ''
+            for word in repeat_str.split():
+                newWord = word
+                if "#" in word:
+                    newWord = "#" + str(times + 1) + word[1:]
+                new_str += newWord + ' '
+            send_to_screen(new_str[:len(new_str) - 1])
+            atk_handler(char_name, target_name, atk_dict)
+    elif isinstance(target_name, int) and target_name != 4:
+        for side in faction:
+            if char_name in faction[side]:
+                team = faction[side]
+            else:
+                not_team = faction[side]
+        lis = ([char_name] if target_name == 1 else
+                team if target_name == 2 else
+                not_team if target_name == 3 else
+                [])
+        for char in lis:
+            atk_handler(char_name, char,
+                    character.format_string_in_dict(
+                        deepcopy(atk_dict), char))
+    else:
+        atk_handler(char_name, target_name, atk_dict)
+
+def atk_handler(char_name, target_name, atk_dict):
+    global wait_for_hit, wait_for_next_turn
+    if (everyone[target_name].check_if_dead() and
+            "wait_for_next_turn" not in atk_dict):
+        send_to_screen(char_name + "'s attack failed.")
+        return 0
+    elif char_name in target_lose_turn:
+        send_to_screen(target_lose_turn.pop(char_name))
+        return 0
+    elif not checkAcc(char_name, target_name, atk_dict):
+        send_to_screen(char_name + " missed!")
+    else:
+        if target_name in wait_for_hit:
+            target_atk = wait_for_hit.pop(target_name)
+            wait_dict = target_atk.pop("wait_for_hit")
+            recieve_dmg = wait_dict["recieve_dmg"]
+            counter_atk = wait_dict.get("counter_atk", False)
+            if recieve_dmg:
+                mod_atk(char_name, target_name, atk_dict)
+            else:
+                recieve_str = wait_dict["recieve_str"]
+                send_to_screen(recieve_str)
+            if counter_atk:
+                target_atk["atk_str"] = wait_dict[
+                        "counter_atk_str"]
+                target_atk["target"] = char_name
+                attack(target_name, target_atk)
+        elif target_name in wait_for_next_turn:
+            recieve_dmg = wait_for_next_turn[target_name][
+                    "wait_for_next_turn"]["recieve_dmg"]
+            if recieve_dmg:
+                mod_atk(char_name, target_name, atk_dict)
+            else:
+                send_to_screen(char_name + " missed!")
+        else:
+            mod_atk(char_name, target_name, atk_dict)
+
+def checkAcc(char_name, target_name, atk_dict):
+    global everyone
+    character = everyone[char_name]
+    target = everyone[target_name]
+    base_acc = atk_dict.get("base_acc", 0)
+    char_acc = character.stats["acc"]
+    target_eva = target.stats["eva"]
+    acc = (base_acc/100.0) * (char_acc/target_eva)
+    #make sure target is not on same team
+    team = (faction["allies"] if char_name in faction[
+        "allies"] else faction["enemies"])
+    same_team = True if target_name in team else False
+    r = random()
+    if not r < acc and not same_team:
+        return False
+    return True
+
+def mod_atk(char_name, target_name, atk_dict):
+    global everyone, target_lose_turn
+    target = everyone[target_name]
+    mod_dict = atk_dict.get("mod", {})
+    lose = atk_dict.get("target_lose_turn", False)
+    if lose:
+        target_lose_turn[target_name] = lose
+    if mod_dict:
+        mod_string = atk_dict.get("mod_str")
+    else:
+        mod_string = ''
+    dmg = calc_dmg(char_name, target_name, atk_dict)
+    if dmg:
+        mod_dict["hp"] = dmg
+        send_to_screen("%s took %d damage!" %(target_name, -dmg))
+    absorb_dict = atk_dict.get("absorb", False)
+    if absorb_dict:
+        absorb(char_name, dmg, absorb_dict)
+    target.stat_modifier(mod_dict)
+    if mod_string:
+        send_to_screen(mod_string)
+    bury_if_dead(target_name)
+
+def calc_dmg(char_name, target_name, atk_dict):
+    global everyone
+    character = everyone[char_name]
+    target = everyone[target_name]
+    mag_atk = atk_dict.get("mp_used", 0)
+    atk = character.stats["ma" if mag_atk else "str"]
+    defe = target.stats["md" if mag_atk else "def"]
+    lck = character.check_if_lucky()
+    #defending character is given advantage
+    atk_def_ratio = ((atk * 1.0) / (defe * 2.0)) * lck
+    base_atk = (atk_dict.get("base_atk", 0) / 100.0) * atk
+    if not base_atk:
+        return 0
+    if lck == 2:
+        send_to_screen('That\'s gonna leave a mark!')
+    return int(round(-1 * (atk_def_ratio + base_atk)
+        * atk_def_ratio))
+
+def absorb(char_name, dmg, absorb_dict):
+    global everyone
+    character = everyone[char_name]
+    stat = absorb_dict["stat_benefit"]
+    factor = absorb_dict["factor"]
+    mod = int(round((factor / 100.0) * -dmg))
+    character.stat_modifier({stat: mod})
+    send_to_screen("%s gained %d %s!" %(char_name, mod, stat))
+
+#def status_effect():
+#    pass
+
+def bury_if_dead(char_name):
+    global everyone, faction
+    character = everyone[char_name]
+    if character.check_if_dead():
+        send_to_screen("%s died." %(char_name))
+        for side in faction:
+            if char_name in faction[side]:
+                faction[side].remove(char_name)
+                break
+
+#check for end status
+def check_if_end(player):
+    enemies = faction["enemies"]
+    if everyone[player].check_if_dead():
+        return True
+    elif not enemies:
+        return True
+    return False
 
 def test():
     MasaYume = ANPC({"name": "MasaYume",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
-            "rightHand": "gauntlet",
-            "leftHand": "dagger",
+            "right_hand": "gauntlet",
+            "left_hand": "dagger",
             "legs": "leather greaves"
             },
-        "skills": {
-            "fist": ["speed punch", "zen punch"],
-            "dagger": ["backstab"]
-            },
+        "skills": ["speed punch", "zen punch", "backstab"]
         })
     Brandon = ANPC({"name": "Brandon",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
             #this is two-handed so I only need to attach it to one hand
-            "rightHand": "rifle",
+            "right_hand": "rifle",
             "legs": "leather greaves"
             },
-        "skills": {
-            "all": ["smokescreen", "trip"],
-            "gun": ["focus shot"]
-            },
+        "skills": ["smokescreen", "trip", "focus shot"]
         })
-    typicalWarrior = ANPC({"name": "Kid Authur",
+    typical_warrior = ANPC({"name": "Kid Authur",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
-            "rightHand": "sword",
-            "leftHand": "wooden shield",
+            "right_hand": "sword",
+            "left_hand": "wooden shield",
             "legs": "leather greaves"
             },
-        "skills": {
-            "all": ["warcry"],
-            "blade": ["counter strike"],
-            "shield": ["shield bash"]
-            },
+        "skills": ["warcry", "counter strike", "shield bash"]
         })
-    typicalArcher = ANPC({"name": "elf",
+    typical_archer = ANPC({"name": "elf",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
-            "rightHand": "bow",
+            "right_hand": "bow",
             "legs": "leather greaves"
             },
-        "skills": {
-            "all": ["smokescreen"],
-            "bow": ["arrow barrage", "spreadshot"]
-            },
+        "skills": ["smokescreen", "arrow barrage", "spreadshot"]
         })
     return battle(MasaYume, [Brandon],
-            [typicalWarrior, typicalArcher])
+            [typical_warrior, typical_archer])
 
 if __name__ == "__main__":
-    autoTest = 1000
-    if autoTest:
+    auto_test = 1000
+    if auto_test:
         quiet = True
         wins = 0
-        for x in range(autoTest):
+        for x in range(auto_test):
             wins += test()
         print wins
     else:

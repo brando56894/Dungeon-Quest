@@ -4,87 +4,96 @@
 
 #weapon definitions
 weapons = {
-    "sword": {
-        "type": "blade",
-        "mods": {"str": 7, "def": 3},
-        "handsNeeded": 1,
+    "blade": {
+        "sword": {
+            "mods": {"str": 7, "def": 3},
+            "hands_needed": 1,
+            },
         },
-    "pistol": {
-        "type": "gun",
-        "mods": {"str": 8, "def": -3},
-        "handsNeeded": 1,
-        },
-    "rifle": {
-        "type": "gun",
-        "mods": {"str": 15, "def": -5, "spe": -5},
-        "handsNeeded": 2,
+    "gun": {
+        "pistol": {
+            "mods": {"str": 8, "def": -3},
+            "hands_needed": 1,
+            },
+        "rifle": {
+            "mods": {"str": 15, "def": -5, "spe": -5},
+            "hands_needed": 2,
+            },
         },
     "dagger": {
-        "type": "dagger",
-        "mods": {"str": 3, "spe": 3, "lck": 3},
-        "handsNeeded": 1,
+        "dagger": {
+            "mods": {"str": 3, "spe": 3, "lck": 3},
+            "hands_needed": 1,
+            },
         },
     "bow": {
-        "type": "bow",
-        "mods": {"str": 10, "spe": 5},
-        "handsNeeded": 2,
-        },
-    "crossbow": {
-        "type": "bow",
-        "mods": {"str": 12, "spe": 5},
-        "handsNeeded": 2,
+        "bow": {
+            "mods": {"str": 10, "spe": 5},
+            "hands_needed": 2,
+            },
+        "crossbow": {
+            "mods": {"str": 12, "spe": 5},
+            "hands_needed": 2,
+            },
         },
     "staff": {
-        "type": "staff",
-        "mods": {"ma": 5, "md": 5},
-        "handsNeeded": 1,
+        "staff": {
+            "mods": {"ma": 5, "md": 5},
+            "hands_needed": 1,
+            },
         },
-    "gauntlet": {
-        "type": "fist",
-        "mods": {"str": 10, "def": -5, "spe": 3},
-        "handsNeeded": 1,
-        },
-    "bare": {
-        "type": "fist",
-        "mods": {"spe": 5},
-        "handsNeeded": 1,
-        },
+    "fist": {
+        "gauntlet": {
+            "mods": {"str": 10, "def": -5, "spe": 3},
+            "hands_needed": 1,
+            },
+        "bare": {
+            "type": "fist",
+            "mods": {"spe": 5},
+            "hands_needed": 1,
+            },
+        }
     }
 
 #armour definitions
 armour = {
-    "cap":{
-        "type": "head",
-        "mods":{"def": 1},
+    "head": {
+        "cap":{
+            "mods":{"def": 1},
+            },
         },
-    "wooden shield":{
-        "type": "hand",
-        "mods":{"def": 2},
+    "hand": {
+        "wooden shield":{
+            "mods":{"def": 2},
+            },
         },
-    "rusty chainmail":{
-        "type": "body",
-        "mods":{"def": 5},
+    "body": {
+        "rusty chainmail":{
+            "mods":{"def": 5},
+            },
         },
-    "leather greaves":{
-        "type": "legs",
-        "mods":{"def": 1},
-        },
+    "legs": {
+        "leather greaves":{
+            "mods":{"def": 1},
+            },
+        }
     }
 
 class Equipment(object):
 
     def __init__(self, name):
         self.name = name
-        self.equipType = ("armour" if name in armour
-                else "weapon")
-        self.build()
-
-    def build(self):
-        if self.equipType == "armour":
-            defDict = armour
-        else:
-            defDict = weapons
-            self.handsNeeded = defDict[self.name][
-                    "handsNeeded"]
-        self.type = defDict[self.name]["type"]
-        self.mods = defDict[self.name]["mods"]
+        self.equip_type = ''
+        for key, values in armour.items():
+            if name in values:
+                self.equip_type = "armour"
+        if not self.equip_type:
+            self.equip_type = "weapons"
+        def_dict = armour if 'r' in self.equip_type else weapons
+        for key, values in def_dict.items():
+            if name in values:
+                self.type = key
+        if 'n' in self.equip_type:
+            self.hands_needed = def_dict[self.type][self.name][
+                    "hands_needed"]
+        self.mods = def_dict[self.type][self.name]["mods"]

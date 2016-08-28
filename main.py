@@ -40,10 +40,10 @@ def menu(Player):
     #using this method helps clean up all those logic gates
     choices = {
             'r': actions.roll_dice,
-            'l': newPlayer.list_inventory,
-            'c': newPlayer.set_current_weapon,
+            'l': new_player.list_inventory,
+            'c': new_player.set_current_weapon,
             'v': actions.visit_shop,
-            'u': newPlayer.use_potion,
+            'u': new_player.use_potion,
             's': actions.save_game,
             'q': actions.quit_game,
             'd': debug.menu,
@@ -75,18 +75,18 @@ actions.clearscreen()
 print "Dungeon Quest v%.2f" % version
 #name = raw_input("\nWho dares to enter the dungeon? ")
 name = "Bran"
-newPlayer = player.CreatePlayer(name)
+new_player = player.CreatePlayer(name)
 
-while newPlayer.health > 0:
-    if menu(newPlayer) == 0:
+while new_player.health > 0:
+    if menu(new_player) == 0:
         break
-    if newPlayer.basilisk_attack is True:
+    if new_player.basilisk_attack is True:
         print "\nCongratulations! You made it through the dungeon alive!\n"
         break
-    elif newPlayer.run_away > 5:
+    elif new_player.run_away > 5:
         clearscreen()
         print ("\nYou're too much of a wimp to make it though the dungeon alive!\n"
                 "Don't show your face here again until you toughen yourself up!\n")
         break
-if not newPlayer.health:
+if not new_player.health:
     print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"

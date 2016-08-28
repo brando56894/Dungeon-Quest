@@ -2,7 +2,7 @@
 #
 #~~Player Functions~~
 
-from superRandom import superRandint, superChoice
+from superRandom import super_randint, super_choice
 from time import sleep
 import actions
 import monsters
@@ -42,7 +42,7 @@ class CreatePlayer(object):
                 )
 
     def find_gold(self):
-        amount = superRandint(1,25)
+        amount = super_randint(1,25)
         self.gold += amount
         print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         sleep(2)
@@ -63,7 +63,7 @@ class CreatePlayer(object):
     def find_weapon(self):
         #TODO: add more weapons
         weapons = ["sword","pistol","rifle"]
-        found = superChoice(weapons)
+        found = super_choice(weapons)
         print "\nYou found a %s!" % found
         if found == "sword":
             damage = 25
@@ -162,15 +162,15 @@ class CreatePlayer(object):
         
     def gain_xp(self,monster_name):
         if monster_name == "Dragon":
-            gained = superRandint(40,150)
+            gained = super_randint(40,150)
         elif monster_name == "Gremlin":
-            gained = superRandint(1,35)
+            gained = super_randint(1,35)
         elif monster_name == "Demon":
-            gained = superRandint(15,50)
+            gained = super_randint(15,50)
         elif monster_name == "Zombie":
-            gained = superRandint(16,75)
+            gained = super_randint(16,75)
         else:
-            gained = superRandint(1,30)
+            gained = super_randint(1,30)
         self.xp += gained
         print "\nYou gained %d XP!" % gained
         return self
