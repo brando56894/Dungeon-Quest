@@ -6,28 +6,29 @@ from superRandom import super_randint, super_choice
 from time import sleep
 import actions
 import monsters
+from charANPC import CharANPC
 
-class CreatePlayer(object):
+class CreatePlayer(CharANPC):
   
     def __init__(self, name):
-        self.health = 125
-        self.xp = 0 #TODO: use gained XP to gain levels
-        self.potions = 0
-        self.gold = 0
-        self.weapons = ["dagger"]
-        self.name = name
-        self.steps = 0
+        self.health = 125 #*
+        self.xp = 0 #TODO: use gained XP to gain levels #*
+        self.potions = 0 #*
+        self.gold = 0 #*
+        self.weapons = ["dagger"] #*
+        self.name = name #*
+        self.steps = 0 #*
         self.damage_dealt = 12
-        self.current_weapon = "dagger"
-        self.dragon_attack = False
-        self.basilisk_attack = False
+        self.current_weapon = "dagger" #*
+        self.dragon_attack = False #*
+        self.basilisk_attack = False #*
         self.has_sword = False
         self.has_pistol = False
         self.has_rifle = False
-        self.run_away = 0
+        self.run_away = 0 #*
         self.has_key = False
         
-    def __repr__(self):
+    def __repr__(self): #*
         return ("\nName: %s\nHealth: %d\nXP: %d\nPotions: "
                 "%d\nGold: %d\nWeapons: %s\nSteps: %d\nCurr"
                 "ent Weapon: %s\nDragon Attack: %s\nBasili"
@@ -41,26 +42,26 @@ class CreatePlayer(object):
                     self.run_away,self.has_key)
                 )
 
-    def find_gold(self):
+    def find_gold(self): #*
         amount = super_randint(1,25)
         self.gold += amount
         print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         sleep(2)
         return self
     
-    def find_gold_debug(self,amount):
+    def find_gold_debug(self,amount): #*
         self.gold += amount
         print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
         sleep(2)
         return self
     
-    def find_potions(self):
+    def find_potions(self): #*
         self.potions += 1
         print "\nYou found a health potion! You now have %d potions in your inventory." % self.potions
         sleep(2)
         return self
     
-    def find_weapon(self):
+    def find_weapon(self): #*
         #TODO: add more weapons
         weapons = ["sword","pistol","rifle"]
         found = super_choice(weapons)
@@ -90,7 +91,7 @@ class CreatePlayer(object):
             sleep(2)
             actions.visit_shop(self)
     
-    def use_potion(self):
+    def use_potion(self): #*
         if self.potions > 0 and self.potions < 2:
             self.potions -= 1
             self.health += 25
@@ -107,7 +108,7 @@ class CreatePlayer(object):
         sleep(2)
         return self
         
-    def list_inventory(self):
+    def list_inventory(self): #*
         actions.clearscreen()
         print ("\nName: %s\n"
                 "Exp. Points: %d\n"
@@ -126,7 +127,7 @@ class CreatePlayer(object):
         print "Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons)
         sleep(4)
         
-    def low_health(self):
+    def low_health(self): #*
         if self.health <= 60 and self.potions > 0:
             print "\n*****DANGER*****\n"
             choice = raw_input("\nYour health is currently at %d, a"

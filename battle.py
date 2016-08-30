@@ -8,6 +8,7 @@ from charANPC import ANPC
 from skills import skills
 from copy import deepcopy
 
+#define global variables
 everyone = {}
 faction = {}
 order = []
@@ -20,7 +21,11 @@ quiet = False
 
 def send_to_screen(messege):
     '''
-    this is in perperation for gui
+    prints message if not quiet
+
+    This will be a lot more complicated when gui
+    is implemented so I thought I would get it
+    started
     '''
 
     global quiet
@@ -28,6 +33,10 @@ def send_to_screen(messege):
         print messege
 
 def battle(player, allies, enemies):
+    '''
+    This is the battle loop
+    '''
+
     global everyone, char_atk_dicts, status_effects, faction, order
     allies.append(player)
     #throwing around strings is alot faster than
@@ -72,7 +81,10 @@ def calc_reward(player, allies, enemies):
     pass
 
 def clean_up():
-    #reset these dictionaries after each round
+    '''
+    reset some variables after each round
+    '''
+
     global target_lose_turn, wait_for_hit
     for char_name in wait_for_hit:
         send_to_screen(char_name + "'s attack failed.")
@@ -85,6 +97,10 @@ def clean_up():
 #    pass
 
 def collect_atks(player):
+    '''
+    collects atks from all alive characters
+    '''
+
     global everyone, char_atk_dicts, faction, wait_for_next_turn
     allies = faction["allies"]
     enemies = faction["enemies"]
@@ -95,6 +111,10 @@ def collect_atks(player):
                 else everyone[e].AI_atk(allies, enemies))
 
 def decide_order():
+    '''
+    decides the order
+    '''
+
     global faction, order
     everyone_alive = faction["allies"] + faction["enemies"]
     priority = filter(
@@ -109,6 +129,13 @@ def decide_order():
     order = priority + order
 
 def attack(char_name, atk_dict):
+    '''
+    This can be seen as the pre_atk_handler
+
+    Takes care of anything in need of special attention before
+    sending it off to atk_handler
+    '''
+
     global everyone, wait_for_hit, wait_for_next_turn, faction
     character = everyone[char_name]
     target_name = atk_dict.get("target")
@@ -168,6 +195,11 @@ def attack(char_name, atk_dict):
         atk_handler(char_name, target_name, atk_dict)
 
 def atk_handler(char_name, target_name, atk_dict):
+    '''
+    handles every valid atk and sends it to the
+    right function
+    '''
+
     global wait_for_hit, wait_for_next_turn
     if (everyone[target_name].check_if_dead() and
             "wait_for_next_turn" not in atk_dict):
@@ -205,6 +237,10 @@ def atk_handler(char_name, target_name, atk_dict):
             mod_atk(char_name, target_name, atk_dict)
 
 def checkAcc(char_name, target_name, atk_dict):
+    '''
+    checks if the atk missed or not
+    '''
+
     global everyone
     character = everyone[char_name]
     target = everyone[target_name]
@@ -222,6 +258,11 @@ def checkAcc(char_name, target_name, atk_dict):
     return True
 
 def mod_atk(char_name, target_name, atk_dict):
+    '''
+    handles dmg and stat modifications
+
+    dmg can be seen as a stat modification to hp
+    '''
     global everyone, target_lose_turn
     target = everyone[target_name]
     mod_dict = atk_dict.get("mod", {})
@@ -245,6 +286,12 @@ def mod_atk(char_name, target_name, atk_dict):
     bury_if_dead(target_name)
 
 def calc_dmg(char_name, target_name, atk_dict):
+    '''
+    calculates dmg based on target defense
+    character strength base attack power
+    of attack and character luck
+    '''
+
     global everyone
     character = everyone[char_name]
     target = everyone[target_name]
@@ -263,6 +310,11 @@ def calc_dmg(char_name, target_name, atk_dict):
         * atk_def_ratio))
 
 def absorb(char_name, dmg, absorb_dict):
+    '''
+    calculates how much of the dmg is absorbed
+    and sends it to the character
+    '''
+
     global everyone
     character = everyone[char_name]
     stat = absorb_dict["stat_benefit"]
@@ -275,6 +327,11 @@ def absorb(char_name, dmg, absorb_dict):
 #    pass
 
 def bury_if_dead(char_name):
+    '''
+    removes character from game once the character
+    has been declared dead
+    '''
+
     global everyone, faction
     character = everyone[char_name]
     if character.check_if_dead():
@@ -286,35 +343,51 @@ def bury_if_dead(char_name):
 
 #check for end status
 def check_if_end(player):
+    '''
+    checks if the battle is finished
+
+    it does not however check who won
+    '''
     enemies = faction["enemies"]
-    if everyone[player].check_if_dead():
-        return True
-    elif not enemies:
+    if everyone[player].check_if_dead() or not enemies:
         return True
     return False
 
 def test():
-    MasaYume = ANPC({"name": "MasaYume",
+    '''
+    This is to test the battle features
+
+    currently only supports spectating a battle
+    between AI's
+    '''
+
+    #You can pass the build argument as a bunch of kwargs
+    MasaYume = ANPC(name = "MasaYume",
+            equipment = {
+                "head": "cap",
+                "body": "rusty chainmail",
+                "right_hand": "gauntlet",
+                "left_hand": "dagger",
+                "legs": "leather greaves"
+                },
+            skills = ["speed punch", "zen punch", "backstab"]
+            )
+    #Or you can pass it as a dictionary just don't forget the **
+    #in front of the dict
+    Brandon = ANPC(**{"name": "Brandon",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
-            "right_hand": "gauntlet",
-            "left_hand": "dagger",
-            "legs": "leather greaves"
-            },
-        "skills": ["speed punch", "zen punch", "backstab"]
-        })
-    Brandon = ANPC({"name": "Brandon",
-        "equipment": {
-            "head": "cap",
-            "body": "rusty chainmail",
-            #this is two-handed so I only need to attach it to one hand
-            "right_hand": "rifle",
+            #this is two-handed so both_hands are used
+            #but you can litterally put anything for
+            #two-handed weapons as long as it is different
+            #from the other body parts
+            "both_hands": "rifle",
             "legs": "leather greaves"
             },
         "skills": ["smokescreen", "trip", "focus shot"]
         })
-    typical_warrior = ANPC({"name": "Kid Authur",
+    typical_warrior = ANPC(**{"name": "Kid Authur",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
@@ -324,11 +397,12 @@ def test():
             },
         "skills": ["warcry", "counter strike", "shield bash"]
         })
-    typical_archer = ANPC({"name": "elf",
+    typical_archer = ANPC(**{"name": "elf",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
-            "right_hand": "bow",
+            #I did say anything, right?
+            "anything": "bow",
             "legs": "leather greaves"
             },
         "skills": ["smokescreen", "arrow barrage", "spreadshot"]
@@ -337,12 +411,13 @@ def test():
             [typical_warrior, typical_archer])
 
 if __name__ == "__main__":
-    auto_test = 1000
+    auto_test = 0
     if auto_test:
         quiet = True
         wins = 0
         for x in range(auto_test):
             wins += test()
+        #This number is usefull for balancing weapons and skills
         print wins
     else:
         test()

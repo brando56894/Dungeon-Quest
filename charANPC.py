@@ -8,8 +8,12 @@ from skills import skills
 from copy import deepcopy
 
 class CharANPC(object):
+    '''
+    This class will hold all battle methods needed by the
+    Player and the ANPC classes
+    '''
 
-    def __init__(self, build):
+    def __init__(self, **build):
         self.stats = {
                 "hp": 200, #health points
                 "max_hp": 200,
@@ -29,7 +33,11 @@ class CharANPC(object):
                 "gol": 0, #gold
                 }
         self.lvl = 1
-        self.inventory = {}
+        self.inventory = {
+                "items": [],
+                "armour": [],
+                "weapons": []
+                }
         self.equipment = {
                 "head": None,
                 "right_hand": None,
@@ -37,35 +45,55 @@ class CharANPC(object):
                 "body": None,
                 "legs": None
                 }
+        #This is the regular attack for all characters
         self.reg_atk = {
                 "base_atk": 60,
                 "base_acc": 95,
                 "atk_str": "name attacked target_name!"
                 }
-        self.skills = {"reg_atk": self.reg_atk}
+        self.skills = {"attack": self.reg_atk}
+
+        #some lambda methods for simple checks
         self.check_if_dead = lambda: (True if not self.stats["hp"]
                 else False)
         self.check_if_lucky = lambda: super_choice([
             super_choice((1,1,1,2)) for x in range(self.stats["lck"])
             ])
+
         self.build(build)
 
     def build(self, build):
+        '''
+        Uses the dictionary passed to it by __init__ to
+        build the character to its current state
+
+        current build composition:
+            build = {
+                "name": "name of character",
+                "equipment": dictionary of equipment,
+                "skills": list of skills,
+            }
+        '''
         self.name = build["name"]
         equipment = build.get("equipment", {})
-        skill_set = build.get("skills", {})
-        for hand in ("right_hand", "left_hand"):
-            self.equip(build["equipment"].get(hand, "bare"), hand)
+        skill_set = build.get("skills", [])
+
+        #equip
         for part, item in equipment.items():
-            if part not in ("right_hand", "left_hand") and item:
+            if "hand" not in part and item:
                 self.equip(item, part)
-            elif part in ("right_hand", "left_hand"):
+            elif "hand" in part:
                 self.equip(item if item else 'bare', part)
+
+        #skills
         for skill in skill_set:
             self.add_skill(skill)
 
     def stat_modifier(self, stat_mod, reverse = False):
         '''
+        all stat modifications to the character will use this
+        method
+
         stat_mod is a dictionary with the following syntax:
         {stat_to_be_modified:modification,...}
         '''
@@ -92,6 +120,11 @@ class CharANPC(object):
                     self.stats[stat] = 0
 
     def SPMP_regen(self):
+        '''
+        Regenerate sp and mp after each
+        turn at a reasonable rate
+        '''
+
         for stat in ("mp", "sp"):
             full = self.stats["max_" + stat]
             now = self.stats[stat]
@@ -102,6 +135,11 @@ class CharANPC(object):
             self.stat_modifier({stat:mod})
 
     def SPMP_handle(self, atk):
+        '''
+        Make sure character has enough sp or mp
+        to use skill
+        '''
+
         SPMP_needed = atk.get("mp_used", 0)
         if SPMP_needed:
             stat = "mp"
@@ -115,9 +153,14 @@ class CharANPC(object):
 
     def equip(self, equipment, where_to_put,
             dequip = False, self_sent = False):
-        #self_sent boolean is for when the method calls itself
-        #where_to_put is irrelevent for 2 handed weapons so anything
-        #can be put there if the weapon in question needs 2 hands
+        '''
+        This method handles detaching and attaching equipment
+
+        self_sent boolean is for when the method calls itself
+
+        where_to_put is irrelevent for 2 handed weapons so anything
+        can be put there if the weapon in question needs 2 hands
+        '''
 
         if not isinstance(equipment, Equipment):
             equipment = Equipment(equipment)
@@ -141,7 +184,7 @@ class CharANPC(object):
                             self.equip(
                                     self.equipment[h + "_hand"],
                                     where_to_put, True, True)
-                            self.equipment[h + "_hand"] = equipment
+                        self.equipment[h + "_hand"] = equipment
                 else:
                     if self.equipment[where_to_put]:
                         self.equip(self.equipment[where_to_put],
@@ -159,14 +202,27 @@ class CharANPC(object):
                     if not self_sent:
                         self.equip("bare", where_to_put)
 
-    def add_skill(self, skill_name):
-        for key, values in skills.items():
-            if skill_name in values:
-                skill = skills[key][skill_name]
-                break
-        self.skills[skill_name] = skill
+    def add_skill(self, skill_name, remove = False):
+        '''
+        This method handles adding and removing skills
+        to and from character
+        '''
+
+        if not remove:
+            for key, values in skills.items():
+                if skill_name in values:
+                    skill = skills[key][skill_name]
+                    break
+            self.skills[skill_name] = skill
+        else:
+            self.skills.pop(skill_name)
 
     def format_atk(self, atk, target_name = ''):
+        '''
+        This handles the formatting the atk strings into
+        a viewer friendly string
+        '''
+
         if "target" not in atk or isinstance(atk["target"], str):
             atk["target"] = target_name
         else:
@@ -175,6 +231,13 @@ class CharANPC(object):
         return atk
 
     def format_string_in_dict(self, dic, target_name):
+        '''
+        used to format strings in the atk dictionary
+
+        currently does not work for atk_name and defaults
+        to attack
+        '''
+
         for key in dic:
             if isinstance(dic[key], dict):
                 dic[key] = self.format_string_in_dict(dic[key], target_name)
@@ -189,21 +252,27 @@ class CharANPC(object):
                             word = word[:len(word) - len(x)]
                     new_str += (target_name if word == 'target_name'
                             else self.name if word == 'name'
-                            else 'reg_atk' if word == 'atk_name'
+                            else 'attack' if word == 'atk_name'
                             else word)
                     new_str += after_word
                 dic[key] = (new_str[:len(new_str) - 1] if
                         new_str[len(new_str) - 1] == ' ' else new_str)
         return dic
 
-
-
-class Player(CharANPC):
-    pass
-
 class ANPC(CharANPC):
+    '''
+    ANPC stands for Active Non Player Character
+
+    This class will be used for any NPC in battle
+    '''
     
     def AI_atk(self, allies, enemies):
+        '''
+        This will be the method of attack for all ANPC's
+
+        currently is random
+        '''
+
         if self.name in allies:
             not_team = enemies
         not_team = allies if self.name not in allies else enemies
