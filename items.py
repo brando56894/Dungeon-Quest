@@ -20,3 +20,18 @@ items = {
             'key'
             ]
         }
+
+class Item(object):
+
+    def __init__(self, name):
+        self.name = name
+        for item_type, itemDic in items.items():
+            if name in itemDic:
+                self.effect = itemDic[name]
+        pass
+
+    def use(self, char):
+        mod = self.effect["mod"]
+        mod_string = self.effect["mod"_string]
+        char.statModifier(mod)
+        print char.name + mod_string[5:]

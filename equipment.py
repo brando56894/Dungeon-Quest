@@ -2,6 +2,9 @@
 #
 #~equipment.py~
 
+#calculate cost based on mods
+calc_cost = lambda mods: reduce(lambda x,y: x + y, mods.values()) * 10
+
 #weapon definitions
 weapons = {
     "blade": {
@@ -48,8 +51,11 @@ weapons = {
             "hands_needed": 1,
             },
         "bare": {
-            "type": "fist",
             "mods": {"spe": 5},
+            "hands_needed": 1,
+            },
+        "claws": {
+            "mods": {"str": 10, "spe": 10},
             "hands_needed": 1,
             },
         }
@@ -70,6 +76,9 @@ armour = {
     "body": {
         "rusty chainmail":{
             "mods":{"def": 5},
+            },
+        "tough skin": {
+            "mods":{"def": 10},
             },
         },
     "legs": {

@@ -138,9 +138,15 @@ skills = {
             "target": 2,
             "base_acc": 100,
             "atk_str": "name used cure allies!",
-            "mod": {"hp": 5},
+            "mod": {"hp": 10},
             "mod_str": "target_name regained some health!",
             "mp_used": 8
+            },
+        "fireball": {
+            "base_atk": 90,
+            "base_acc": 90,
+            "atk_str": "name used fireball!",
+            "mp_used": 8,
             },
         },
     "dagger": {

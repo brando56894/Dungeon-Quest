@@ -4,9 +4,10 @@
 
 from random import random
 from superRandom import super_randint
-from charANPC import ANPC
+from anpc import ANPC
 from skills import skills
 from copy import deepcopy
+from actions import clearscreen
 
 #define global variables
 everyone = {}
@@ -51,11 +52,14 @@ def battle(player, allies, enemies):
     rewards = calc_reward(player, allies, enemies)
 
     count = 0
+    clearscreen()
+    ran = False
     while not check_if_end(player):
         count += 1
         #for sE in status_effects:
         #    apply_status_effects(sE, status_effects[sE])
-        collect_atks(player)
+        if collect_atks(player):
+            ran = True
         decide_order()
         send_to_screen('\nround ' + str(count))
         for c in order:
@@ -70,10 +74,12 @@ def battle(player, allies, enemies):
     if player.check_if_dead():
         send_to_screen("You died.")
         return 0
+    elif ran:
+        send_to_screen("You ran.")
+        return 0
     else:
         send_to_screen("You win!")
         return 1
-        #win
         #rewards
 
 def calc_reward(player, allies, enemies):
@@ -91,6 +97,7 @@ def clean_up():
     for dic in (wait_for_hit, target_lose_turn):
         if dic:
             dic = {}
+    #clearscreen()
 
 #apply any status effects
 #def apply_status_effects(character, effect):
@@ -109,6 +116,35 @@ def collect_atks(player):
                 wait_for_next_turn else everyone[e].AI_atk(
                     allies, enemies) if e == player
                 else everyone[e].AI_atk(allies, enemies))
+    if run_check(player):
+        return True
+
+def run_check(player):
+    '''
+    checks if the player's run attempt is successfull
+    by looking at team averages in speed and luck
+    '''
+
+    global everyone, faction
+    #I can assume player is on allies
+    allies_len = len(faction["allies"])
+    enemy_len = len(faction["enemies"])
+    faction_avg = {}
+    if char_atk_dicts[player] == "run":
+        for team in faction:
+            team_lck = reduce(lambda x,y:x+y,
+                    [everyone[char].check_if_lucky()
+                        for char in team])
+            team_spe = reduce(lambda x,y:x+y,
+                    [everyone[char].stats["spe"]
+                        for char in team])
+            team_len = len(faction[team])
+            faction_avg[team] = ((team_lck * team_spe) *
+                    (team_len ** 2))
+        if faction_avg["allies"] >= faction_avg["enemies"]:
+            return True
+
+
 
 def decide_order():
     '''
@@ -355,7 +391,7 @@ def check_if_end(player):
 
 def test():
     '''
-    This is to test the battle features
+    This is to debug the battle features
 
     currently only supports spectating a battle
     between AI's

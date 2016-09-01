@@ -1,13 +1,13 @@
 #!/usr/bin/python
 #
-#~charANPC.py~
+#~character.py~
 
 from superRandom import super_choice
 from equipment import Equipment
 from skills import skills
 from copy import deepcopy
 
-class CharANPC(object):
+class Character(object):
     '''
     This class will hold all battle methods needed by the
     Player and the ANPC classes
@@ -33,11 +33,7 @@ class CharANPC(object):
                 "gol": 0, #gold
                 }
         self.lvl = 1
-        self.inventory = {
-                "items": [],
-                "armour": [],
-                "weapons": []
-                }
+        self.inventory = {} #item:quantity
         self.equipment = {
                 "head": None,
                 "right_hand": None,
@@ -53,7 +49,7 @@ class CharANPC(object):
                 }
         self.skills = {"attack": self.reg_atk}
 
-        #some lambda methods for simple checks
+        #some lambda methods for simple functions
         self.check_if_dead = lambda: (True if not self.stats["hp"]
                 else False)
         self.check_if_lucky = lambda: super_choice([
@@ -61,6 +57,9 @@ class CharANPC(object):
             ])
 
         self.build(build)
+
+    def __repr__(self):
+        pass
 
     def build(self, build):
         '''
@@ -70,13 +69,15 @@ class CharANPC(object):
         current build composition:
             build = {
                 "name": "name of character",
-                "equipment": dictionary of equipment,
+                "equipment": dictionary of equipment, {body_part: equipment}
                 "skills": list of skills,
+                "inventory: dictionary of items {item: quantity}
             }
         '''
         self.name = build["name"]
         equipment = build.get("equipment", {})
         skill_set = build.get("skills", [])
+        inv = build.get("inventory", {})
 
         #equip
         for part, item in equipment.items():
@@ -88,6 +89,10 @@ class CharANPC(object):
         #skills
         for skill in skill_set:
             self.add_skill(skill)
+
+        #inventory
+        for item, quantity in inv.items():
+            self.edit_inv(item, quantity)
 
     def stat_modifier(self, stat_mod, reverse = False):
         '''
@@ -116,8 +121,8 @@ class CharANPC(object):
                         stat]:
                     self.stats[stat] = self.stats["max_" +
                             stat]
-                elif self.stats[stat] < 0:
-                    self.stats[stat] = 0
+            if self.stats[stat] < 0:
+                self.stats[stat] = 0
 
     def SPMP_regen(self):
         '''
@@ -217,6 +222,16 @@ class CharANPC(object):
         else:
             self.skills.pop(skill_name)
 
+    def edit_inv(self, item, quantity, remove = False):
+        quantity = -quantity if remove else quantity
+        if item in self.inventory:
+            if remove and quantity == -self.inventory[item]:
+                self.inventory.pop(item)
+            else:
+                self.inventory[item] += quantity
+        else:
+            self.inventory[item] = quantity
+
     def format_atk(self, atk, target_name = ''):
         '''
         This handles the formatting the atk strings into
@@ -258,24 +273,3 @@ class CharANPC(object):
                 dic[key] = (new_str[:len(new_str) - 1] if
                         new_str[len(new_str) - 1] == ' ' else new_str)
         return dic
-
-class ANPC(CharANPC):
-    '''
-    ANPC stands for Active Non Player Character
-
-    This class will be used for any NPC in battle
-    '''
-    
-    def AI_atk(self, allies, enemies):
-        '''
-        This will be the method of attack for all ANPC's
-
-        currently is random
-        '''
-
-        if self.name in allies:
-            not_team = enemies
-        not_team = allies if self.name not in allies else enemies
-        skill = super_choice(self.skills.values())
-        atk = skill if self.SPMP_handle(skill) else self.reg_atk
-        return self.format_atk(deepcopy(atk), super_choice(not_team))
