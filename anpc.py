@@ -5,15 +5,118 @@
 from time import sleep
 from superRandom import super_choice
 from character import Character
+from copy import deepcopy
+from battle import battle
 import actions
 
 monsters = {
-        #equipment, skills, inventory, stats
-        "gremlin": {},
-        "demon": {},
-        "zombie": {},
-        "dragon": {},
-        "basilisk": {}
+        "gremlin": {
+            "equipment": {
+                "head": "cap",
+                "body": "rusty chainmail",
+                "legs": "leather greaves",
+                "right_hand": "dagger",
+                "left_hand": "dagger"
+                },
+            "skills": ["smokescreen", "backstab",
+                "vampire strike"],
+            "inventory": {"potion": 1},
+            #default stats are in character.py
+            #any stat not included except for the max_X stats will be
+            #given default value
+            "stats": {
+                "hp": 30,
+                "def": 5,
+                "str": 5,
+                "md": 5,
+                "ma": 5,
+                "spe": 15,
+                "lck": 15,
+                "exp": 20, #base exp given during reward phase of battle
+                "gol": 10 #base gold given during reward phase of battle
+                }
+            },
+        "demon": {
+            "equipment": {
+                "head": "cap",
+                "body": "rusty chainmail",
+                "legs": "leather greaves",
+                "right_hand": "wooden shield",
+                "left_hand": "sword"
+                },
+            "skills": ["trip", "shield bash",
+                "counter strike"],
+            "inventory": {"potion": 1},
+            "stats": {
+                "hp": 70,
+                "exp": 50,
+                "gol": 30
+                }
+            },
+        "zombie": {
+            "equipment": {
+                "head": "cap",
+                "body": "rusty chainmail",
+                "legs": "leather greaves",
+                "right_hand": "bare",
+                "left_hand": "gauntlet"
+                },
+            "skills": ["speed punch", "trip", "warcry"],
+            "inventory": {"potion": 1},
+            "stats": {
+                "hp": 100,
+                "def": 15,
+                "str": 15,
+                "spe": 5,
+                "lck": 5,
+                "exp": 100,
+                "gol": 75
+                }
+            },
+        "dragon": {
+            "equipment": {
+                #leaving out parts defaults those parts to None
+                "body": "tough skin",
+                "right_hand": "claws",
+                "left_hand": "claws"
+                },
+            "skills": ["fireball"],
+            "inventory": {"potion": 2},
+            "stats": {
+                "hp": 250,
+                "sp": 30,
+                "mp": 30,
+                "def": 25,
+                "str": 20,
+                "md": 20,
+                "ma": 20,
+                "lck": 1,
+                "exp": 200,
+                "gol": 150
+                }
+            },
+        "basilisk": {
+            "equipment": {
+                "body": "tough skin",
+                "right_hand": "claws",
+                "left_hand": "claws"
+                },
+            "skills": [],
+            "inventory": {"potion": 3},
+            "stats": {
+                "hp": 350,
+                "sp": 50,
+                "mp": 50,
+                "def": 30,
+                "str": 35,
+                "md": 10,
+                "ma": 10,
+                "spe": 1,
+                "lck": 1,
+                "exp": 300,
+                "gol": 250
+                }
+            }
         }
 
 class ANPC(Character):
@@ -23,12 +126,9 @@ class ANPC(Character):
     This class will be used for any NPC in battle
     '''
     def build(self, build):
-        super(ANPC, self).build(self, build)
-        if not self.inventory:
-            self.make_inv()
-
-    def make_inv(self):
-        pass
+        if self.name in monsters:
+            build = monsters[self.name]
+        super(ANPC, self).build(build)
 
     def AI_atk(self, allies, enemies):
         '''
@@ -44,7 +144,7 @@ class ANPC(Character):
         atk = skill if self.SPMP_handle(skill) else self.reg_atk
         return self.format_atk(deepcopy(atk), super_choice(not_team))
 
-def monsterAppearance(player, boss = False):
+def monster_appearance(player, boss = False):
     if boss:
         if player.stats["dragon_attack"]:
             monster = "basilisk"
@@ -53,8 +153,9 @@ def monsterAppearance(player, boss = False):
         print ("\nA %s blocks your path! There looks to "
                 "be no way around it.\n\nPrepare to fight!"
                 % monster)
-        #cant run
+        can_run = False
     else:
         monster = super_choice(["gremlin", "demon", "zombie"])
         print "\nYou were attacked by a %s!" % monster
-        #can run
+        can_run = True
+    battle(player, enemies = [ANPC(name = monster)], can_run = can_run) 

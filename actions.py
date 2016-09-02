@@ -5,7 +5,7 @@
 from time import sleep
 from superRandom import *
 import os
-import monsters
+from anpc import *
 import pickle
 from equipment import weapons, calc_cost
 
@@ -17,16 +17,14 @@ def roll_dice(player):
     player.stats["steps"] += roll
 
     #mid-game boss
-    if player.stats["steps"] >= 100 and not player.stats["dragon_attack"]:
-        #* dragon = monsters.CreateMonster(200,25,"Dragon") #HP,damage_dealt,name
-        #* dragon.boss_attack(player)
+    if player.stats["steps"] >= 100:
+        monster_appearance(player, True)
         player.stats["dragon_attack"] = 1
         return
 
     #final boss
     elif player.stats["steps"] >= 150:
-        #* basilisk = monsters.CreateMonster(300,40,"Basilisk") #HP,damage_dealt,name
-        #* basilisk.boss_attack(player)
+        monster_appearance(player, True)
         player.stats["basilisk_attack"] = True
         return
 
@@ -69,22 +67,7 @@ def roll_dice(player):
 
     #all of #5 I will do later
     elif roll == 5:
-        monster_names = ["Gremlin", "Demon", "Zombie"]
-        choice = superChoice(monster_names)
-        if choice == "Gremlin":
-            newMonster = monsters.CreateMonster(super_randint(10,15), super_randint(1,7),"Gremlin") #HP,damage_dealt,name
-            newMonster.attack(player)
-            del newMonster
-
-        elif choice == "Demon":
-            newMonster = monsters.CreateMonster(super_randint(15,25), super_randint(7,15),"Demon") #HP,damage_dealt,name
-            newMonster.attack(player)
-            del newMonster
-
-        else:
-            newMonster = monsters.CreateMonster(super_randint(25,35), super_randint(10,20),"Zombie") #HP,damage_dealt,name
-            newMonster.attack(player)
-            del newMonster            
+        monster_appearance(player)
 
     else:
         print ("\nYou're safe for the moment!\n"

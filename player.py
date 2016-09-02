@@ -17,12 +17,11 @@ class Player(CharANPC):
         return first_part + second_part
 
     def build(self, build):
-        super(Player, self).build(self, build)
+        super(Player, self).build(build)
         for key in ("steps", "run_away", "dragon_attack",
                 "basilisk_attack"):
             self.stats[key] = build.get(key, 0)
 
-    #This should be integrated into shop
     #make a more general use item
     def use_potion(self): #*
         if self.potions > 0 and self.potions < 2:
@@ -61,20 +60,19 @@ class Player(CharANPC):
         print "Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons)
         sleep(4)
         
-    #make into function of battle
-   # def low_health(self): #*
-   #     if self.health <= 60 and self.potions > 0:
-   #         print "\n*****DANGER*****\n"
-   #         choice = raw_input("\nYour health is currently at %d, a"
-   #                 "nd you currently have %d potions in your inven"
-   #                 "tory. \nWould you like to use one? " % (self.health,self.potions)
-   #                 )
-   #         choice.lower()
-   #         if choice == 'y' or choice == 'yes':
-   #             self.use_potion()
-   #             return self
-   #         else:
-   #             print "\nOk tough guy."
-   #             sleep(2)
-   #             return self
+    def low_health(self): #*
+        if self.health <= 60 and self.potions > 0:
+            print "\n*****DANGER*****\n"
+            choice = raw_input("\nYour health is currently at %d, a"
+                    "nd you currently have %d potions in your inven"
+                    "tory. \nWould you like to use one? " % (self.health,self.potions)
+                    )
+            choice.lower()
+            if choice == 'y' or choice == 'yes':
+                self.use_potion()
+                return self
+            else:
+                print "\nOk tough guy."
+                sleep(2)
+                return self
     

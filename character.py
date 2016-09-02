@@ -14,6 +14,7 @@ class Character(object):
     '''
 
     def __init__(self, **build):
+        self.name = build["name"]
         self.stats = {
                 "hp": 200, #health points
                 "max_hp": 200,
@@ -71,13 +72,14 @@ class Character(object):
                 "name": "name of character",
                 "equipment": dictionary of equipment, {body_part: equipment}
                 "skills": list of skills,
-                "inventory: dictionary of items {item: quantity}
+                "inventory": dictionary of items {item: quantity}
+                "stats": dictionary of stats excluding max_X stats
             }
         '''
-        self.name = build["name"]
         equipment = build.get("equipment", {})
         skill_set = build.get("skills", [])
         inv = build.get("inventory", {})
+        stats = build.get("stats", {})
 
         #equip
         for part, item in equipment.items():
@@ -93,6 +95,13 @@ class Character(object):
         #inventory
         for item, quantity in inv.items():
             self.edit_inv(item, quantity)
+
+        #stats
+        for stat, amount in stats.items():
+            if stat in self.stats:
+                self.stats[stat] = amount
+                if ("max_" + stat) in self.stats:
+                    self.stats["max_" + stat] = amount
 
     def stat_modifier(self, stat_mod, reverse = False):
         '''

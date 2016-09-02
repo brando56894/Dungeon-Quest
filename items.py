@@ -32,6 +32,6 @@ class Item(object):
 
     def use(self, char):
         mod = self.effect["mod"]
-        mod_string = self.effect["mod"_string]
+        mod_string = self.effect["mod_string"]
         char.statModifier(mod)
         print char.name + mod_string[5:]

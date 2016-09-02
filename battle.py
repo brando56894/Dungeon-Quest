@@ -19,6 +19,7 @@ wait_for_hit = {}
 char_atk_dicts = {}
 status_effects = {}
 quiet = False
+run_ability = True
 
 def send_to_screen(messege):
     '''
@@ -33,12 +34,13 @@ def send_to_screen(messege):
     if not quiet:
         print messege
 
-def battle(player, allies, enemies):
+def battle(player, allies = [], enemies = [], can_run = True):
     '''
     This is the battle loop
     '''
 
-    global everyone, char_atk_dicts, status_effects, faction, order
+    global (everyone, char_atk_dicts, status_effects,
+            faction, order, run_ability)
     allies.append(player)
     #throwing around strings is alot faster than
     #throwing around big objects
@@ -49,6 +51,7 @@ def battle(player, allies, enemies):
     player = player.name
     faction["allies"] = allies
     faction["enemies"] = enemies
+    run_ability = can_run
     rewards = calc_reward(player, allies, enemies)
 
     count = 0
@@ -60,6 +63,7 @@ def battle(player, allies, enemies):
         #    apply_status_effects(sE, status_effects[sE])
         if collect_atks(player):
             ran = True
+            break
         decide_order()
         send_to_screen('\nround ' + str(count))
         for c in order:
@@ -109,6 +113,8 @@ def collect_atks(player):
     '''
 
     global everyone, char_atk_dicts, faction, wait_for_next_turn
+    if run_check(player):
+        return True
     allies = faction["allies"]
     enemies = faction["enemies"]
     for e in everyone:
@@ -116,8 +122,6 @@ def collect_atks(player):
                 wait_for_next_turn else everyone[e].AI_atk(
                     allies, enemies) if e == player
                 else everyone[e].AI_atk(allies, enemies))
-    if run_check(player):
-        return True
 
 def run_check(player):
     '''
@@ -125,7 +129,10 @@ def run_check(player):
     by looking at team averages in speed and luck
     '''
 
-    global everyone, faction
+    global everyone, faction, run_ability
+    if not run_ability:
+        sendToScreen("You can't run from this fight!")
+        return False
     #I can assume player is on allies
     allies_len = len(faction["allies"])
     enemy_len = len(faction["enemies"])
@@ -175,7 +182,8 @@ def attack(char_name, atk_dict):
     global everyone, wait_for_hit, wait_for_next_turn, faction
     character = everyone[char_name]
     target_name = atk_dict.get("target")
-    if character.check_if_dead():
+    if character.check_if_dead() or atk_dict == "run":
+        #if player tries to run but fails they lose turn
         return 0
     send_to_screen(atk_dict["atk_str"])
     if "wait_for_hit" in atk_dict:
@@ -443,8 +451,10 @@ def test():
             },
         "skills": ["smokescreen", "arrow barrage", "spreadshot"]
         })
-    return battle(MasaYume, [Brandon],
-            [typical_warrior, typical_archer])
+    dragon = ANPC(name = "dragon")
+    basilisk = ANPC(name = "basilisk")
+    #basilisk vs dragon ;)
+    return battle(basilisk, [], [dragon])
 
 if __name__ == "__main__":
     auto_test = 0
