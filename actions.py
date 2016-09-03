@@ -4,10 +4,10 @@
 
 from time import sleep
 from superRandom import *
-import os
-from anpc import *
+import anpc
 import pickle
 from equipment import weapons, calc_cost
+import main
 
 def roll_dice(player):
     #TODO: add more rolls since some options come up too often
@@ -18,20 +18,20 @@ def roll_dice(player):
 
     #mid-game boss
     if player.stats["steps"] >= 100:
-        monster_appearance(player, True)
+        anpc.monster_appearance(player, True)
         player.stats["dragon_attack"] = 1
         return
 
     #final boss
     elif player.stats["steps"] >= 150:
-        monster_appearance(player, True)
+        anpc.monster_appearance(player, True)
         player.stats["basilisk_attack"] = True
         return
 
     print "\nYou walked %d paces and..." % roll
     sleep(1)
 
-    clearscreen()
+    main.clearscreen(player)
     if roll == 1:
         find_gold(player)
 
@@ -67,7 +67,7 @@ def roll_dice(player):
 
     #all of #5 I will do later
     elif roll == 5:
-        monster_appearance(player)
+        anpc.monster_appearance(player)
 
     else:
         print ("\nYou're safe for the moment!\n"
@@ -78,7 +78,7 @@ def roll_dice(player):
 
 def find_gold(player):
     amount = super_randint(1,25)
-    player.statModification({"gol": amount})
+    player.statModification({"gold": amount})
     print ("\nYou found %d gold coins, which brings "
             "you to a total of %d coins!" % (
                 amount, player.stats["gold"]))
@@ -107,13 +107,13 @@ def find_potions(player):
     sleep(2)
 
 def visit_shop(player):
-    clearscreen()
+    main.clearscreen()
     print ("\nWhat would you like to purchase?\n"
             "You currently have %d gold coins.\n"
             "\nP) Health Potions\n""W) Weapons\n"
-            "N) Nothing/Leave Store" %(player.stats["gol"]))
+            "N) Nothing/Leave Store" %(player.stats["gold"]))
     choice = raw_input("\nChoice: ").lower()
-    clearscreen()
+    main.clearscreen()
 
     if choice == 'p':
         buy_potions(player)
@@ -133,7 +133,7 @@ def visit_shop(player):
 def buy_potions(player):
     print ("\nGold: %d"
             "Each potion costs 20 gold pieces "
-            "and restores 25 HP." % player.stats["gol"])
+            "and restores 25 HP." % player.stats["gold"])
     while 1:
         try:
             amount = int(raw_input("\nHow many would you like to purchase? "))
@@ -141,8 +141,8 @@ def buy_potions(player):
         except ValueError:
             print "Please enter a number!"
     cost = amount * 20
-    if player.stats["gol"] >= cost:
-        player.statModification({"gol": -cost})
+    if player.stats["gold"] >= cost:
+        player.statModification({"gold": -cost})
         player.edit_inv("potion", amount)
         print "\n%d potions have been added to your inventory." % amount
         sleep(2)
@@ -160,9 +160,9 @@ def buy_weapon(player):
                 print "\n%s: %d Gold" %(weapon.title(),
                         weapon_costs[weapon])
     answer = raw_input("\nWhich one would you like to purchase? ").lower()
-    if (answer in weapon_costs and player.stats["gol"]
+    if (answer in weapon_costs and player.stats["gold"]
             >= weapon_costs[answer]):
-        player.statModification("gol", -weapon_costs[answer])
+        player.statModification("gold", -weapon_costs[answer])
         player.edit_inv(answer, 1)
         print "\nA %s has been added to your inventory." % answer
         sleep(2)
@@ -192,6 +192,3 @@ def load_game(): #TODO: fix me!
     print "\nSaved game has been loaded!"
     sleep(2)
     return player
-
-def clearscreen():
-    os.system('cls' if os.name == 'nt' else 'clear')

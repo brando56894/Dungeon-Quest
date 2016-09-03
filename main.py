@@ -5,8 +5,9 @@
 import actions
 import player
 from time import sleep
+from os import system, name
 
-version = 1.12 
+version = 1.12
 
 #enables the debug menu option in the main menu
 DEBUG_MODE = "enabled"
@@ -15,12 +16,17 @@ DEBUG_MODE = "enabled"
 if DEBUG_MODE == "enabled":
     import debug
 
+def clearscreen(player = None):
+    system('cls' if name == 'nt' else 'clear')
+    if player:
+        player.HUD()
+
 cache = None #place to remember last function
 
 def menu(Player):
-    global cache
+    global cache, new_player
 
-    actions.clearscreen()
+    clearscreen(player)
     startScreen = ("Current Health: %d\n"
             "\nWhat would you like to do?\n"
             "***************************\n"
@@ -70,23 +76,24 @@ def menu(Player):
                     "Please choose again.")
             sleep(2)
 
-#Starts the game
-actions.clearscreen()
-print "Dungeon Quest v%.2f" % version
-#name = raw_input("\nWho dares to enter the dungeon? ")
-name = "Bran"
-new_player = player.CreatePlayer(name)
+if __name__ == "__main__":
+    #Starts the game
+    clearscreen()
+    print "Dungeon Quest v%.2f" % version
+    #name = raw_input("\nWho dares to enter the dungeon? ")
+    name = "Bran"
+    new_player = player.Player(name = name)
 
-while new_player.health > 0:
-    if menu(new_player) == 0:
-        break
-    if new_player.basilisk_attack is True:
-        print "\nCongratulations! You made it through the dungeon alive!\n"
-        break
-    elif new_player.run_away > 5:
-        clearscreen()
-        print ("\nYou're too much of a wimp to make it though the dungeon alive!\n"
-                "Don't show your face here again until you toughen yourself up!\n")
-        break
-if not new_player.health:
-    print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
+    while new_player.health > 0:
+        if menu(new_player) == 0:
+            break
+        if new_player.basilisk_attack is True:
+            print "\nCongratulations! You made it through the dungeon alive!\n"
+            break
+        elif new_player.run_away > 5:
+            clearscreen()
+            print ("\nYou're too much of a wimp to make it though the dungeon alive!\n"
+                    "Don't show your face here again until you toughen yourself up!\n")
+            break
+    if not new_player.health:
+        print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"

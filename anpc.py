@@ -6,8 +6,7 @@ from time import sleep
 from superRandom import super_choice
 from character import Character
 from copy import deepcopy
-from battle import battle
-import actions
+import battle
 
 monsters = {
         "gremlin": {
@@ -33,7 +32,7 @@ monsters = {
                 "spe": 15,
                 "lck": 15,
                 "exp": 20, #base exp given during reward phase of battle
-                "gol": 10 #base gold given during reward phase of battle
+                "gold": 10 #base gold given during reward phase of battle
                 }
             },
         "demon": {
@@ -50,7 +49,7 @@ monsters = {
             "stats": {
                 "hp": 70,
                 "exp": 50,
-                "gol": 30
+                "gold": 30
                 }
             },
         "zombie": {
@@ -70,7 +69,7 @@ monsters = {
                 "spe": 5,
                 "lck": 5,
                 "exp": 100,
-                "gol": 75
+                "gold": 75
                 }
             },
         "dragon": {
@@ -92,7 +91,7 @@ monsters = {
                 "ma": 20,
                 "lck": 1,
                 "exp": 200,
-                "gol": 150
+                "gold": 150
                 }
             },
         "basilisk": {
@@ -114,7 +113,7 @@ monsters = {
                 "spe": 1,
                 "lck": 1,
                 "exp": 300,
-                "gol": 250
+                "gold": 250
                 }
             }
         }
@@ -140,7 +139,9 @@ class ANPC(Character):
         if self.name in allies:
             not_team = enemies
         not_team = allies if self.name not in allies else enemies
-        skill = super_choice(self.skills.values())
+        skills = self.skills.values()
+        skills.append(self.reg_atk)
+        skill = super_choice(skills)
         atk = skill if self.SPMP_handle(skill) else self.reg_atk
         return self.format_atk(deepcopy(atk), super_choice(not_team))
 
@@ -158,4 +159,4 @@ def monster_appearance(player, boss = False):
         monster = super_choice(["gremlin", "demon", "zombie"])
         print "\nYou were attacked by a %s!" % monster
         can_run = True
-    battle(player, enemies = [ANPC(name = monster)], can_run = can_run) 
+    battle.battle(player, enemies = [ANPC(name = monster)], can_run = can_run) 

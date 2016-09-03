@@ -30,10 +30,10 @@ class Character(object):
                 "lck": 10, #luck
                 "acc": 100, #accuracy
                 "eva": 100, #evasion
+                "lvl": 1, #level
                 "exp": 0, #experience
-                "gol": 0, #gold
+                "gold": 0, #gold
                 }
-        self.lvl = 1
         self.inventory = {} #item:quantity
         self.equipment = {
                 "head": None,
@@ -48,7 +48,7 @@ class Character(object):
                 "base_acc": 95,
                 "atk_str": "name attacked target_name!"
                 }
-        self.skills = {"attack": self.reg_atk}
+        self.skills = {}
 
         #some lambda methods for simple functions
         self.check_if_dead = lambda: (True if not self.stats["hp"]
@@ -145,8 +145,8 @@ class Character(object):
             lck = self.check_if_lucky()
             if not now:
                 now += 1
-            mod = lck * .25 * full / now
-            self.stat_modifier({stat:mod})
+            mod = int(round(lck * .25 * full / now))
+            self.stat_modifier({stat:mod if mod else 1})
 
     def SPMP_handle(self, atk):
         '''

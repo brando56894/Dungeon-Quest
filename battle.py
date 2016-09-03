@@ -3,11 +3,14 @@
 #~battle.py
 
 from random import random
-from superRandom import super_randint
-from anpc import ANPC
+from superRandom import super_randint, super_choice
 from skills import skills
 from copy import deepcopy
-from actions import clearscreen
+import main
+
+#testing purposes
+import anpc
+import player
 
 #define global variables
 everyone = {}
@@ -18,6 +21,7 @@ wait_for_next_turn = {}
 wait_for_hit = {}
 char_atk_dicts = {}
 status_effects = {}
+player_stats_copy = {} #allows some stats to go back to normal
 quiet = False
 run_ability = True
 
@@ -39,11 +43,12 @@ def battle(player, allies = [], enemies = [], can_run = True):
     This is the battle loop
     '''
 
-    global (everyone, char_atk_dicts, status_effects,
-            faction, order, run_ability)
-    allies.append(player)
+    global everyone, char_atk_dicts, status_effects
+    global faction, order, run_ability, player_stat_copy
+    player_stat_copy = deepcopy(player.stats)
     #throwing around strings is alot faster than
     #throwing around big objects
+    allies.append(player)
     for aE in allies + enemies:
         everyone[aE.name] = aE
     allies = [char.name for char in allies]
@@ -52,10 +57,9 @@ def battle(player, allies = [], enemies = [], can_run = True):
     faction["allies"] = allies
     faction["enemies"] = enemies
     run_ability = can_run
-    rewards = calc_reward(player, allies, enemies)
+    rewards = calc_reward(player, enemies)
 
     count = 0
-    clearscreen()
     ran = False
     while not check_if_end(player):
         count += 1
@@ -64,8 +68,9 @@ def battle(player, allies = [], enemies = [], can_run = True):
         if collect_atks(player):
             ran = True
             break
+        main.clearscreen(everyone[player])
         decide_order()
-        send_to_screen('\nround ' + str(count))
+        send_to_screen('round ' + str(count))
         for c in order:
             attack(c, char_atk_dicts[c])
             if check_if_end(player):
@@ -73,22 +78,64 @@ def battle(player, allies = [], enemies = [], can_run = True):
         for e in everyone:
             everyone[e].SPMP_regen()
         clean_up()
+        everyone[player].battle_prompt(allies, enemies,
+                enter = True)
 
     player = everyone[player]
+    main.clearscreen(player)
     if player.check_if_dead():
         send_to_screen("You died.")
         return 0
     elif ran:
         send_to_screen("You ran.")
+        #resets some stats to normal
+        #hp stays the same
+        for stat, value in player_stat_copy.items():
+            if "hp" not in stat:
+                player.stats[stat] = value
+        player.stats["run_away"] += 1
         return 0
     else:
         send_to_screen("You win!")
+        #resets some stats to normal
+        #hp stays the same
+        for stat, value in player_stat_copy.items():
+            if "hp" not in stat:
+                player.stats[stat] = value
+        #give items
+        for item, quantity in rewards.pop("items").items():
+            send_to_screen("\nYou recieved %d %s!" %(quantity, item))
+            player.edit_inv(item, quantity)
+        #give stats
+        for stat, mod in rewards.items():
+            send_to_screen("\nYou recieved %d %s!" %(mod, stat))
+            player.stat_modifier({stat:mod})
         return 1
-        #rewards
 
-def calc_reward(player, allies, enemies):
-    #yet to be implemented
-    pass
+def calc_reward(player, enemies):
+    #inventory
+    inv = {}
+    for char in enemies:
+        inventory = everyone[char].inventory
+        for item, quantity in inventory.items():
+            inv[item] = (inv[item] + quantity
+                    if item in inv else quantity)
+    items = {}
+    for item, quanitity in inv.items():
+        if super_choice([1,0]):
+            items[item] = (super_randint(0,quantity)
+                    * everyone[player].check_if_lucky())
+
+    reward_dict = {"items": items}
+    #gold, exp
+    for stat in ("gold", "exp"):
+        total = reduce((lambda x,t: x+y),
+                [everyone[char].stats[stat]
+                    for char in enemies])
+        stat_value = (total * everyone[player].check_if_lucky()
+                / len(enemies))
+        reward_dict[stat] = stat_value
+    return reward_dict
 
 def clean_up():
     '''
@@ -98,10 +145,8 @@ def clean_up():
     global target_lose_turn, wait_for_hit
     for char_name in wait_for_hit:
         send_to_screen(char_name + "'s attack failed.")
-    for dic in (wait_for_hit, target_lose_turn):
-        if dic:
-            dic = {}
-    #clearscreen()
+    wait_for_hit = {}
+    target_lose_turn = {}
 
 #apply any status effects
 #def apply_status_effects(character, effect):
@@ -113,15 +158,15 @@ def collect_atks(player):
     '''
 
     global everyone, char_atk_dicts, faction, wait_for_next_turn
-    if run_check(player):
-        return True
     allies = faction["allies"]
     enemies = faction["enemies"]
     for e in everyone:
         char_atk_dicts[e] = (wait_for_next_turn[e] if e in
-                wait_for_next_turn else everyone[e].AI_atk(
+                wait_for_next_turn else everyone[e].battle_prompt(
                     allies, enemies) if e == player
                 else everyone[e].AI_atk(allies, enemies))
+    if run_check(player):
+        return True
 
 def run_check(player):
     '''
@@ -139,12 +184,13 @@ def run_check(player):
     faction_avg = {}
     if char_atk_dicts[player] == "run":
         for team in faction:
+            teamList = faction[team]
             team_lck = reduce(lambda x,y:x+y,
                     [everyone[char].check_if_lucky()
-                        for char in team])
+                        for char in teamList])
             team_spe = reduce(lambda x,y:x+y,
                     [everyone[char].stats["spe"]
-                        for char in team])
+                        for char in teamList])
             team_len = len(faction[team])
             faction_avg[team] = ((team_lck * team_spe) *
                     (team_len ** 2))
@@ -406,7 +452,7 @@ def test():
     '''
 
     #You can pass the build argument as a bunch of kwargs
-    MasaYume = ANPC(name = "MasaYume",
+    MasaYume = player.Player(name = "MasaYume",
             equipment = {
                 "head": "cap",
                 "body": "rusty chainmail",
@@ -418,7 +464,7 @@ def test():
             )
     #Or you can pass it as a dictionary just don't forget the **
     #in front of the dict
-    Brandon = ANPC(**{"name": "Brandon",
+    Brandon = anpc.ANPC(**{"name": "Brandon",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
@@ -431,7 +477,7 @@ def test():
             },
         "skills": ["smokescreen", "trip", "focus shot"]
         })
-    typical_warrior = ANPC(**{"name": "Kid Authur",
+    typical_warrior = anpc.ANPC(**{"name": "Kid Authur",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
@@ -441,7 +487,7 @@ def test():
             },
         "skills": ["warcry", "counter strike", "shield bash"]
         })
-    typical_archer = ANPC(**{"name": "elf",
+    typical_archer = anpc.ANPC(**{"name": "elf",
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
@@ -451,10 +497,11 @@ def test():
             },
         "skills": ["smokescreen", "arrow barrage", "spreadshot"]
         })
-    dragon = ANPC(name = "dragon")
-    basilisk = ANPC(name = "basilisk")
+    demon = anpc.ANPC(name = "demon")
+    dragon = anpc.ANPC(name = "dragon")
+    basilisk = anpc.ANPC(name = "basilisk")
     #basilisk vs dragon ;)
-    return battle(basilisk, [], [dragon])
+    return battle(MasaYume, [], [demon])
 
 if __name__ == "__main__":
     auto_test = 0
