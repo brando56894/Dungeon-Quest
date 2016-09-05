@@ -69,8 +69,10 @@ def battle(player, allies = [], enemies = [], can_run = True):
             ran = True
             break
         main.clearscreen(everyone[player])
-        decide_order()
+        decide_order(player)
         send_to_screen('round ' + str(count))
+        if char_atk_dicts[player] == "run":
+            send_to_screen("You couldn't run away!")
         for c in order:
             attack(c, char_atk_dicts[c])
             if check_if_end(player):
@@ -78,8 +80,7 @@ def battle(player, allies = [], enemies = [], can_run = True):
         for e in everyone:
             everyone[e].SPMP_regen()
         clean_up()
-        everyone[player].battle_prompt(allies, enemies,
-                enter = True)
+        main.confirm()
 
     player = everyone[player]
     main.clearscreen(player)
@@ -199,13 +200,15 @@ def run_check(player):
 
 
 
-def decide_order():
+def decide_order(player):
     '''
     decides the order
     '''
 
-    global faction, order
+    global faction, order, char_atk_dicts
     everyone_alive = faction["allies"] + faction["enemies"]
+    if char_atk_dicts[player] == "run":
+        everyone_alive.remove(player)
     priority = filter(
             lambda x: char_atk_dicts[x].get(
                 "skip_to_front", False), everyone_alive)

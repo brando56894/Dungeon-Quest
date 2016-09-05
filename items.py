@@ -7,20 +7,21 @@
 items = {
         "anywhere":{
             "potion": {
-                "effect": {
-                    "target": 1,
-                    "mod": {"hp": 20},
-                    "atk_string": "name used a potion!",
-                    "mod_string": "name regained some health"
-                    }
+                "target": 1,
+                "mod": {"hp": 20},
+                "atk_string": "name used a potion!",
+                "mod_string": "name regained some health",
+                "ability_descrip": "Replenishes some health.",
+                #for now cost will be manually added to the item definition
+                "cost": 20,
                 },
             },
         "battle": {},
-        "special": [
-            'key'
-            ]
         }
 
+special_items = [
+    'key'
+    ]
 class Item(object):
 
     def __init__(self, name):

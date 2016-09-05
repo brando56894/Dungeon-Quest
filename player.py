@@ -32,9 +32,7 @@ class Player(Character):
             self.stats["lvl"], self.stats["gold"]))
         print string
 
-    def battle_prompt(self, allies = [], enemies = [], enter = False):
-        if enter:
-            return raw_input("\n**Press any button**")
+    def battle_prompt(self, allies = [], enemies = []):
         while 1:
             main.clearscreen(self)
             string = "What do you want to do?\n-------------------\n"
@@ -71,17 +69,17 @@ class Player(Character):
                         else:
                             print ("\nYou don't have enough "
                                     "sp or mp to do that")
-                            self.battle_prompt(enter = True)
+                            main.confirm()
                     elif not action:
                         return self.battle_prompt(allies, enemies)
                     else:
                         print "\nInvalid choice"
-                        self.battle_prompt(enter = True)
+                        main.confirm()
             elif 'r' in action:
                 return "run"
             else:
                 print "\nInvalid choice."
-                self.battle_prompt(enter = True)
+                main.confirm()
 
     def target_prompt(self, atk, allies, enemies):
         while 1:
@@ -102,7 +100,7 @@ class Player(Character):
                 return self.battle_prompt(allies, enemies)
             else:
                 print "\nInvalid choice"
-                self.battle_prompt(enter = True)
+                main.confirm()
 
     def list_attribute(self, attribute):
         main.clearscreen(self)
@@ -122,7 +120,7 @@ class Player(Character):
 
     def use_item(self, item):
         Item(item).use(self)
-        self.battle_prompt(enter = True)
+        main.confrim()
 
     def low_health(self): #*
         if self.health <= 60 and self.potions > 0:
@@ -137,5 +135,11 @@ class Player(Character):
                 return self
             else:
                 print "\nOk tough guy."
-                self.battle_prompt(enter = True)
+                main.confirm()
                 return self
+
+    def gold_handle(self, cost):
+        if self.stats["gold"] < cost:
+            return False
+        self.stat_modifier({"gold", -cost})
+        return True

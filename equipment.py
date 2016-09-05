@@ -3,7 +3,7 @@
 #~equipment.py~
 
 #calculate cost based on mods
-calc_cost = lambda mods: reduce(lambda x,y: x + y, mods.values()) * 10
+calc_cost = lambda atk: reduce(lambda x,y: x + y, atk["mods"].values()) * 10
 
 #weapon definitions
 weapons = {
@@ -53,10 +53,12 @@ weapons = {
         "bare": {
             "mods": {"spe": 5},
             "hands_needed": 1,
+            "no_shop": True #this tag makes the item not appear in shop
             },
         "claws": {
             "mods": {"str": 10, "spe": 10},
             "hands_needed": 1,
+            "no_shop": True
             },
         }
     }
@@ -79,6 +81,7 @@ armour = {
             },
         "tough skin": {
             "mods":{"def": 10},
+            "no_shop": True
             },
         },
     "legs": {
@@ -106,3 +109,15 @@ class Equipment(object):
             self.hands_needed = def_dict[self.type][self.name][
                     "hands_needed"]
         self.mods = def_dict[self.type][self.name]["mods"]
+
+    def describe_self(self):
+        string = "%s\n--------------\n" %(self.name.capitalize())
+        if self.mods:
+            import main
+            for stat,mod in self.mods.items():
+                string += "%s: %d\n" %(
+                        main.player_friendly_stats[
+                            stat].capitalize(), mod)
+        if "w" in self.equip_type:
+            string += "Hands Needed: %d\n" %(self.hands_needed)
+        return string
