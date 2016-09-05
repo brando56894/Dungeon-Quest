@@ -98,6 +98,8 @@ def find_weapon(player):
     weapon_list = []
     for weapon_type in weapons:
         weapon_list += weapon_type.keys()
+    weapons_list.remove('bare')
+    weapons_list.remove('claws')
     found = super_choice(weapon_list)
     print "\nYou found a %s!" % found
     player.edit_inv(found, 1)
