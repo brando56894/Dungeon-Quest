@@ -197,7 +197,7 @@ class Character(object):
                         if self.equipment[h + "_hand"]:
                             self.equip(
                                     self.equipment[h + "_hand"],
-                                    where_to_put, True, True)
+                                    h + "_hand", True, True)
                         self.equipment[h + "_hand"] = equipment
                 else:
                     if self.equipment[where_to_put]:
@@ -215,6 +215,11 @@ class Character(object):
                     self.equipment[where_to_put] = None
                     if not self_sent:
                         self.equip("bare", where_to_put)
+        if not self_sent:
+            #clean up None values in hand
+            for h in ("right", "left"):
+                if not self.equipment[h + "_hand"]:
+                    self.equip("bare", h + "_hand")
 
     def add_skill(self, skill_name, remove = False):
         '''

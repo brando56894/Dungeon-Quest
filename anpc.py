@@ -146,6 +146,7 @@ class ANPC(Character):
         return self.format_atk(deepcopy(atk), super_choice(not_team))
 
 def monster_appearance(player, boss = False):
+    import main
     if boss:
         if player.stats["dragon_attack"]:
             monster = "basilisk"
@@ -159,4 +160,5 @@ def monster_appearance(player, boss = False):
         monster = super_choice(["gremlin", "demon", "zombie"])
         print "\nYou were attacked by a %s!" % monster
         can_run = True
+    main.confirm()
     battle.battle(player, enemies = [ANPC(name = monster)], can_run = can_run) 

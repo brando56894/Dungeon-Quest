@@ -9,8 +9,8 @@ items = {
             "potion": {
                 "target": 1,
                 "mod": {"hp": 20},
-                "atk_string": "name used a potion!",
-                "mod_string": "name regained some health",
+                "atk_str": "name used a potion!",
+                "mod_str": "name regained some health",
                 "ability_descrip": "Replenishes some health.",
                 #for now cost will be manually added to the item definition
                 "cost": 20,
@@ -33,6 +33,6 @@ class Item(object):
 
     def use(self, char):
         mod = self.effect["mod"]
-        mod_string = self.effect["mod_string"]
-        char.statModifier(mod)
-        print char.name + mod_string[5:]
+        mod_string = self.effect["mod_str"]
+        char.stat_modifier(mod)
+        print "%s %s" %(char.name, mod_string[5:])

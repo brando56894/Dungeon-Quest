@@ -95,16 +95,19 @@ class Equipment(object):
 
     def __init__(self, name):
         self.name = name
-        self.equip_type = ''
         for key, values in armour.items():
             if name in values:
                 self.equip_type = "armour"
-        if not self.equip_type:
+                break
+        else:
             self.equip_type = "weapons"
         def_dict = armour if 'r' in self.equip_type else weapons
         for key, values in def_dict.items():
             if name in values:
                 self.type = key
+                break
+        else:
+            raise KeyError
         if 'n' in self.equip_type:
             self.hands_needed = def_dict[self.type][self.name][
                     "hands_needed"]

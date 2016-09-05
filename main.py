@@ -54,10 +54,11 @@ def menu(player):
             "***************************\n"
             "** Enter: Prev Action    **\n"
             "** R:     Roll Dice      **\n"
-            "** L:     List Inventory **\n"
-            "** C:     Change Weapon  **\n"
-            "** V:     Visit Shop     **\n"
-            "** U:     Use Potion     **\n"
+            "** G:     Go To Shop     **\n"
+            "** I:     Inventory      **\n"
+            "** E:     Equipment      **\n"
+            "** V:     View Skills    **\n"
+            "** L:     List Stats     **\n"
             "** S:     Save Game      **\n"
             "** Q:     Quit           **\n"
             )
@@ -69,13 +70,14 @@ def menu(player):
     choice = raw_input("\nChoice: ").lower()
     #using this method helps clean up all those logic gates
     choices = {
-            #'r': actions.roll_dice,
-            #'l': player.list_inventory,
-            #'c': player.set_current_weapon,
-            'v': actions.visit_shop,
-            #'u': player.use_potion,
-            #'s': actions.save_game,
-            #'q': actions.quit_game,
+            'r': actions.roll_dice,
+            'g': actions.visit_shop,
+            'i': player.view_inv,
+            'e': player.view_equip,
+            'v': player.view_skills,
+            'l': player.view_stats,
+            's': actions.save_game,
+            'q': actions.quit_game,
             #'d': debug.menu,
             '': cache, #for convenience
             }
@@ -83,14 +85,13 @@ def menu(player):
     if not choice and not cache:
         print ("\nThere is no previous action.\n"
                 "Please choose again.")
-        main.confirm()
+        confirm()
     else:
         try:
             if choices[choice] != cache:
                 cache = choices[choice]
             x = choices[choice]()
-            #look at each function to see if this is neccesary
-            if not x:
+            if x == 0: #quit_game should be the only one that returns zero
                 return 0
         except TypeError:
             if choices[choice] != cache:
@@ -99,20 +100,25 @@ def menu(player):
         except KeyError:
             print ("\nYou didn't select a valid choice.\n"
                     "Please choose again.")
-            main.confirm()
-    return 1
+            confirm()
 
 if __name__ == "__main__":
     #Starts the game
     clearscreen()
     print "Dungeon Quest v%.2f" % version
     #name = raw_input("\nWho dares to enter the dungeon? ")
-    name = "Bran"
-    new_player = player.Player(name = name)
+    new_player = player.Player(**{"name": "Brandon",
+        "equipment": {
+            "head": "cap",
+            "body": "rusty chainmail",
+            "both_hands": "rifle",
+            "legs": "leather greaves"
+            },
+        "skills": ["smokescreen", "trip", "focus shot"]
+        })
 
     while new_player.stats["hp"] > 0:
-        if not menu(new_player):
-            break
+        menu(new_player)
         if new_player.stats["basilisk_attack"]:
             print "\nCongratulations! You made it through the dungeon alive!\n"
             break

@@ -15,7 +15,7 @@ def roll_dice(player):
     #TODO: add more rolls since some options come up too often
     #If zork-style gameplay is enabled, this will no longer be a problem
 
-    roll = super_randrange(1,6)
+    roll = 5 #super_randrange(1,6)
     player.stats["steps"] += roll
 
     #mid-game boss
@@ -39,7 +39,8 @@ def roll_dice(player):
 
     elif roll == 2:
         print "\nYou stepped on a booby trap!"
-        player.statModification({"hp": -super_randint(1,7)})
+        player.stat_modifier({"hp": -super_randint(1,7)})
+        main.confirm()
 
     elif roll == 3:
         print "\nYou found a locked door..."
@@ -49,7 +50,7 @@ def roll_dice(player):
             player.edit_inv("key", 1, True)
         else:
             print "\nBut you can't open it since you don't have the key"
-            main.confirm()
+        main.confirm()
 
     elif roll == 4:
         print "\nYou stumbled upon a dead body, you look through it's backpack...."
@@ -67,20 +68,20 @@ def roll_dice(player):
             print "\nYou didn't find anything...looks like someone else already got to it"
             main.confirm()
 
-    #all of #5 I will do later
     elif roll == 5:
         anpc.monster_appearance(player)
+        main.confirm()
 
     else:
         print ("\nYou're safe for the moment!\n"
                 "\nTake a minute to catch your breath")
-        if player.health <= 60 and player.inventory["potions"] > 0:
+        if player.stats["hp"] <= 60 and player.inventory["potions"] > 0:
             player.low_health()
         main.confirm()
 
 def find_gold(player):
     amount = super_randint(1,25)
-    player.statModification({"gold": amount})
+    player.stat_modifier({"gold": amount})
     print ("\nYou found %d gold coins, which brings "
             "you to a total of %d coins!" % (
                 amount, player.stats["gold"]))
@@ -142,7 +143,7 @@ def visit_shop(player):
     if area == "leave":
         print "\nThanks for stopping by!"
         main.confirm()
-        return 0 #make sure you can actually do this
+        return
     visit_shop_section(area, areas[area], player)
 
 def visit_shop_section(name, area, player):
@@ -160,7 +161,7 @@ def visit_shop_section(name, area, player):
                         else equipment.Equipment(item_name).describe_self)
                 name_cost_descrip[item_name] = (cost, descrip, info)
                 string += "%s\n" %(item_name.capitalize())
-    string += "\nPress enter to go back\n"
+    string += "\nPres Enter To Go Back\n"
     print string
     answer = raw_input("What do you want to check out? ").lower()
     if not answer:
@@ -185,7 +186,7 @@ def checkout_item(name, cost_descrip, section, section_dict,
         descrip = cost_descrip[1]()
     except TypeError:
         descrip = cost_descrip[1](name, cost_descrip[2])
-    print "%s\nCost: %d\n\nPress enter to go back\n" %(descrip, cost)
+    print "%s\nCost: %d\n\nPres Enter To Go Back\n" %(descrip, cost)
     if not yes:
         answer = raw_input("Do you want to buy this? ").lower()
         if not answer:
@@ -208,10 +209,14 @@ def checkout_item(name, cost_descrip, section, section_dict,
             checkout_item(name, cost_descrip, section,
                     section_dict, player, True)
             return
-        if player.gold_handle(cost*amount):
+        if amount and player.gold_handle(cost*amount):
             print ("\nThank you for your purchase\n"
                     "You gained %d %s" %(amount,
                         (name + 's' if amount > 1 else name)))
+            if section == "skills":
+                player.add_skill(name)
+            else:
+                player.edit_inv(name, amount)
             visit_shop(player)
         else:
             print "\nYou can't pay for that purchase!"
@@ -265,7 +270,7 @@ def save_game(player):
     with open("savegame.pkl",'wb') as oput:
         pickle.dump(player,oput,pickle.HIGHEST_PROTOCOL)
     print "\nGame saved!"
-    sleep(1)
+    main.confirm()
 
 def load_game(): #TODO: fix me!
     #input is a key word in python

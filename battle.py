@@ -176,14 +176,15 @@ def run_check(player):
     '''
 
     global everyone, faction, run_ability
-    if not run_ability:
-        sendToScreen("You can't run from this fight!")
-        return False
     #I can assume player is on allies
     allies_len = len(faction["allies"])
     enemy_len = len(faction["enemies"])
     faction_avg = {}
     if char_atk_dicts[player] == "run":
+        if not run_ability:
+            send_to_screen("You can't run from this fight!")
+            main.confirm()
+            return False
         for team in faction:
             teamList = faction[team]
             team_lck = reduce(lambda x,y:x+y,
@@ -504,6 +505,7 @@ def test():
     dragon = anpc.ANPC(name = "dragon")
     basilisk = anpc.ANPC(name = "basilisk")
     #basilisk vs dragon ;)
+    MasaYume.edit_inv("potion", 1)
     return battle(MasaYume, [], [demon])
 
 if __name__ == "__main__":
