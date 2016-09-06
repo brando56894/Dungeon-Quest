@@ -15,7 +15,7 @@ def roll_dice(player):
     #TODO: add more rolls since some options come up too often
     #If zork-style gameplay is enabled, this will no longer be a problem
 
-    roll = 5 #super_randrange(1,6)
+    roll = super_randrange(1,6)
     player.stats["steps"] += roll
 
     #mid-game boss
@@ -113,7 +113,7 @@ def find_potions(player):
     main.confirm()
 
 def visit_shop(player):
-    main.clearscreen()
+    main.clearscreen(player)
     print (
             "Shop\n"
             "-----------\n"
@@ -150,7 +150,7 @@ def visit_shop(player):
 
 def visit_shop_section(name, area, player):
     #For each option list items with a price
-    main.clearscreen()
+    main.clearscreen(player)
     string = "%s\n--------------\n" %(name.capitalize())
     name_cost_descrip = {}
     for key, nested_dict in area[0].items():
@@ -182,7 +182,7 @@ def checkout_item(name, cost_descrip, section, section_dict,
         player, yes = False):
     #how many they want to buy
     #whether or not they want to buy something else
-    main.clearscreen()
+    main.clearscreen(player)
     cost = cost_descrip[0]
     try:
         descrip = cost_descrip[1]()

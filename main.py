@@ -37,7 +37,7 @@ player_friendly_stats = {
 
 def clearscreen(player = None):
     system('cls' if name == 'nt' else 'clear')
-    if player:
+    if player: #do not pass the player if you don't want HUD to be displayed
         player.HUD()
 
 def confirm():
