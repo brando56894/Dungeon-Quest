@@ -95,11 +95,17 @@ def find_gold_debug(self,amount):
     return self
 
 def find_weapon(player):
+    '''
+    Creates weapon list and removes weapons not available
+    to player
+    '''
+
     weapon_list = []
     for weapon_type in weapons:
         weapon_list += weapon_type.keys()
-    weapons_list.remove('bare')
-    weapons_list.remove('claws')
+    cannot_see = ('bare', 'claws')
+    for weapon in cannot_see:
+        weapons_list.remove(cannot_see)
     found = super_choice(weapon_list)
     print "\nYou found a %s!" % found
     player.edit_inv(found, 1)
@@ -113,6 +119,10 @@ def find_potions(player):
     main.confirm()
 
 def visit_shop(player):
+    '''
+    Displays shop sections
+    '''
+
     main.clearscreen(player)
     print (
             "Shop\n"
@@ -149,7 +159,10 @@ def visit_shop(player):
     visit_shop_section(area, areas[area], player)
 
 def visit_shop_section(name, area, player):
-    #For each option list items with a price
+    '''
+    Displays items available in visited section
+    '''
+
     main.clearscreen(player)
     string = "%s\n--------------\n" %(name.capitalize())
     name_cost_descrip = {}
@@ -180,8 +193,12 @@ def visit_shop_section(name, area, player):
 
 def checkout_item(name, cost_descrip, section, section_dict,
         player, yes = False):
-    #how many they want to buy
-    #whether or not they want to buy something else
+    '''
+    displays in depth information on chosen item and
+    prompts user on whether or not they want to buy the
+    item and how much
+    '''
+
     main.clearscreen(player)
     cost = cost_descrip[0]
     try:

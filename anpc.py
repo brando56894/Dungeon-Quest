@@ -8,6 +8,7 @@ from character import Character
 from copy import deepcopy
 import battle
 
+#monster definitions
 monsters = {
         "gremlin": {
             "equipment": {
@@ -146,6 +147,12 @@ class ANPC(Character):
         return self.format_atk(deepcopy(atk), super_choice(not_team))
 
 def monster_appearance(player, boss = False):
+    '''
+    This is the basic battle scene for all battles
+    that introduces the enemy and decides whether
+    or not the user can try to run away
+    '''
+
     import main
     if boss:
         if player.stats["dragon_attack"]:

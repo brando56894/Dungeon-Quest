@@ -92,6 +92,9 @@ armour = {
     }
 
 class Equipment(object):
+    '''
+    This class is for all equipment
+    '''
 
     def __init__(self, name):
         self.name = name
@@ -114,6 +117,11 @@ class Equipment(object):
         self.mods = def_dict[self.type][self.name]["mods"]
 
     def describe_self(self):
+        '''
+        much like describe_ability in actions.py but specific
+        for equipment
+        '''
+
         string = "%s\n--------------\n" %(self.name.capitalize())
         if self.mods:
             import main

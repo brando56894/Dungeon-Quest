@@ -3,7 +3,7 @@
 #~items.py
 
 #item definitions
-#types anywhere, battle, special
+#types anywhere, battle
 items = {
         "anywhere":{
             "potion": {
@@ -19,10 +19,16 @@ items = {
         "battle": {},
         }
 
+#these items are specific to triggering events rather anywhere
+#or battle use
 special_items = [
     'key'
     ]
+
 class Item(object):
+    '''
+    class for all regualar items, not special items
+    '''
 
     def __init__(self, name):
         self.name = name

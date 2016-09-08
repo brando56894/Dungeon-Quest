@@ -36,11 +36,20 @@ player_friendly_stats = {
         }
 
 def clearscreen(player = None):
+    '''
+    clears the screen and prints the HUD if the player
+    object is passed
+    '''
+
     system('cls' if name == 'nt' else 'clear')
     if player: #do not pass the player if you don't want HUD to be displayed
         player.HUD()
 
 def confirm():
+    '''
+    Pauses game until player presses enter
+    '''
+
     raw_input("\n**Press any button**")
 
 cache = None #place to remember last function
@@ -107,6 +116,8 @@ if __name__ == "__main__":
     clearscreen()
     print "Dungeon Quest v%.2f" % version
     #name = raw_input("\nWho dares to enter the dungeon? ")
+
+    #quick player definition taken from battle.py
     new_player = player.Player(**{"name": "Brandon",
         "equipment": {
             "head": "cap",

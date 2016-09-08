@@ -41,6 +41,13 @@ def send_to_screen(messege):
 def battle(player, allies = [], enemies = [], can_run = True):
     '''
     This is the battle loop
+
+    first atks are chosen by each character
+    then order is decided
+    then atks are delivered
+    afterwards mp and sp are regenerated
+
+    reward is decided beforehand
     '''
 
     global everyone, char_atk_dicts, status_effects
@@ -114,6 +121,10 @@ def battle(player, allies = [], enemies = [], can_run = True):
         return 1
 
 def calc_reward(player, enemies):
+    '''
+    Reward is calculated here
+    '''
+
     #inventory
     inv = {}
     for char in enemies:
@@ -450,12 +461,12 @@ def check_if_end(player):
 def test():
     '''
     This is to debug the battle features
-
-    currently only supports spectating a battle
-    between AI's
     '''
 
     #You can pass the build argument as a bunch of kwargs
+    #if you want to test battle as player replace anpc.ANPC with player.Player
+    #for the desired character you would like to play as
+    #you can also create a new character build if you want
     MasaYume = player.Player(name = "MasaYume",
             equipment = {
                 "head": "cap",

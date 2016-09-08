@@ -237,6 +237,10 @@ class Character(object):
             self.skills.pop(skill_name)
 
     def edit_inv(self, item, quantity, remove = False):
+        '''
+        adds/removes items to/from inventory
+        '''
+
         quantity = -quantity if remove else quantity
         if item in self.inventory:
             if remove and quantity == -self.inventory[item]:

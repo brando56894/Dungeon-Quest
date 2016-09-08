@@ -9,6 +9,10 @@ from items import Item, items
 from copy import deepcopy
 
 class Player(Character):
+    '''
+    This class is specifically for the player and thus contain
+    methods that will be used specifically for the player
+    '''
   
     def __repr__(self):
         first_part = super(Player, self).__repr__(self)
@@ -23,6 +27,11 @@ class Player(Character):
             self.stats[key] = build.get(key, 0)
 
     def HUD(self):
+        '''
+        Heads Up Display designed to keep important
+        information at the top of the screen
+        '''
+
         string = self.name + '\n'
         for stat in ("hp", "sp", "mp"):
             stat_val = self.stats[stat]
@@ -33,6 +42,11 @@ class Player(Character):
         print string
 
     def battle_prompt(self, allies = [], enemies = []):
+        '''
+        Prompts for choice during battle whether it be a skill
+        or an item
+        '''
+
         while 1:
             main.clearscreen(self)
             string = "What do you want to do?\n-------------------\n"
@@ -83,6 +97,10 @@ class Player(Character):
                 main.confirm()
 
     def target_prompt(self, atk, allies, enemies):
+        '''
+        prompts for target choice
+        '''
+
         while 1:
             main.clearscreen(self)
             display = ""
@@ -104,6 +122,11 @@ class Player(Character):
                 main.confirm()
 
     def list_attribute(self, attribute, part = ""):
+        '''
+        lists a certain listable attribute like inventory
+        or equipment
+        '''
+
         main.clearscreen(self)
         if "equi" in attribute:
             if "inv" in attribute:
@@ -161,6 +184,11 @@ class Player(Character):
         return string
 
     def view_inv(self, item = None):
+        '''
+        Shows player inventory and allows for in depth
+        information and out of battle use of items
+        '''
+
         print "%s\nPress Enter To Go Back\n" %(
                 self.list_attribute("inventory"))
         answer = raw_input("\nWhat do you want to check out? "
@@ -206,6 +234,11 @@ class Player(Character):
             self.view_inv()
 
     def view_equip(self):
+        '''
+        Shows currently equipped items and allows for equipping
+        of equipment in inventory
+        '''
+
         print "%s\nPress Enter To Go Back\n" %(
                 self.list_attribute("equipment"))
         answer = raw_input("\nWhat do you want to check out? ").lower()
@@ -259,6 +292,11 @@ class Player(Character):
             self.view_equip()
 
     def view_skills(self):
+        '''
+        Displays skills and allows for in depth info on each
+        skill
+        '''
+
         print "%s\nPress Enter To Go Back\n" %(
                 self.list_attribute("skills"))
         answer = raw_input("\nWhat do you want to check out? "
@@ -276,16 +314,28 @@ class Player(Character):
             self.view_skills()
 
     def view_stats(self):
+        '''
+        Displays current stats
+        '''
+
         print self.list_attribute("stats")
         main.confirm()
 
     def use_item(self, item):
+        '''
+        Use item and remove it from inventory
+        '''
+
         print ''
         Item(item).use(self)
         self.edit_inv(item, 1, True)
         main.confirm()
 
-    def low_health(self): #*
+    def low_health(self):
+        '''
+        Warns user of low health
+        '''
+
         health = self.stats["hp"]
         potions = self.inventory["potion"]
         if health <= 60 and potions > 0:
@@ -294,7 +344,6 @@ class Player(Character):
                     "nd you currently have %d potions in your inven"
                     "tory. \nWould you like to use one? " % (health, potions)
                     ).lower()
-            answer.lower()
             if 'y' in answer:
                 self.use_item("potion")
             else:
@@ -302,6 +351,10 @@ class Player(Character):
                 main.confirm()
 
     def gold_handle(self, cost):
+        '''
+        handles gold transactions
+        '''
+
         if self.stats["gold"] < cost:
             return False
         self.stat_modifier({"gold", -cost})
