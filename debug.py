@@ -4,12 +4,13 @@
 
 
 import player
-import monsters
+#import monsters
 import actions
+import main
 from time import sleep
 
 def menu(Player):
-    actions.clearscreen()
+    main.clearscreen()
     print ("\n1. monster methods\n"
             "2. player methods\n"
             "3. actions functions")

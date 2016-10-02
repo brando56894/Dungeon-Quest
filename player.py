@@ -2,237 +2,360 @@
 #
 #~~Player Functions~~
 
-from superRandom import superRandint, superChoice
-from time import sleep
-import actions
-import monsters
+from superRandom import super_randint, super_choice
+import main
+from character import Character
+from items import Item, items
+from copy import deepcopy
 
-class CreatePlayer(object):
+class Player(Character):
+    '''
+    This class is specifically for the player and thus contain
+    methods that will be used specifically for the player
+    '''
   
-    def __init__(self, name):
-        self.health = 125
-        self.xp = 0 #TODO: use gained XP to gain levels
-        self.potions = 0
-        self.gold = 0
-        self.weapons = ["dagger"]
-        self.name = name
-        self.steps = 0
-        self.damage_dealt = 12
-        self.current_weapon = "dagger"
-        self.dragon_attack = False
-        self.basilisk_attack = False
-        self.has_sword = False
-        self.has_pistol = False
-        self.has_rifle = False
-        self.run_away = 0
-        self.has_key = False
-        
     def __repr__(self):
-        return ("\nName: %s\nHealth: %d\nXP: %d\nPotions: "
-                "%d\nGold: %d\nWeapons: %s\nSteps: %d\nCurr"
-                "ent Weapon: %s\nDragon Attack: %s\nBasili"
-                "skAttack: %s\nHas Sword: %s\nHas Pistol: "
-                "%s\nHas Rifle: %s\nTimes Run Away: %d\nHa"
-                "s Key: %s" % (self.name,self.health,self.xp,
-                    self.potions,self.gold,self.weapons,
-                    self.steps,self.current_weapon,
-                    self.dragon_attack,self.basilisk_attack,
-                    self.has_sword,self.has_pistol,self.has_rifle,
-                    self.run_away,self.has_key)
-                )
+        first_part = super(Player, self).__repr__(self)
+        second_part = "Steps: %d\nTimes Run Away: %d" %(
+                self.stats["steps"], self.stats["run_away"])
+        return first_part + second_part
 
-    def find_gold(self):
-        amount = superRandint(1,25)
-        self.gold += amount
-        print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
-        sleep(2)
-        return self
-    
-    def find_gold_debug(self,amount):
-        self.gold += amount
-        print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
-        sleep(2)
-        return self
-    
-    def find_potions(self):
-        self.potions += 1
-        print "\nYou found a health potion! You now have %d potions in your inventory." % self.potions
-        sleep(2)
-        return self
-    
-    def find_weapon(self):
-        #TODO: add more weapons
-        weapons = ["sword","pistol","rifle"]
-        found = superChoice(weapons)
-        print "\nYou found a %s!" % found
-        if found == "sword":
-            damage = 25
-        elif found == "pistol":
-            damage = 60
-        else:
-            damage = 120
-        self.add_weapon(found,damage)
-        return self     
-    
-    def buy_potions(self):
-        print "\nGold: %d" % self.gold
-        print "Each potion costs 20 gold pieces and restores 25 HP."
-        amount = raw_input("\nHow many would you like to purchase? ")
-        cost = int(amount) * 20
-        if self.gold >= int(cost):
-            self.gold = self.gold - int(cost)
-            self.potions += int(amount)
-            print "\n%d potions have been added to your inventory." % int(amount)
-            sleep(2)
-            return self
-        else:
-            print "\nSorry you don't have enough gold for %d potions!" % int(amount)
-            sleep(2)
-            actions.visit_shop(self)
-    
-    def use_potion(self):
-        if self.potions > 0 and self.potions < 2:
-            self.potions -= 1
-            self.health += 25
-            print "\nYour health is now at %d" % self.health
-        elif self.potions > 1:
-            print "\nYou currently have %d potions" % self.potions
-            amount = int(raw_input("\nHow many? "))
-            raise_health = amount * 25
-            self.health += raise_health
-            self.potions -= amount
-            print "\nYour health is now at %d" % self.health
-        else:
-            print "\nSorry you don't have any more potions!"
-        sleep(2)
-        return self
-        
-    def list_inventory(self):
-        actions.clearscreen()
-        print ("\nName: %s\n"
-                "Exp. Points: %d\n"
-                "Potions Held: %d\n"
-                "Gold: %d pieces\n"
-                "Current Weapon: %s" %(self.name, self.xp,
-                    self.potions, self.gold, self.current_weapon)
-                )
-        
-        if self.has_pistol is True and "pistol" not in self.weapons:
-            self.weapons.append("pistol")
-        elif self.has_rifle is True and "rifle" not in self.weapons:
-            self.weapons.append("rifle")
-        elif self.has_sword is True and "sword" not in self.weapons:
-            self.weapons.append("sword") 
-        print "Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons)
-        sleep(4)
-        
+    def build(self, build):
+        super(Player, self).build(build)
+        for key in ("steps", "run_away", "dragon_attack",
+                "basilisk_attack"):
+            self.stats[key] = build.get(key, 0)
+
+    def HUD(self):
+        '''
+        Heads Up Display designed to keep important
+        information at the top of the screen
+        '''
+
+        string = self.name + '\n'
+        for stat in ("hp", "sp", "mp"):
+            stat_val = self.stats[stat]
+            stat_max = self.stats["max_" + stat]
+            string += "%s: %d/%d\n" %(stat, stat_val, stat_max)
+        string += ("Level: %d\nGold: %d\n\n" %(
+            self.stats["lvl"], self.stats["gold"]))
+        print string
+
+    def battle_prompt(self, allies = [], enemies = []):
+        '''
+        Prompts for choice during battle whether it be a skill
+        or an item
+        '''
+
+        while 1:
+            main.clearscreen(self)
+            string = "What do you want to do?\n-------------------\n"
+            for option in ("attack", "skills", "inventory", "run"):
+                string += option[:1].upper() + ')' + option[1:] + '\n'
+            print string + '\n'
+            action = raw_input("Choice: ").lower()
+            if 'a' in action:
+                return self.target_prompt(self.reg_atk,
+                        allies, enemies)
+            elif 's' in action or 'i' in action:
+                if 's' in action:
+                    attribute = ("skills", self.skills)
+                else:
+                    attribute = ("inventory", self.inventory)
+                while 1:
+                    print ("%s\nPress Enter To Go Back\n" %(
+                        self.list_attribute(attribute[0])))
+                    action = raw_input("Choice: ").lower()
+                    if action in attribute[1]:
+                        if 'i' in action:
+                            self.edit_inv(action, 1, True)
+                            itemDict = Item(action).effect
+                            if not itemDict.get('target', 0):
+                                return self.target_prompt(
+                                        Item(action).effect,
+                                        allies, enemies)
+                            else:
+                                return itemDict
+                        elif self.SPMP_handle(
+                                attribute[1][action]):
+                            return self.target_prompt(
+                                    attribute[1][action],
+                                    allies, enemies)
+                        else:
+                            print ("\nYou don't have enough "
+                                    "sp or mp to do that")
+                            main.confirm()
+                    elif not action:
+                        return self.battle_prompt(allies, enemies)
+                    else:
+                        print "\nInvalid choice"
+                        main.confirm()
+            elif 'r' in action:
+                return "run"
+            else:
+                print "\nInvalid choice."
+                main.confirm()
+
+    def target_prompt(self, atk, allies, enemies):
+        '''
+        prompts for target choice
+        '''
+
+        while 1:
+            main.clearscreen(self)
+            display = ""
+            if len(allies) - 1:
+                display += ("Allies\n------------\n%s\n\n" %(
+                        '\n'.join(allies)))
+            display += ("Enemies\n------------\n%s\n\n" %(
+                '\n'.join(enemies)))
+            display += "Press Enter To Go Back\n"
+            print display
+            target = raw_input("Who is your target? ").lower()
+            for char in allies + enemies:
+                if target == char.lower():
+                    return self.format_atk(deepcopy(atk), char)
+            if not target:
+                return self.battle_prompt(allies, enemies)
+            else:
+                print "\nInvalid choice"
+                main.confirm()
+
+    def list_attribute(self, attribute, part = ""):
+        '''
+        lists a certain listable attribute like inventory
+        or equipment
+        '''
+
+        main.clearscreen(self)
+        if "equi" in attribute:
+            if "inv" in attribute:
+                from equipment import armour, weapons
+                string = ("%s\n---------------\n" %(
+                    part.replace('_', ' ').capitalize()))
+                inv_equip = []
+                for item in self.inventory:
+                    length = len(inv_equip)
+                    for type_name, type_dict in weapons.items():
+                        for name in type_dict:
+                            if item == name and 'hand' in part:
+                                inv_equip.append(item)
+                                break
+                    if 'hand' in part:
+                        part = 'hand'
+                    if item in armour[part]:
+                        inv_equip.append(item)
+                if inv_equip:
+                    string += "%s\n" %('\n'.join(inv_equip))
+                else:
+                    string += "Y u no hav nuthing!!!\n"
+                return (string, inv_equip)
+            else:
+                string = "Equipment\n---------------\n"
+                for part, equipment in self.equipment.items():
+                    part = part.replace("_", " ").capitalize()
+                    string += "%s: %s\n" %(part,
+                            (equipment.name if equipment
+                                else "None"))
+        elif "inv" in attribute:
+            string = "Inventory\n----------------\n"
+            if not self.inventory:
+                string += "Y u no hav nuthing!!!\n"
+            for item, quantity in self.inventory.items():
+                string += "%s: %d\n" %(item, quantity)
+        elif "sk" in attribute:
+            string = ("Skills\n----------------\n")
+            if not self.skills:
+                string += ("You must have mad skillz to not "
+                        "have\nany skills and still be alive...\n")
+            string += ("%s\n" %('\n'.join(self.skills)))
+        elif "sta" in attribute:
+            string = "Stats\n----------------\n"
+            #dictionaries dont save key order so I have to order them
+            for stat in ("hp","sp","mp","def","str","md",
+                    "ma","spe","lck","acc","eva","lvl",
+                    "exp","gold"):
+                value = self.stats[stat]
+                if stat in main.player_friendly_stats:
+                    string += "%s: %d\n" %(
+                            main.player_friendly_stats[
+                                stat].capitalize(),
+                            value)
+        return string
+
+    def view_inv(self, item = None):
+        '''
+        Shows player inventory and allows for in depth
+        information and out of battle use of items
+        '''
+
+        print "%s\nPress Enter To Go Back\n" %(
+                self.list_attribute("inventory"))
+        answer = raw_input("\nWhat do you want to check out? "
+                if self.inventory else "").lower()
+        if item or (self.inventory and answer):
+            if not item:
+                for part, equip in self.equipment.items():
+                    if equip and answer == equip.name:
+                        item = equip
+                        break
+                else:
+                    item = self.inventory.get(answer, 0)
+            if item:
+                main.clearscreen(self)
+                if isinstance(item, int):
+                    from actions import describe_ability
+                    for item_type, type_dict in items.items():
+                        for name, name_dict in type_dict.items():
+                            if name == answer:
+                                break
+                    print ("%sQuantity: %d\n\nPress Enter "
+                            "To Go Back"
+                            %(describe_ability(name, name_dict),
+                                item))
+                    answer = raw_input(
+                            "\nWould you like to use this item? "
+                            if "any" in item_type else "").lower()
+                    if answer:
+                        if "y" in answer:
+                            self.use_item(name)
+                        elif "n" not in answer:
+                            print ("Please type either 'yes' "
+                                    "or 'no'.")
+                            main.confirm()
+                            self.view_inv(item)
+                else:
+                    print ("%s\nPress Enter To Go Back" %(
+                        item.describe_self()))
+                    raw_input("")
+            else:
+                print "\nInvalid choice"
+                main.confirm()
+            self.view_inv()
+
+    def view_equip(self):
+        '''
+        Shows currently equipped items and allows for equipping
+        of equipment in inventory
+        '''
+
+        print "%s\nPress Enter To Go Back\n" %(
+                self.list_attribute("equipment"))
+        answer = raw_input("\nWhat do you want to check out? ").lower()
+        if answer:
+            for part, equip in self.equipment.items():
+                if equip and (
+                        answer == part.replace('_', ' ')
+                        or answer == equip.name):
+                    break
+            else:
+                print "\nInvalid choice"
+                main.confirm()
+                self.view_equip()
+                return
+            main.clearscreen(self)
+            print ("%s: %s\nPress Enter To Go Back\n" %(
+                part.replace('_',' ').capitalize(),
+                equip.describe_self()))
+            answer = raw_input("Would you like to equip something "
+                    "else here or dequip this item? "
+                    if (equip and equip.name != "bare")
+                    else "").lower()
+            if answer and "d" not in answer:
+                string, equip_list = self.list_attribute(
+                        "part equipment in inventory", part)
+                print "%s\nPress Enter To Go Back\n" %(string)
+                answer = raw_input("\nWhat do you want to "
+                        "check out? " if equip_list else ""
+                        ).lower()
+                if answer and answer in equip_list:
+                    main.clearscreen(self)
+                    from equipment import Equipment
+                    equip = Equipment(answer)
+                    print ("%s\nPress Enter To Go Back\n" %(
+                        equip.describe_self()))
+                    answer = raw_input("\nDo you want to equip this? ").lower()
+                    if "y" in answer:
+                        self.equip(equip, part)
+                        print "\n%s was equipped." %(equip.name)
+                        main.confirm()
+                    elif "n" not in answer:
+                        print "\nInvalid choice"
+                        main.confirm()
+                elif answer:
+                    print "\nInvalid choice"
+                    main.confirm()
+            elif "d" in answer:
+                self.equip(equip, part, True)
+                print "\n%s was dequipped." %(equip.name)
+                main.confirm()
+            self.view_equip()
+
+    def view_skills(self):
+        '''
+        Displays skills and allows for in depth info on each
+        skill
+        '''
+
+        print "%s\nPress Enter To Go Back\n" %(
+                self.list_attribute("skills"))
+        answer = raw_input("\nWhat do you want to check out? "
+                if self.skills else "").lower()
+        if answer and self.skills:
+            if answer in self.skills:
+                main.clearscreen()
+                atk = self.skills[answer]
+                from actions import describe_ability
+                raw_input("%s\n\nPress Enter To Go Back"
+                        %(describe_ability(answer, atk)))
+            else:
+                print "\nInvalid choice"
+                main.confirm()
+            self.view_skills()
+
+    def view_stats(self):
+        '''
+        Displays current stats
+        '''
+
+        print self.list_attribute("stats")
+        main.confirm()
+
+    def use_item(self, item):
+        '''
+        Use item and remove it from inventory
+        '''
+
+        print ''
+        Item(item).use(self)
+        self.edit_inv(item, 1, True)
+        main.confirm()
+
     def low_health(self):
-        if self.health <= 60 and self.potions > 0:
+        '''
+        Warns user of low health
+        '''
+
+        health = self.stats["hp"]
+        potions = self.inventory["potion"]
+        if health <= 60 and potions > 0:
             print "\n*****DANGER*****\n"
-            choice = raw_input("\nYour health is currently at %d, a"
+            answer = raw_input("\nYour health is currently at %d, a"
                     "nd you currently have %d potions in your inven"
-                    "tory. \nWould you like to use one? " % (self.health,self.potions)
-                    )
-            choice.lower()
-            if choice == 'y' or choice == 'yes':
-                self.use_potion()
-                return self
+                    "tory. \nWould you like to use one? " % (health, potions)
+                    ).lower()
+            if 'y' in answer:
+                self.use_item("potion")
             else:
                 print "\nOk tough guy."
-                sleep(2)
-                return self
-    
-    def set_health(self, newHealth):
-        self.health = newHealth
-        print "\nHealth set to %d" % self.health
-        sleep(2)
-        return self
-    
-    def take_damage(self, damage):
-        self.health -= damage
-        print "\nYour health is now at %d" % self.health
-        if self.health < 0:
-            print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
-            exit(0)
-        sleep(2)
-        return self
-    
-    def deal_damage(self,Monster):
-        Monster.take_damage(self.damage_dealt,self)
-        
-    def gain_xp(self,monster_name):
-        if monster_name == "Dragon":
-            gained = superRandint(40,150)
-        elif monster_name == "Gremlin":
-            gained = superRandint(1,35)
-        elif monster_name == "Demon":
-            gained = superRandint(15,50)
-        elif monster_name == "Zombie":
-            gained = superRandint(16,75)
-        else:
-            gained = superRandint(1,30)
-        self.xp += gained
-        print "\nYou gained %d XP!" % gained
-        return self
+                main.confirm()
 
-    def add_weapon(self,name,damage):
-        if name == "pistol" and self.has_pistol is False:
-            self.has_pistol = True            
-        elif name == "rifle" and self.has_rifle is False:
-            self.has_rifle = True            
-        elif name == "sword" and self.has_sword is False:
-            self.has_sword = True            
-        else:
-            print "\nYou already own that weapon!"
-        sleep(2)            
-        return (self)
-    
-    def buy_weapon(self):
-        print "\nS)word:   25 Gold"
-        print "P)istol:  60 Gold"
-        print "R)ifle:   120 Gold"
-        choice = raw_input("\nWhich one would you like to purchase? ").lower()
-        if choice == 's'and self.gold >= 25:
-            self.gold -= 25
-            self.add_weapon("sword",25)
-            print "\nA sword has been added to your inventory."
-            sleep(2)
-        elif choice == 'p' and self.gold >= 60:
-            self.gold -= 60
-            self.add_weapon("pistol",60)
-            print "\nA pistol has been added to your inventory."
-            sleep(2)
-        elif choice == 'r' and self.gold >= 120:
-            self.gold -= 120
-            self.add_weapon("rifle",120)
-            print "\nA rifle has been added to your inventory."
-            sleep(2)
-        else:
-            print "\nSorry you don't have enough gold for that purchase."
-            sleep(2)
-            actions.visit_shop(self)
-        return (self)
-    
-    def set_current_weapon(self): 
-        print "\nCurrent Weapon: " + self.current_weapon
-        #doesn't show correct weapons immediately after a new weapon is found
-        #even if weapon is in inventory, method itself works perfectly.
-        print "Available Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons) 
-        choice = raw_input("\nUse weapon: ").lower()
-        if choice == "sword" and self.has_sword is True:
-            self.damage_dealt = 25
-            self.current_weapon = "sword"
-        elif choice == "pistol" and self.has_pistol is True:
-            self.damage_dealt = 60
-            self.current_weapon = "pistol"
-        elif choice == "rifle" and self.has_rifle is True:
-            self.damage_dealt = 120
-            self.current_weapon = "rifle"
-        elif choice == "dagger":
-            self.damage_dealt = 12
-            self.current_weapon = "dagger"
-        else:
-            print "\nSorry you don't currently have that weapon in your inventory."
-        print "\nCurrent weapon has been changed to: %s" % self.current_weapon
-        sleep(2)
-        return self
+    def gold_handle(self, cost):
+        '''
+        handles gold transactions
+        '''
+
+        if self.stats["gold"] < cost:
+            return False
+        self.stat_modifier({"gold", -cost})
+        return True
