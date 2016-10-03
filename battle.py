@@ -38,7 +38,7 @@ def send_to_screen(messege):
     if not quiet:
         print messege
 
-def battle(player, allies = [], enemies = [], can_run = True):
+def battle(player = None, allies = [], enemies = [], can_run = True):
     '''
     This is the battle loop
 
@@ -58,11 +58,8 @@ def battle(player, allies = [], enemies = [], can_run = True):
     allies.append(player)
     for aE in allies + enemies:
         everyone[aE.name] = aE
-    #temporary fix for name appearing more than once in
-    #team lists
-    #sets automatically get rid of duplicates in list
-    allies = list(set([char.name for char in allies]))
-    enemies = list(set([char.name for char in enemies]))
+    allies = [char.name for char in allies]
+    enemies = [char.name for char in enemies]
     player = player.name
     faction["allies"] = allies
     faction["enemies"] = enemies
@@ -540,7 +537,7 @@ def test():
     basilisk = anpc.ANPC(name = "basilisk")
     #basilisk vs dragon ;)
     MasaYume.edit_inv("potion", 1)
-    return battle(MasaYume, [], [demon])
+    return battle(player = MasaYume, allies = [], enemies = [demon])
 
 if __name__ == "__main__":
     auto_test = 0

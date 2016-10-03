@@ -15,7 +15,7 @@ def roll_dice(player):
     #TODO: add more rolls since some options come up too often
     #If zork-style gameplay is enabled, this will no longer be a problem
 
-    roll = 5#super_randrange(1,6)
+    roll = super_randrange(1,6)
     player.stats["steps"] += roll
 
     #mid-game boss
