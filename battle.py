@@ -77,7 +77,7 @@ def battle(player = None, allies = [], enemies = [], can_run = True):
             break
         main.clearscreen(everyone[player])
         decide_order(player)
-        send_to_screen('round ' + str(count))
+        send_to_screen('round ' + str(count) + "\n")
         if char_atk_dicts[player] == "run":
             send_to_screen("You couldn't run away!")
         for c in order:
