@@ -6,12 +6,12 @@ recreate it while I was re-learning Python, and make it better than it ever was 
 
 The current features are as follows:
 
-* A shop where the player can purchase health potions and better weapons
+* A shop where the player can purchase items, weapons, armour, and skills
 * Player finds random items such as gold, health potions and weapons as (s)he is navigating the dungeon
 * Random monster attack with 3 types of monsters (gremlin, demon and zombie) which have different attributes
-* 4 types of weapons (dagger, sword, pistol, rifle) with different damages
+* Many types of weapons
 * Mid-game boss and Final boss
-* Non-interactive attack system (only initially gives you the choice to fight or run away, all other turns are automated)
+* Interactive attack system
 * Player gains experience based upon which monster was killed, will be used later for leveling up character
 
 To start the game simply execute main.py with Python v2.x (preferably 2.7.x), the game will not work at all with Python 3
