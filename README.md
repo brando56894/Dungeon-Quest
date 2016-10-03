@@ -15,5 +15,3 @@ The current features are as follows:
 * Save and load features
 
 To start the game simply execute main.py with Python v2.x (preferably 2.7.x), the game will not work at all with Python 3
-
-You can also enable debug mode by setting **DEBUG_MODE = "enabled"** in main.py (just comment or uncomment)
