@@ -142,7 +142,7 @@ skills = {
             "mod_str": "target_name's strength lowered.",
             "sp_used": 3,
             "ability_descrip":("The enemy will soon learn "
-                "that the best offence\nis the best defence"
+                "that the best offense\nis the best defense"
                 ", but it will cost them their\nstrength.")
             },
         },
