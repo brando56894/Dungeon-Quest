@@ -95,10 +95,10 @@ def find_weapon(player):
 
     weapon_list = []
     for weapon_type in equipment.weapons:
-        weapon_list += weapon_type.keys()
+        weapon_list += weapon_type #causes a crash
     cannot_see = ('bare', 'claws') #weapons that cannot be bought
     for weapon in cannot_see:
-        weapons_list.remove(cannot_see)
+        weapon_list.remove(cannot_see)
     found = super_choice(weapon_list)
     print "\nYou found a %s!" % found
     player.edit_inv(found, 1)
