@@ -278,13 +278,14 @@ def quit_game():
     print "\nGood Bye!\n"
     return 0
 
+#TODO: fix me!
 def save_game(player):
     with open("savegame.pkl",'wb') as oput:
         pickle.dump(player,oput,pickle.HIGHEST_PROTOCOL)
     print "\nGame saved!"
     main.confirm()
 
-def load_game(): #TODO: fix me!
+def load_game(): 
     #input is a key word in python
     with open('savegame.pkl','rb') as iput:
         player = pickle.load(iput)
