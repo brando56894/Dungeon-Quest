@@ -87,13 +87,6 @@ def find_gold(player):
                 amount, player.stats["gold"]))
     main.confirm()
 
-#untouched, just moved
-def find_gold_debug(self,amount):
-    self.gold += amount
-    print "\nYou found %d gold coins, which brings you to a total of %d coins!" % (amount, self.gold)
-    sleep(2)
-    return self
-
 def find_weapon(player):
     '''
     Creates weapon list and removes weapons not available
