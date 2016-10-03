@@ -15,7 +15,7 @@ def roll_dice(player):
     #TODO: add more rolls since some options come up too often
     #If zork-style gameplay is enabled, this will no longer be a problem
 
-    roll = super_randrange(1,6)
+    roll = 5#super_randrange(1,6)
     player.stats["steps"] += roll
 
     #mid-game boss
@@ -101,9 +101,9 @@ def find_weapon(player):
     '''
 
     weapon_list = []
-    for weapon_type in weapons:
+    for weapon_type in equipment.weapons:
         weapon_list += weapon_type.keys()
-    cannot_see = ('bare', 'claws')
+    cannot_see = ('bare', 'claws') #weapons that cannot be bought
     for weapon in cannot_see:
         weapons_list.remove(cannot_see)
     found = super_choice(weapon_list)
@@ -115,7 +115,7 @@ def find_potions(player):
     player.edit_inv("potion", 1)
     print ("\nYou found a health potion! You now have %d "
             "potions in your inventory."
-            % player.inventory["potions"])
+            % player.inventory["potion"])
     main.confirm()
 
 def visit_shop(player):

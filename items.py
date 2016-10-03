@@ -35,7 +35,6 @@ class Item(object):
         for item_type, itemDic in items.items():
             if name in itemDic:
                 self.effect = itemDic[name]
-        pass
 
     def use(self, char):
         mod = self.effect["mod"]

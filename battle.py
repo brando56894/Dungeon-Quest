@@ -58,8 +58,11 @@ def battle(player, allies = [], enemies = [], can_run = True):
     allies.append(player)
     for aE in allies + enemies:
         everyone[aE.name] = aE
-    allies = [char.name for char in allies]
-    enemies = [char.name for char in enemies]
+    #temporary fix for name appearing more than once in
+    #team lists
+    #sets automatically get rid of duplicates in list
+    allies = list(set([char.name for char in allies]))
+    enemies = list(set([char.name for char in enemies]))
     player = player.name
     faction["allies"] = allies
     faction["enemies"] = enemies
@@ -93,6 +96,7 @@ def battle(player, allies = [], enemies = [], can_run = True):
     main.clearscreen(player)
     if player.check_if_dead():
         send_to_screen("You died.")
+        reset_arena()
         return 0
     elif ran:
         send_to_screen("You ran.")
@@ -102,6 +106,7 @@ def battle(player, allies = [], enemies = [], can_run = True):
             if "hp" not in stat:
                 player.stats[stat] = value
         player.stats["run_away"] += 1
+        reset_arena()
         return 0
     else:
         send_to_screen("You win!")
@@ -118,6 +123,7 @@ def battle(player, allies = [], enemies = [], can_run = True):
         for stat, mod in rewards.items():
             send_to_screen("\nYou recieved %d %s!" %(mod, stat))
             player.stat_modifier({stat:mod})
+        reset_arena()
         return 1
 
 def calc_reward(player, enemies):
@@ -135,7 +141,7 @@ def calc_reward(player, enemies):
     items = {}
     for item, quanitity in inv.items():
         if super_choice([1,0]):
-            items[item] = (super_randint(0,quantity)
+            items[item] = (super_randint(1,quantity)
                     * everyone[player].check_if_lucky())
 
     reward_dict = {"items": items}
@@ -159,6 +165,23 @@ def clean_up():
         send_to_screen(char_name + "'s attack failed.")
     wait_for_hit = {}
     target_lose_turn = {}
+
+def reset_arena():
+    '''
+    resets all global variables for next battle
+    '''
+
+    everyone = {}
+    faction = {}
+    order = []
+    target_lose_turn = {}
+    wait_for_next_turn = {}
+    wait_for_hit = {}
+    char_atk_dicts = {}
+    status_effects = {}
+    player_stats_copy = {}
+    quiet = False
+    run_ability = True
 
 #apply any status effects
 #def apply_status_effects(character, effect):

@@ -65,27 +65,27 @@ class Player(Character):
                 while 1:
                     print ("%s\nPress Enter To Go Back\n" %(
                         self.list_attribute(attribute[0])))
-                    action = raw_input("Choice: ").lower()
-                    if action in attribute[1]:
+                    attack = raw_input("Choice: ").lower()
+                    if attack in attribute[1]:
                         if 'i' in action:
-                            self.edit_inv(action, 1, True)
-                            itemDict = Item(action).effect
+                            self.edit_inv(attack, 1, True)
+                            itemDict = Item(attack).effect
                             if not itemDict.get('target', 0):
                                 return self.target_prompt(
-                                        Item(action).effect,
+                                        Item(attack).effect,
                                         allies, enemies)
                             else:
                                 return itemDict
                         elif self.SPMP_handle(
-                                attribute[1][action]):
+                                attribute[1][attack]):
                             return self.target_prompt(
-                                    attribute[1][action],
+                                    attribute[1][attack],
                                     allies, enemies)
                         else:
                             print ("\nYou don't have enough "
                                     "sp or mp to do that")
                             main.confirm()
-                    elif not action:
+                    elif not attack:
                         return self.battle_prompt(allies, enemies)
                     else:
                         print "\nInvalid choice"
