@@ -7,7 +7,7 @@ import player
 from time import sleep
 from os import system, name
 
-version = 1.12
+version = 2.0
 
 #enables the debug menu option in the main menu
 #DEBUG_MODE = "enabled"
