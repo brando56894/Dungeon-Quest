@@ -148,7 +148,7 @@ class Player(Character):
                 if inv_equip:
                     string += "%s\n" %('\n'.join(inv_equip))
                 else:
-                    string += "Y u no hav nuthing!!!\n"
+                    string += "You have nothing.\n"
                 return (string, inv_equip)
             else:
                 string = "Equipment\n---------------\n"
