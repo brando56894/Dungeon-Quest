@@ -129,7 +129,7 @@ if __name__ == "__main__":
         })
 
     while new_player.stats["hp"] > 0:
-        menu(new_player)
+        continue_game = menu(new_player)
         if new_player.stats["basilisk_attack"]:
             print "\nCongratulations! You made it through the dungeon alive!\n"
             break
@@ -137,6 +137,8 @@ if __name__ == "__main__":
             clearscreen()
             print ("\nYou're too much of a wimp to make it though the dungeon alive!\n"
                     "Don't show your face here again until you toughen yourself up!\n")
+            break
+        elif not continue_game:
             break
     if not new_player.stats["hp"]:
         print "\nYou were slain! Maybe you should carry more health potions with you next time!\n"
