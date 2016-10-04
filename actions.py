@@ -57,7 +57,7 @@ def roll_dice(player):
     elif roll == 4:
         print "\nYou stumbled upon a dead body, you look through it's backpack...."
         sleep(1)
-        number = super_randint(0,3)
+        number = super_randint(1,3)
         if number == 1:
             find_gold(player)
         elif number == 2:
