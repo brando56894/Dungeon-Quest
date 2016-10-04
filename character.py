@@ -178,6 +178,10 @@ class Character(object):
 
         if not isinstance(equipment, Equipment):
             equipment = Equipment(equipment)
+        if (not dequip) and (equipment.name in self.inventory):
+            self.edit_inv(equipment.name, 1, True)
+        elif dequip and equipment.name not in ("bare", "claws"):
+            self.edit_inv(equipment.name, 1)
         self.stat_modifier(equipment.mods, dequip)
         if equipment.equip_type == "armour":
             if not dequip:

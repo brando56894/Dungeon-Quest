@@ -266,10 +266,10 @@ class Player(Character):
             print ("%s: %s\nPress Enter To Go Back\n" %(
                 part.replace('_',' ').capitalize(),
                 equip.describe_self()))
-            answer = raw_input("Would you like to equip something "
-                    "else here or dequip this item? "
-                    if (equip and equip.name != "bare")
-                    else "").lower()
+            question = "Would you like to equip something here"
+            question += ("? " if (not equip or equip.name == "bare")
+                    else " or dequip this item? ")
+            answer = raw_input(question).lower()
             if answer and "d" not in answer:
                 string, equip_list = self.list_attribute(
                         "part equipment in inventory", part)

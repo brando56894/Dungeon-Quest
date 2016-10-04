@@ -135,7 +135,7 @@ def visit_shop(player):
             "armour": (equipment.armour, equipment.calc_cost),
             "weapons": (equipment.weapons, equipment.calc_cost),
             "skills": (skills.skills, skills.calc_cost),
-            "leave": lambda x: x #does nothin
+            "leave": lambda x: x #does nothing
             }
     while not check:
         area = raw_input(
@@ -212,26 +212,30 @@ def checkout_item(name, cost_descrip, section, section_dict,
             checkout_item(name, cost_descrip, section,
                     section_dict, player, True)
             return
-        try:
-            answer = raw_input("How many do you want to buy? ").lower()
-            if not answer:
-                visit_shop_section(section, section_dict, player)
+        if section != "skills":
+            try:
+                answer = raw_input("How many do you want to buy? ").lower()
+                if not answer:
+                    visit_shop_section(section, section_dict, player)
+                    return
+                amount = int(answer)
+            except ValueError:
+                print "Please input a number."
+                main.confirm()
+                checkout_item(name, cost_descrip, section,
+                        section_dict, player, True)
                 return
-            amount = int(answer)
-        except ValueError:
-            print "Please input a number."
-            main.confirm()
-            checkout_item(name, cost_descrip, section,
-                    section_dict, player, True)
-            return
+        else:
+            amount = 1
         if amount and player.gold_handle(cost*amount):
             print ("\nThank you for your purchase\n"
-                    "You gained %d %s" %(amount,
+                    "You bought %d %s" %(amount,
                         (name + 's' if amount > 1 else name)))
             if section == "skills":
                 player.add_skill(name)
             else:
                 player.edit_inv(name, amount)
+            main.confirm()
             visit_shop(player)
         else:
             print "\nYou can't pay for that purchase!"
