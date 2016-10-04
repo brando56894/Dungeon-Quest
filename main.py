@@ -67,8 +67,9 @@ def menu(player):
             "** I:     Inventory      **\n"
             "** E:     Equipment      **\n"
             "** V:     View Skills    **\n"
-            "** L:     List Stats     **\n"
+            "** C:     Check Stats    **\n"
             "** S:     Save Game      **\n"
+            "** L:     Load Game      **\n"
             "** Q:     Quit           **\n"
             )
     #if DEBUG_MODE == "enabled":
@@ -84,10 +85,10 @@ def menu(player):
             'i': player.view_inv,
             'e': player.view_equip,
             'v': player.view_skills,
-            'l': player.view_stats,
+            'c': player.view_stats,
             's': actions.save_game,
+            'l': actions.load_game,
             'q': actions.quit_game,
-            #'d': debug.menu,
             '': cache, #for convenience
             }
 
@@ -110,6 +111,7 @@ def menu(player):
             print ("\nYou didn't select a valid choice.\n"
                     "Please choose again.")
             confirm()
+    return 1
 
 if __name__ == "__main__":
     #Starts the game
@@ -125,7 +127,8 @@ if __name__ == "__main__":
             "both_hands": "rifle",
             "legs": "leather greaves"
             },
-        "skills": ["smokescreen", "trip", "focus shot"]
+        "skills": ["smokescreen", "trip", "focus shot"],
+        "stats": {"gold": 99999999999} #dev buff
         })
 
     while new_player.stats["hp"] > 0:

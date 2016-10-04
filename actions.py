@@ -5,6 +5,7 @@
 from time import sleep
 from superRandom import *
 import anpc
+import dill
 import pickle
 import main
 import equipment
@@ -38,8 +39,9 @@ def roll_dice(player):
         find_gold(player)
 
     elif roll == 2:
-        print "\nYou stepped on a booby trap!"
-        player.stat_modifier({"hp": -super_randint(1,7)})
+        damage = super_randint(1, 7)
+        player.stat_modifier({"hp": -damage})
+        print "\nYou stepped on a booby trap and took %d damage!" % damage
         main.confirm()
 
     elif roll == 3:
@@ -286,10 +288,9 @@ def save_game(player):
     print "\nGame saved!"
     main.confirm()
 
-def load_game(): 
+def load_game(player): 
     #input is a key word in python
     with open('savegame.pkl','rb') as iput:
-        player = pickle.load(iput)
+        player.update(pickle.load(iput))
     print "\nSaved game has been loaded!"
-    sleep(2)
-    return player
+    main.confirm()

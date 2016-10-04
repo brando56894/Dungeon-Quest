@@ -26,6 +26,13 @@ class Player(Character):
                 "basilisk_attack"):
             self.stats[key] = build.get(key, 0)
 
+    def update(self, load_player):
+        self.name = load_player.name
+        self.equipment = load_player.equipment
+        self.skills = load_player.skills
+        self.inventory = load_player.inventory
+        self.stats = load_player.stats
+
     def HUD(self):
         '''
         Heads Up Display designed to keep important
@@ -102,6 +109,8 @@ class Player(Character):
         '''
 
         while 1:
+            if (len(allies) == 1) and (len(enemies) == 1):
+                return self.format_atk(deepcopy(atk), enemies[0])
             main.clearscreen(self)
             display = ""
             if len(allies) - 1:
@@ -357,5 +366,5 @@ class Player(Character):
 
         if self.stats["gold"] < cost:
             return False
-        self.stat_modifier({"gold", -cost})
+        self.stat_modifier({"gold": -cost})
         return True
