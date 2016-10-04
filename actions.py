@@ -91,14 +91,15 @@ def find_weapon(player):
     '''
     Creates weapon list and removes weapons not available
     to player
+    Then randomly returns a weapon from list
     '''
 
     weapon_list = []
     for weapon_type in equipment.weapons:
-        weapon_list += weapon_type 
-    cannot_see = ('bare', 'claws') #weapons that cannot be bought
+        weapon_list += equipment.weapons[weapon_type].keys()
+    cannot_see = ('bare', 'claws') #list of weapons that cannot be bought
     for weapon in cannot_see:
-        weapon_list.remove(cannot_see) #causes a crash
+        weapon_list.remove(weapon)
     found = super_choice(weapon_list)
     print "\nYou found a %s!" % found
     player.edit_inv(found, 1)
