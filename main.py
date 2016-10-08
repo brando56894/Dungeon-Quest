@@ -9,13 +9,6 @@ from os import system, name
 
 version = 2.0
 
-#enables the debug menu option in the main menu
-#DEBUG_MODE = "enabled"
-#DEBUG_MODE = "disabled"
-
-#if DEBUG_MODE == "enabled":
-#    import debug
-
 #dictionary of player friendly version of stat names
 #for printing purposes
 player_friendly_stats = {
@@ -52,30 +45,70 @@ def confirm():
 
     raw_input("\n**Press any button**")
 
+def create_menu(prompt = "", choices = (), options = (), enter_option = False):
+    #TODO:Make mult column menu compatibility
+    '''
+    creates a menu
+
+    prompt is the message that will be displayed at the top
+
+    choices are a tuple of letters/numbers that the user
+    will type in to access the options
+
+    options are a tuple of words that represent the thing
+    the user can access
+
+    the enter_option is for adding a "press enter to go back"
+    signal at the end of the menu
+    '''
+    longest = lambda x, y: x if (len(x) > len(y)) else y
+    if isinstance(prompt, tuple):
+        check_prompt = reduce(longest, prompt)
+    else:
+        check_prompt = prompt
+        prompt = (prompt, )
+    if enter_option:
+        choices += ("Enter",)
+        options += ("Go back",)
+    longest_choice = reduce(longest, choices)
+    entries = []
+    for index, choice in enumerate(choices):
+        entry = "%s: " % choice
+        buff = " " * (len(longest_choice) - len(choice))
+        entry += "%s%s" %(buff, options[index])
+        entries.append(entry)
+    longest_string = reduce(longest, [check_prompt] + [entries[i]
+                            + (" " * 6) for i in range(len(entries))])
+                            #" " * 6 is a buffer for entries
+    length = len(longest_string)
+    longest_entry = reduce(longest, entries)
+    menu = ""
+    for part in prompt:
+        menu += ("%s\n" % part.center(length, "-"))
+    menu += "%s\n" %("*" * length)
+    for index, entry in enumerate(entries):
+        buff = " " * (len(longest_entry) - len(entry))
+        entry = (entry + buff).center(length - 4)
+        string = "**%s**\n" %entry
+        menu += string
+    menu += (("*" * length) + "\n")
+    return menu
+
 cache = None #place to remember last function
 
-def menu(player):
+def main_menu(player):
     global cache, new_player
 
     clearscreen(player)
-    start_screen = (
-            "\nWhat would you like to do?\n"
-            "***************************\n"
-            "** Enter: Prev Action    **\n"
-            "** R:     Roll Dice      **\n"
-            "** G:     Go To Shop     **\n"
-            "** I:     Inventory      **\n"
-            "** E:     Equipment      **\n"
-            "** V:     View Skills    **\n"
-            "** C:     Check Stats    **\n"
-            "** S:     Save Game      **\n"
-            "** L:     Load Game      **\n"
-            "** Q:     Quit           **\n"
+    start_screen = create_menu(
+            prompt = "What would you like to do?",
+            choices = ("Enter", "R", "G", "I", "E", "V", "C",
+                "S", "L", "Q"),
+            options = ("Prev Action", "Roll Dice", "Go To Shop",
+                "Inventory", "Equipment", "View Skills", "Check Stats",
+                "Save Game", "Load Game", "Quit"),
             )
-    #if DEBUG_MODE == "enabled":
-    #    print "%s** D:     Debug Menu     **" %(start_screen)
     print start_screen
-    print "***************************"
     
     choice = raw_input("\nChoice: ").lower()
     #using this method helps clean up all those logic gates
@@ -132,7 +165,7 @@ if __name__ == "__main__":
         })
 
     while new_player.stats["hp"] > 0:
-        continue_game = menu(new_player)
+        continue_game = main_menu(new_player)
         if new_player.stats["basilisk_attack"]:
             print "\nCongratulations! You made it through the dungeon alive!\n"
             break

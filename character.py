@@ -49,6 +49,7 @@ class Character(object):
                 "atk_str": "name attacked target_name!"
                 }
         self.skills = {}
+        self.skill_bag = [] #holds the names of obtained, but unequipped skills
 
         #some lambda methods for simple functions
         self.check_if_dead = lambda: (True if not self.stats["hp"]
@@ -91,6 +92,7 @@ class Character(object):
         #skills
         for skill in skill_set:
             self.add_skill(skill)
+            self.equip_skill(skill)
 
         #inventory
         for item, quantity in inv.items():
@@ -227,18 +229,35 @@ class Character(object):
 
     def add_skill(self, skill_name, remove = False):
         '''
-        This method handles adding and removing skills
-        to and from character
+        This method handles adding and removing
+        skills to and from skill bag
         '''
 
         if not remove:
-            for key, values in skills.items():
-                if skill_name in values:
-                    skill = skills[key][skill_name]
-                    break
-            self.skills[skill_name] = skill
+            self.skill_bag.append(skill_name)
+        else:
+            self.skill_bag.remove(skill_name)
+
+    def equip_skill(self, skill_name, dequip = False):
+        '''
+        method for equiping and dequiping skills
+        '''
+
+        if not dequip:
+            if len(self.skills.keys()) < 5:
+                for types, type_skills in skills.items():
+                    if skill_name in type_skills:
+                        skill = skills[types][skill_name]
+                        skill["type"] = types
+                        break
+                self.add_skill(skill_name, True)
+                self.skills[skill_name] = skill
+                return True
+            else:
+                return False
         else:
             self.skills.pop(skill_name)
+            self.add_skill(skill_name)
 
     def edit_inv(self, item, quantity, remove = False):
         '''

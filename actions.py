@@ -120,14 +120,11 @@ def visit_shop(player):
     '''
 
     main.clearscreen(player)
-    print (
-            "Shop\n"
-            "-----------\n"
-            "I)tems\n"
-            "A)rmour\n"
-            "W)eapons\n"
-            "S)kills\n"
-            "L)eave"
+    menu = main.create_menu(
+            prompt = ("Shop", "Which section do you want to go to?"),
+            choices = ("I", "A", "W", "S"),
+            options = ("Items", "Armour", "Weapons", "Skills"),
+            enter_option = True
             )
     check = False
     areas = {
@@ -135,23 +132,22 @@ def visit_shop(player):
             "armour": (equipment.armour, equipment.calc_cost),
             "weapons": (equipment.weapons, equipment.calc_cost),
             "skills": (skills.skills, skills.calc_cost),
-            "leave": lambda x: x #does nothing
             }
     while not check:
-        area = raw_input(
-                "\nWhich section do you want to go to? ").lower()
+        area = raw_input("%s" % menu).lower()
         for string in areas:
-            if area in (string[0], string):
+            if area and area in (string[0], string):
                 check = True
                 area = string
                 break
+            elif not area:
+                print "\nThanks for stopping by!"
+                main.confirm()
+                return
         else:
             print "Invalid choice."
             main.confirm()
-    if area == "leave":
-        print "\nThanks for stopping by!"
-        main.confirm()
-        return
+            main.clearscreen(player)
     visit_shop_section(area, areas[area], player)
 
 def visit_shop_section(name, area, player):
@@ -160,29 +156,36 @@ def visit_shop_section(name, area, player):
     '''
 
     main.clearscreen(player)
-    string = "%s\n--------------\n" %(name.capitalize())
+    count = 0
+    options = []
     name_cost_descrip = {}
     for key, nested_dict in area[0].items():
         for item_name, info in nested_dict.items():
             if not info.get("no_shop", 0):
+                count += 1
                 cost = (area[1](info) if len(area) > 1
                         else info["cost"])
                 descrip = (describe_ability if
                         info.get("ability_descrip", 0)
                         else equipment.Equipment(item_name).describe_self)
-                name_cost_descrip[item_name] = (cost, descrip, info)
-                string += "%s\n" %(item_name.capitalize())
-    string += "\nPres Enter To Go Back\n"
-    print string
-    answer = raw_input("What do you want to check out? ").lower()
+                name_cost_descrip[str(count)] = (cost, descrip, info)
+                options.append(item_name.capitalize())
+    menu = main.create_menu(
+            prompt = (name.capitalize(), "What do you want to check out?"),
+            choices = tuple([str(x+1) for x in range(count)]),
+            options = tuple(options),
+            enter_option = True
+            )
+    print menu
+    answer = raw_input("")
     if not answer:
         visit_shop(player)
         return
-    if answer in name_cost_descrip:
+    try: #EAFP Easier to Ask for Forgiveness than Permission
         cost_descrip_info = name_cost_descrip[answer]
-        checkout_item(answer, cost_descrip_info, name,
-                area, player)
-    else:
+        checkout_item(options[int(answer) - 1].lower(),
+                cost_descrip_info, name, area, player)
+    except KeyError:
         print "Invalid choice."
         main.confirm()
         visit_shop_section(name, area, player)
@@ -227,7 +230,7 @@ def checkout_item(name, cost_descrip, section, section_dict,
                 return
         else:
             amount = 1
-        if amount and player.gold_handle(cost*amount):
+        if amount and player.gold_handle(cost * amount):
             print ("\nThank you for your purchase\n"
                     "You bought %d %s" %(amount,
                         (name + 's' if amount > 1 else name)))
@@ -257,6 +260,10 @@ def describe_ability(name, dic):
     '''
 
     string = "%s\n--------------\n" %(name.capitalize())
+
+    #type
+    string += ("Type: %s\n" %(dic["type"]) if "type" in dic
+            else "")
 
     #target
     target = dic.get("target", 0)

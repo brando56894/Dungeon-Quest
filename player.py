@@ -160,12 +160,18 @@ class Player(Character):
                     string += "Y u no hav nuthing!!!\n"
                 return (string, inv_equip)
             else:
-                string = "Equipment\n---------------\n"
+                choices = []
+                options = []
                 for part, equipment in self.equipment.items():
                     part = part.replace("_", " ").capitalize()
-                    string += "%s: %s\n" %(part,
-                            (equipment.name if equipment
-                                else "None"))
+                    choices.append(part)
+                    options.append(equipment.name if equipment
+                                else "None")
+                string = main.create_menu(
+                        prompt = "Equipment",
+                        choices = choices,
+                        options = options,
+                        )
         elif "inv" in attribute:
             string = "Inventory\n----------------\n"
             if not self.inventory:
@@ -173,23 +179,32 @@ class Player(Character):
             for item, quantity in self.inventory.items():
                 string += "%s: %d\n" %(item, quantity)
         elif "sk" in attribute:
+            #TODO:Finish this menu
             string = ("Skills\n----------------\n")
             if not self.skills:
                 string += ("You must have mad skillz to not "
                         "have\nany skills and still be alive...\n")
-            string += ("%s\n" %('\n'.join(self.skills)))
+            string += ("%s\n" %('\n'.join(self.skills.keys())))
+            available = 5 - len(self.skills.keys())
+            for x in range(available):
+                string += "Empty skill slot\n"
         elif "sta" in attribute:
-            string = "Stats\n----------------\n"
+            choices = []
+            options = []
             #dictionaries dont save key order so I have to order them
             for stat in ("hp","sp","mp","def","str","md",
                     "ma","spe","lck","acc","eva","lvl",
                     "exp","gold"):
                 value = self.stats[stat]
                 if stat in main.player_friendly_stats:
-                    string += "%s: %d\n" %(
-                            main.player_friendly_stats[
-                                stat].capitalize(),
-                            value)
+                    choices.append(main.player_friendly_stats[
+                        stat].capitalize())
+                    options.append(value)
+            string = main.create_menu(
+                    prompt = "Stats",
+                    choices = choices,
+                    options = options,
+                    )
         return string
 
     def view_inv(self, item = None):
@@ -234,9 +249,8 @@ class Player(Character):
                             main.confirm()
                             self.view_inv(item)
                 else:
-                    print ("%s\nPress Enter To Go Back" %(
+                    raw_input("%s\nPress Enter To Go Back " %(
                         item.describe_self()))
-                    raw_input("")
             else:
                 print "\nInvalid choice"
                 main.confirm()
@@ -284,7 +298,7 @@ class Player(Character):
                     print ("%s\nPress Enter To Go Back\n" %(
                         equip.describe_self()))
                     answer = raw_input("\nDo you want to equip this? ").lower()
-                    if "y" in answer:
+                    if "y" in answer and self.validate_equip(equip.type):
                         self.equip(equip, part)
                         print "\n%s was equipped." %(equip.name)
                         main.confirm()
@@ -294,16 +308,67 @@ class Player(Character):
                 elif answer:
                     print "\nInvalid choice"
                     main.confirm()
-            elif "d" in answer:
+            elif "d" in answer and self.validate_equip("fist"):
                 self.equip(equip, part, True)
                 print "\n%s was dequipped." %(equip.name)
                 main.confirm()
             self.view_equip()
 
+    def validate_skills(self, weapon_type = [], autoremove = False):
+        '''
+        checks if currently equipped skills match types
+        with currently equipped weapons, and depending
+        on flag removes skills from skill list
+        '''
+
+        if not weapon_type:
+            for side in ("left", "right"):
+                equip = self.equipment[side + "_hand"]
+                if equip:
+                    weapon_type.append(equip.type)
+        weapon_type.append("all")
+        remove_skills = []
+        for skill_name, skill in enumerate(self.skills):
+            if skill["type"] not in weapon_type:
+                remove_skills.append(skill)
+        if not autoremove:
+            return remove_skills if remove_skills else []
+        else:
+            if remove_skills:
+                for skill_name in remove_skills:
+                    self.equip_skill(skill_name, True)
+                return True
+            return False
+
+    def validate_equip(self, weapon_type):
+        '''
+        warns player of the removal of skills because of
+        weapons about to be equipped
+        '''
+
+        main.clearscreen()
+        remove_skills = self.validate_skills([weapon_type])
+        if remove_skills:
+            #warn player
+            while 1:
+                answer = raw_input("If you do this, the following skills "
+                        "will be removed:\n%s\n Are you sure you want to "
+                        "do this?(y/n) " %("\n".join(remove_skills))).lower()
+                if "y" in answer:
+                    return True
+                elif "n" in answer:
+                    return False
+                else:
+                    print "Please type either 'y' or 'n'."
+                    main.confirm()
+                    return self.validate_equip(weapon_type)
+        else:
+            return True #True means it is ok to equip
+
     def view_skills(self):
         '''
         Displays skills and allows for in depth info on each
-        skill
+        skill and the equipping and dequipping of skills
         '''
 
         print "%s\nPress Enter To Go Back\n" %(
@@ -321,6 +386,14 @@ class Player(Character):
                 print "\nInvalid choice"
                 main.confirm()
             self.view_skills()
+
+    #def view_skills(self):
+        '''
+        Displays skills and allows for in depth info on each
+        skill and the equipping and dequipping of skills
+        '''
+
+        pass
 
     def view_stats(self):
         '''

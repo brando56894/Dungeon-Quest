@@ -80,7 +80,7 @@ skills = {
             "mod_str": "target_name's accuracy lowered.",
             "sp_used": 2,
             "ability_descrip":("A black mist will surround "
-                "the enemy\nthus reducing their vision by 70%.")
+                "the enemy\nthus reducing their vision by 30%.")
             },
         "warcry": {
             "target": 1,

@@ -13,6 +13,12 @@ weapons = {
             "hands_needed": 1,
             },
         },
+    "shield": {
+        "wooden shield":{
+            "mods":{"def": 2},
+            "hands_needed": 1,
+            },
+        },
     "gun": {
         "pistol": {
             "mods": {"str": 8, "def": -3},
@@ -68,11 +74,6 @@ armour = {
     "head": {
         "cap":{
             "mods":{"def": 1},
-            },
-        },
-    "hand": {
-        "wooden shield":{
-            "mods":{"def": 2},
             },
         },
     "body": {
