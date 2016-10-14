@@ -10,7 +10,7 @@ import pickle
 import main
 import equipment
 import skills
-from items import items
+import items
 
 def roll_dice(player):
     #TODO: add more rolls since some options come up too often
@@ -52,7 +52,7 @@ def roll_dice(player):
             player.edit_inv("key", 1, True)
         else:
             print "\nBut you can't open it since you don't have the key"
-        main.confirm()
+            main.confirm()
 
     elif roll == 4:
         print "\nYou stumbled upon a dead body, you look through it's backpack...."
@@ -128,29 +128,29 @@ def visit_shop(player):
             )
     check = False
     areas = {
-            "items": (items,),
-            "armour": (equipment.armour, equipment.calc_cost),
-            "weapons": (equipment.weapons, equipment.calc_cost),
-            "skills": (skills.skills, skills.calc_cost),
+            "items": (items.items, None, items.Item),
+            "armour": (equipment.armour, equipment.calc_cost,
+                equipment.Equipment),
+            "weapons": (equipment.weapons, equipment.calc_cost,
+                equipment.Equipment),
+            "skills": (skills.skills, skills.calc_cost, skills.Skill),
             }
-    while not check:
-        area = raw_input("%s" % menu).lower()
-        for string in areas:
-            if area and area in (string[0], string):
-                check = True
-                area = string
-                break
-            elif not area:
-                print "\nThanks for stopping by!"
-                main.confirm()
-                return
-        else:
-            print "Invalid choice."
-            main.confirm()
-            main.clearscreen(player)
+    area_letter = player.validate_input(
+            prompt = menu,
+            choices = ("i", "a", "w", "s", ""),
+            invalid_prompt = "Invalid choice.",
+            show_HUD = True
+            )
+    for area in areas:
+        if area_letter == area[0]:
+            break
+    else:
+        print "\nThanks for stopping by!"
+        main.confirm()
+        return
     visit_shop_section(area, areas[area], player)
 
-def visit_shop_section(name, area, player):
+def visit_shop_section(name, area, player): #here
     '''
     Displays items available in visited section
     '''
@@ -161,13 +161,14 @@ def visit_shop_section(name, area, player):
     name_cost_descrip = {}
     for key, nested_dict in area[0].items():
         for item_name, info in nested_dict.items():
-            if not info.get("no_shop", 0):
+            if (not info.get("no_shop", 0) and
+                    not ((name == "skills") and
+                        (item_name in player.skill_bag or
+                            item_name in player.skills))):
                 count += 1
-                cost = (area[1](info) if len(area) > 1
+                cost = (area[1](info) if area[1]
                         else info["cost"])
-                descrip = (describe_ability if
-                        info.get("ability_descrip", 0)
-                        else equipment.Equipment(item_name).describe_self)
+                descrip = area[2](item_name).describe_self
                 name_cost_descrip[str(count)] = (cost, descrip, info)
                 options.append(item_name.capitalize())
     menu = main.create_menu(
@@ -176,8 +177,7 @@ def visit_shop_section(name, area, player):
             options = tuple(options),
             enter_option = True
             )
-    print menu
-    answer = raw_input("")
+    answer = raw_input(menu)
     if not answer:
         visit_shop(player)
         return
@@ -200,14 +200,16 @@ def checkout_item(name, cost_descrip, section, section_dict,
 
     main.clearscreen(player)
     cost = cost_descrip[0]
-    try:
-        descrip = cost_descrip[1]()
-    except TypeError:
-        descrip = cost_descrip[1](name, cost_descrip[2])
-    print "%s\nCost: %d\n\nPres Enter To Go Back\n" %(descrip, cost)
+    descrip = cost_descrip[1]()
+    prompt = "%s\nCost: %d\n\nPres Enter To Go Back\n" %(descrip, cost)
     if not yes:
-        answer = raw_input("Do you want to buy this? ").lower()
-        if not answer:
+        answer = player.validate_input(
+                prompt = prompt + "\nDo you want to buy this? ",
+                choices = ("y", "n", ""),
+                invalid_prompt = "\nPlease type either 'y' or 'n'.",
+                show_HUD = True
+                )
+        if not answer or answer == "n":
             visit_shop_section(section, section_dict, player)
             return
     if yes or "y" in answer:
@@ -217,7 +219,8 @@ def checkout_item(name, cost_descrip, section, section_dict,
             return
         if section != "skills":
             try:
-                answer = raw_input("How many do you want to buy? ").lower()
+                answer = raw_input(
+                        prompt + "\nHow many do you want to buy? ").lower()
                 if not answer:
                     visit_shop_section(section, section_dict, player)
                     return
@@ -239,60 +242,18 @@ def checkout_item(name, cost_descrip, section, section_dict,
             else:
                 player.edit_inv(name, amount)
             main.confirm()
-            visit_shop(player)
+            visit_shop_section(section, section_dict, player)
         else:
             print "\nYou can't pay for that purchase!"
             main.confirm()
             checkout_item(name, cost_descrip, section,
                     section_dict, player, True)
             return
-    elif "n" in answer:
-        visit_shop_section(section, section_dict, player)
-    else:
-        print "\nPlease type either 'yes' or 'no'."
-        main.confirm()
-        checkout_item(name, cost_descrip, section,
-                section_dict, player)
-
-def describe_ability(name, dic):
-    '''
-    Used to describe skills and items
-    '''
-
-    string = "%s\n--------------\n" %(name.capitalize())
-
-    #type
-    string += ("Type: %s\n" %(dic["type"]) if "type" in dic
-            else "")
-
-    #target
-    target = dic.get("target", 0)
-    if target:
-        string += ("Target: " + ("all allies" if target == 2
-            else "all enemies" if target == 3 else "You")
-            + '\n')
-
-    #base_atk, base_acc
-    string += ("" if not dic.get("base_atk", 0) else
-            ("Strength: %d\n" %(dic["base_atk"])))
-    string += ("" if not dic.get("base_acc", 0) else
-            ("Accuracy: %d\n" %(dic["base_acc"])))
-
-    #sp_used, mp_used
-    string += (("SP Used: %d\n" %(dic["sp_used"]))
-            if dic.get("sp_used", 0) else
-            ("MP Used: %d\n" %(dic["mp_used"])) if
-            dic.get("mp_used", 0) else "")
-
-    #ability description
-    string += "\n%s\n" %(dic["ability_descrip"])
-    return string
 
 def quit_game():
     print "\nGood Bye!\n"
     return 0
 
-#TODO: fix me!
 def save_game(player):
     with open("savegame.pkl",'wb') as oput:
         pickle.dump(player,oput,pickle.HIGHEST_PROTOCOL)
@@ -300,7 +261,6 @@ def save_game(player):
     main.confirm()
 
 def load_game(player): 
-    #input is a key word in python
     with open('savegame.pkl','rb') as iput:
         player.update(pickle.load(iput))
     print "\nSaved game has been loaded!"

@@ -3,10 +3,11 @@
 #~~ANPC.py~~
 
 from time import sleep
-from superRandom import super_choice
+from superRandom import super_choice, super_randint
 from character import Character
 from copy import deepcopy
 import battle
+import skills
 
 #monster definitions
 monsters = {
@@ -137,12 +138,13 @@ class ANPC(Character):
         currently is random
         '''
 
-        if self.name in allies:
-            not_team = enemies
         not_team = allies if self.name not in allies else enemies
-        skills = self.skills.values()
-        skills.append(self.reg_atk)
-        skill = super_choice(skills)
+        skill_list = filter(lambda x: x, self.skills)
+        rand_num = super_randint(0, len(skill_list))
+        if not rand_num:
+            skill = self.reg_atk
+        else:
+            skill = skills.Skill(super_choice(skill_list)).effect
         atk = skill if self.SPMP_handle(skill) else self.reg_atk
         return self.format_atk(deepcopy(atk), super_choice(not_team))
 

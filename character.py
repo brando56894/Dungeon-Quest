@@ -4,7 +4,7 @@
 
 from superRandom import super_choice
 from equipment import Equipment
-from skills import skills
+from skills import Skill
 from copy import deepcopy
 
 class Character(object):
@@ -48,7 +48,7 @@ class Character(object):
                 "base_acc": 95,
                 "atk_str": "name attacked target_name!"
                 }
-        self.skills = {}
+        self.skills = [""] * 5
         self.skill_bag = [] #holds the names of obtained, but unequipped skills
 
         #some lambda methods for simple functions
@@ -213,9 +213,8 @@ class Character(object):
             else:
                 if hands_needed == 2:
                     for h in ("right", "left"):
-                        if self_sent:
-                            self.equipment[h + "_hand"] = None
-                        else:
+                        self.equipment[h + "_hand"] = None
+                        if not self_sent:
                             self.equip("bare", h + "_hand")
                 else:
                     self.equipment[where_to_put] = None
@@ -244,19 +243,14 @@ class Character(object):
         '''
 
         if not dequip:
-            if len(self.skills.keys()) < 5:
-                for types, type_skills in skills.items():
-                    if skill_name in type_skills:
-                        skill = skills[types][skill_name]
-                        skill["type"] = types
-                        break
+            if len(filter(lambda x: x, self.skills)) < 5:
                 self.add_skill(skill_name, True)
-                self.skills[skill_name] = skill
+                self.skills[self.skills.index("")] = skill_name
                 return True
             else:
                 return False
         else:
-            self.skills.pop(skill_name)
+            self.skills[self.skills.index(skill_name)] = ""
             self.add_skill(skill_name)
 
     def edit_inv(self, item, quantity, remove = False):

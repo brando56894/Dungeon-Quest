@@ -2,6 +2,8 @@
 #
 #~skills.py~
 
+from items import Item
+
 #algorithm for deciding the cost of skills
 calc_cost = lambda atk: (atk["sp_used"] if atk.get("sp_used", 0) else atk["mp_used"]) * 10 #pretty basic for now
 
@@ -278,3 +280,16 @@ skills = {
         },
     }
 
+class Skill(Item):
+    '''
+    class for all skills
+    '''
+
+    def __init__(self, name, dic = {}):
+        super(Skill, self).__init__(name, dic = skills)
+
+    def use(self, char):
+        '''
+        disabled for Skill class
+        '''
+        raise AttributeError("'Skill' class has not attribute 'use'.")

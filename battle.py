@@ -4,7 +4,6 @@
 
 from random import random
 from superRandom import super_randint, super_choice
-from skills import skills
 from copy import deepcopy
 import main
 

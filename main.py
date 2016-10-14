@@ -68,8 +68,10 @@ def create_menu(prompt = "", choices = (), options = (), enter_option = False):
         check_prompt = prompt
         prompt = (prompt, )
     if enter_option:
-        choices += ("Enter",)
-        options += ("Go back",)
+        #the reason += is not used is so that the original
+        #list is not modified
+        choices = tuple(choices) + ("Enter",)
+        options = tuple(options) + ("Go back",)
     longest_choice = reduce(longest, choices)
     entries = []
     for index, choice in enumerate(choices):
@@ -148,8 +150,8 @@ def main_menu(player):
 
 if __name__ == "__main__":
     #Starts the game
-    clearscreen()
-    print "Dungeon Quest v%.2f" % version
+    #clearscreen()
+    #print "Dungeon Quest v%.2f" % version
     #name = raw_input("\nWho dares to enter the dungeon? ")
 
     #quick player definition taken from battle.py

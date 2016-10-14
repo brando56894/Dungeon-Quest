@@ -7,6 +7,7 @@ import main
 from character import Character
 from items import Item, items
 from copy import deepcopy
+import skills
 
 class Player(Character):
     '''
@@ -15,6 +16,7 @@ class Player(Character):
     '''
   
     def __repr__(self):
+        #the first part is not yet complete
         first_part = super(Player, self).__repr__(self)
         second_part = "Steps: %d\nTimes Run Away: %d" %(
                 self.stats["steps"], self.stats["run_away"])
@@ -30,6 +32,7 @@ class Player(Character):
         self.name = load_player.name
         self.equipment = load_player.equipment
         self.skills = load_player.skills
+        self.skill_bag = load_player.skill_bag
         self.inventory = load_player.inventory
         self.stats = load_player.stats
 
@@ -48,12 +51,34 @@ class Player(Character):
             self.stats["lvl"], self.stats["gold"]))
         print string
 
+    def validate_input(self, prompt = "", choices = (),
+            invalid_prompt = "", show_HUD = False):
+        '''
+        Validates input by using a while loop and returns valid
+        input
+
+        prompt is what is repeated every loop
+        choices is a tuple of choices for user
+        invalid_prompt is what will be said when input is invalid
+        '''
+
+        while 1:
+            main.clearscreen(self if show_HUD else None)
+            answer = raw_input(prompt).lower()
+            if answer not in choices:
+                print invalid_prompt
+                main.confirm()
+            else:
+                return answer
+
+
     def battle_prompt(self, allies = [], enemies = []):
         '''
         Prompts for choice during battle whether it be a skill
         or an item
         '''
 
+        #TODO:Standardize input validation when you fix menu
         while 1:
             main.clearscreen(self)
             string = "What do you want to do?\n-------------------\n"
@@ -66,28 +91,28 @@ class Player(Character):
                         allies, enemies)
             elif 's' in action or 'i' in action:
                 if 's' in action:
-                    attribute = ("skills", self.skills)
+                    attribute = ("equipped skills", self.skills)
                 else:
                     attribute = ("inventory", self.inventory)
                 while 1:
                     print ("%s\nPress Enter To Go Back\n" %(
-                        self.list_attribute(attribute[0])))
+                        self.list_attribute(attribute[0])[0]))
                     attack = raw_input("Choice: ").lower()
                     if attack in attribute[1]:
                         if 'i' in action:
                             self.edit_inv(attack, 1, True)
-                            itemDict = Item(attack).effect
-                            if not itemDict.get('target', 0):
+                            item_dict = Item(attack).effect
+                            if not item_dict.get('target', 0):
                                 return self.target_prompt(
                                         Item(attack).effect,
                                         allies, enemies)
                             else:
                                 return itemDict
-                        elif self.SPMP_handle(
-                                attribute[1][attack]):
-                            return self.target_prompt(
-                                    attribute[1][attack],
-                                    allies, enemies)
+                        elif 's' in action:
+                            skill_dict = skills.Skill(attack).effect
+                            if self.SPMP_handle(skill_dict):
+                                return self.target_prompt(skill_dict,
+                                        allies, enemies)
                         else:
                             print ("\nYou don't have enough "
                                     "sp or mp to do that")
@@ -108,6 +133,7 @@ class Player(Character):
         prompts for target choice
         '''
 
+        #TODO:Standardize input validation when you fix menu
         while 1:
             if (len(allies) == 1) and (len(enemies) == 1):
                 return self.format_atk(deepcopy(atk), enemies[0])
@@ -119,8 +145,7 @@ class Player(Character):
             display += ("Enemies\n------------\n%s\n\n" %(
                 '\n'.join(enemies)))
             display += "Press Enter To Go Back\n"
-            print display
-            target = raw_input("Who is your target? ").lower()
+            target = raw_input("%s\nWho is your target? " % display).lower()
             for char in allies + enemies:
                 if target == char.lower():
                     return self.format_atk(deepcopy(atk), char)
@@ -130,30 +155,50 @@ class Player(Character):
                 print "\nInvalid choice"
                 main.confirm()
 
-    def list_attribute(self, attribute, part = ""):
+    def list_attribute(self, attribute, part = "", prompt = ""):
         '''
         lists a certain listable attribute like inventory
         or equipment
+
+        The part kwarg is for the name of the equipment part
+        like right hand, head, etc
         '''
 
-        main.clearscreen(self)
-        if "equi" in attribute:
+        main.clearscreen()
+        if "sk" in attribute:
+            skill_list = []
+            if "equi" in attribute:
+                skill_list = [skill if skill else "Empty skill slot"
+                        for skill in self.skills]
+                menu = main.create_menu(
+                        prompt = ("Equipped Skills" if not prompt
+                            else ("Equipped Skills", prompt)),
+                        choices = [str(x+1) for x in range(5)],
+                        options = skill_list,
+                        enter_option = True
+                        )
+            else:
+                skill_list += self.skill_bag
+                menu = main.create_menu(
+                        prompt = ("Skills" if not prompt
+                            else ("Skills", prompt)),
+                        choices = [str(x+1) for x in range(len(skill_list))],
+                        options = skill_list,
+                        enter_option = True
+                        )
+            string = (menu, skill_list)
+        elif "equi" in attribute:
             if "inv" in attribute:
-                from equipment import armour, weapons
+                from equipment import Equipment
                 string = ("%s\n---------------\n" %(
                     part.replace('_', ' ').capitalize()))
                 inv_equip = []
                 for item in self.inventory:
-                    length = len(inv_equip)
-                    for type_name, type_dict in weapons.items():
-                        for name in type_dict:
-                            if item == name and 'hand' in part:
-                                inv_equip.append(item)
-                                break
-                    if 'hand' in part:
-                        part = 'hand'
-                    if item in armour[part]:
+                    try:
+                        Equipment(item)
                         inv_equip.append(item)
+                    except KeyError:
+                        continue
                 if inv_equip:
                     string += "%s\n" %('\n'.join(inv_equip))
                 else:
@@ -178,16 +223,6 @@ class Player(Character):
                 string += "Y u no hav nuthing!!!\n"
             for item, quantity in self.inventory.items():
                 string += "%s: %d\n" %(item, quantity)
-        elif "sk" in attribute:
-            #TODO:Finish this menu
-            string = ("Skills\n----------------\n")
-            if not self.skills:
-                string += ("You must have mad skillz to not "
-                        "have\nany skills and still be alive...\n")
-            string += ("%s\n" %('\n'.join(self.skills.keys())))
-            available = 5 - len(self.skills.keys())
-            for x in range(available):
-                string += "Empty skill slot\n"
         elif "sta" in attribute:
             choices = []
             options = []
@@ -215,46 +250,44 @@ class Player(Character):
 
         print "%s\nPress Enter To Go Back\n" %(
                 self.list_attribute("inventory"))
-        answer = raw_input("\nWhat do you want to check out? "
-                if self.inventory else "").lower()
-        if item or (self.inventory and answer):
-            if not item:
-                for part, equip in self.equipment.items():
-                    if equip and answer == equip.name:
-                        item = equip
-                        break
-                else:
-                    item = self.inventory.get(answer, 0)
-            if item:
-                main.clearscreen(self)
-                if isinstance(item, int):
-                    from actions import describe_ability
-                    for item_type, type_dict in items.items():
-                        for name, name_dict in type_dict.items():
-                            if name == answer:
-                                break
-                    print ("%sQuantity: %d\n\nPress Enter "
-                            "To Go Back"
-                            %(describe_ability(name, name_dict),
-                                item))
-                    answer = raw_input(
-                            "\nWould you like to use this item? "
-                            if "any" in item_type else "").lower()
-                    if answer:
-                        if "y" in answer:
-                            self.use_item(name)
-                        elif "n" not in answer:
-                            print ("Please type either 'yes' "
-                                    "or 'no'.")
-                            main.confirm()
-                            self.view_inv(item)
-                else:
-                    raw_input("%s\nPress Enter To Go Back " %(
-                        item.describe_self()))
-            else:
+        if not item:
+            answer = raw_input("\nWhat do you want to check out? "
+                    if self.inventory else "").lower()
+            if answer in self.inventory:
+                item = answer
+            elif answer:
                 print "\nInvalid choice"
                 main.confirm()
-            self.view_inv()
+                self.view_inv()
+                return
+            else:
+                return
+        main.clearscreen()
+        try:
+            from items import Item
+            item = Item(item)
+        except KeyError:
+            from equipment import Equipment
+            item = Equipment(item)
+        print ("%sQuantity: %d\n\nPress Enter "
+                "To Go Back"
+                %(item.describe_self(),
+                    self.inventory[item.name]))
+        if isinstance(item, Item):
+            answer = raw_input(
+                    "\nWould you like to use this item? "
+                    if "any" in item.type else "").lower()
+            if answer and "any" in item.type:
+                if "y" in answer:
+                    self.use_item(name)
+                elif "n" not in answer:
+                    print ("Please type either 'yes' "
+                            "or 'no'.")
+                    main.confirm()
+                    self.view_inv(item)
+        else:
+            main.confirm()
+        self.view_inv()
 
     def view_equip(self):
         '''
@@ -276,7 +309,7 @@ class Player(Character):
                 main.confirm()
                 self.view_equip()
                 return
-            main.clearscreen(self)
+            main.clearscreen()
             print ("%s: %s\nPress Enter To Go Back\n" %(
                 part.replace('_',' ').capitalize(),
                 equip.describe_self()))
@@ -292,7 +325,7 @@ class Player(Character):
                         "check out? " if equip_list else ""
                         ).lower()
                 if answer and answer in equip_list:
-                    main.clearscreen(self)
+                    main.clearscreen()
                     from equipment import Equipment
                     equip = Equipment(answer)
                     print ("%s\nPress Enter To Go Back\n" %(
@@ -312,13 +345,21 @@ class Player(Character):
                 self.equip(equip, part, True)
                 print "\n%s was dequipped." %(equip.name)
                 main.confirm()
+            elif answer:
+                #TODO:Fix this when you fix input validation and menus
+                print "Please choose between 'equip' or 'dequip'."
+                main.confirm()
             self.view_equip()
 
-    def validate_skills(self, weapon_type = [], autoremove = False):
+    def validate_skills(self, weapon_type = [], autoremove = False,
+            skill_type = ""):
         '''
         checks if currently equipped skills match types
-        with currently equipped weapons, and depending
-        on flag removes skills from skill list
+        with currently equipped weapons or specific weapon
+        type, and depending on flag removes skills from
+        skill list
+
+        can also validate specific skills
         '''
 
         if not weapon_type:
@@ -327,12 +368,17 @@ class Player(Character):
                 if equip:
                     weapon_type.append(equip.type)
         weapon_type.append("all")
+        if skill_type:
+            if skill_type in weapon_type:
+                return True
+            else:
+                return False
         remove_skills = []
-        for skill_name, skill in enumerate(self.skills):
-            if skill["type"] not in weapon_type:
-                remove_skills.append(skill)
+        for skill_name in self.skills:
+            if skill_name and (skills.Skill(skill_name)).type not in weapon_type:
+                remove_skills.append(skill_name)
         if not autoremove:
-            return remove_skills if remove_skills else []
+            return remove_skills
         else:
             if remove_skills:
                 for skill_name in remove_skills:
@@ -350,50 +396,229 @@ class Player(Character):
         remove_skills = self.validate_skills([weapon_type])
         if remove_skills:
             #warn player
-            while 1:
-                answer = raw_input("If you do this, the following skills "
-                        "will be removed:\n%s\n Are you sure you want to "
-                        "do this?(y/n) " %("\n".join(remove_skills))).lower()
-                if "y" in answer:
-                    return True
-                elif "n" in answer:
-                    return False
-                else:
-                    print "Please type either 'y' or 'n'."
-                    main.confirm()
-                    return self.validate_equip(weapon_type)
+            answer = self.validate_input(
+                    prompt = ("If you do this, the following skills "
+                    "will be removed:\n\n%s\n\nAre you sure you want to "
+                    "do this?(y/n) " %("\n".join(remove_skills))),
+                    choices = ("y", "n"),
+                    invalid_prompt = "Please type either 'y' ot 'n'."
+                    )
+            if "y" in answer:
+                for skill_name in remove_skills:
+                    self.equip_skill(skill_name, True)
+                return True
+            else:
+                return False
         else:
             return True #True means it is ok to equip
 
-    def view_skills(self):
+    def view_skills(self, section = ""):
         '''
         Displays skills and allows for in depth info on each
         skill and the equipping and dequipping of skills
         '''
 
-        print "%s\nPress Enter To Go Back\n" %(
-                self.list_attribute("skills"))
-        answer = raw_input("\nWhat do you want to check out? "
-                if self.skills else "").lower()
-        if answer and self.skills:
-            if answer in self.skills:
-                main.clearscreen()
-                atk = self.skills[answer]
-                from actions import describe_ability
-                raw_input("%s\n\nPress Enter To Go Back"
-                        %(describe_ability(answer, atk)))
+        global skills
+        if not section:
+            menu = main.create_menu(
+                    prompt = ("Skills", "What do you want to see?"),
+                    choices = ("U", "E"),
+                    options = ("Unequipped", "Equipped"),
+                    enter_option = True
+                    )
+            answer = self.validate_input(
+                    prompt = menu,
+                    choices = ("u", "e", ""),
+                    invalid_prompt = ("Please type 'u' for"
+                        " unequipped or 'e' for equipped")
+                    )
+            if not answer:
+                return
+        else:
+            answer = section
+        gen_prompt = "What do you want to check out?"
+        if answer == "u":
+            menu, skill_list = self.list_attribute("skills",
+                    prompt = (gen_prompt if self.skill_bag else ""))
+            choice = self.validate_input(
+                prompt = menu,
+                choices = [str(x+1) for x in range(len(skill_list))] + [""],
+                invalid_prompt = "Invalid input."
+                )
+            if not choice:
+                self.view_skills()
+                return
             else:
-                print "\nInvalid choice"
+                skill_name = skill_list[int(choice) - 1]
+
+            main.clearscreen()
+            skill = skills.Skill(skill_name)
+            prompt = "%s\n\nPress Enter To Go Back\n\n" % skill.describe_self()
+            if not self.validate_skills(skill_type = skill.type):
+                print prompt + "You cannot equip this TYPE of skill."
                 main.confirm()
-            self.view_skills()
-
-    #def view_skills(self):
-        '''
-        Displays skills and allows for in depth info on each
-        skill and the equipping and dequipping of skills
-        '''
-
-        pass
+                self.view_skills(section = "u")
+                return
+            else:
+                answer = self.validate_input(
+                        prompt = prompt + "Would you like to equip this skill? ",
+                        choices = ("y", "n", ""),
+                        invalid_prompt = "Please type 'y' or 'n'."
+                        )
+            if answer == "y":
+                if self.equip_skill(skill.name):
+                    print "%s was equipped." % skill.name.capitalize()
+                    main.confirm()
+                    self.view_skills(section = "u")
+                    return
+                else:
+                    warning = ("\n\nNote: 5 skills is the max amount of skills\n"
+                            "you can have equipped. To equip another skill,\n"
+                            "you must dequip an equipped skill.\n"
+                            )
+                    sub_menu, sub_options = self.list_attribute(
+                            "equipped skills",
+                            prompt = gen_prompt.replace("check out", "replace")
+                            )
+                    sub_choice = self.validate_input(
+                        prompt = sub_menu + warning,
+                        choices = [str(x+1) for x in range(len(sub_options))] + [""],
+                        invalid_prompt = "Invalid input."
+                        )
+                    if not sub_choice:
+                        self.view_skills(section = "u")
+                        return
+                    else:
+                        skill_name = sub_options[int(sub_choice) - 1]
+                    re_skill = skills.Skill(skill_name)
+                    prompt = "%s\n\nPress Enter To Go Back\n\n" % re_skill.describe_self()
+                    answer = self.validate_input(
+                            prompt = prompt + "Would you like to replace this skill? ",
+                            choices = ("y", "n", ""),
+                            invalid_prompt = "Please type 'y' or 'n'."
+                            )
+                    if answer == 'y':
+                        self.equip_skill(re_skill.name, True)
+                        self.equip_skill(skill.name)
+                        print ("\n%s was dequiped and %s was equipped."
+                                %(re_skill.name, skill.name))
+                        main.confirm()
+                    self.view_skills(section = "u")
+            else:
+                self.view_skills(section = "u")
+                return
+        else:
+            menu, options = self.list_attribute("equipped skills",
+                    prompt = (gen_prompt if self.skills else ""))
+            choice = self.validate_input(
+                    prompt = menu,
+                    choices = ([str(x+1) for x in range(len(options))]
+                            + [""]),
+                    invalid_prompt = "\nInvalid choice."
+                    )
+            if not choice:
+                self.view_skills()
+                return
+            try:
+                skill_name = options[int(choice) - 1]
+                skill = skills.Skill(skill_name)
+            except KeyError:
+                skill_name = ""
+            if skill_name:
+                while 1:
+                    choice = self.validate_input(
+                            prompt = ("%s\n\nPress Enter To Go Back\n\n"
+                                "Would you like to equip something else here"
+                                " or dequip this skill? " % skill.describe_self()),
+                            choices = ("equip", "dequip", ""),
+                            invalid_prompt = ("Please type either 'equip'"
+                                " or 'dequip'.")
+                            )
+                    if not choice:
+                        self.view_skills(section = 'e')
+                        return
+                    elif choice == "equip":
+                        answer = ""
+                        while 1:
+                            sub_menu, sub_options = self.list_attribute(
+                                    "skills",
+                                    prompt = gen_prompt)
+                            sub_choice = self.validate_input(
+                                    prompt = sub_menu,
+                                    choices = [str(x+1) for x in
+                                        range(len(sub_options))] + [""],
+                                    invalid_prompt = "\nInvalid choice."
+                                    )
+                            if sub_choice:
+                                re_skill = skills.Skill(sub_options[
+                                    int(sub_choice) - 1])
+                                main.clearscreen()
+                                prompt = ("%s\n\nPress Enter To Go Back\n\n"
+                                        % re_skill.describe_self())
+                                if not self.validate_skills(skill_type = re_skill.type):
+                                    print prompt + "You cannot equip this TYPE of skill."
+                                    main.confirm()
+                                else:
+                                    answer = self.validate_input(
+                                            prompt = (prompt +
+                                                "Would you like to equip this skill? "),
+                                            choices = ("y", "n", ""),
+                                            invalid_prompt = ("Please type either"
+                                                " 'y' or 'n'.")
+                                            )
+                                    if answer == 'y':
+                                        self.equip_skill(skill.name, True)
+                                        self.equip_skill(re_skill.name)
+                                        print ("%s was dequipped and %s was equipped."
+                                                %(skill.name.capitalize(),
+                                                re_skill.name.capitalize()))
+                                        main.confirm()
+                            if not sub_choice or answer == 'y':
+                                break
+                        if answer == 'y':
+                            break
+                    else:
+                        self.equip_skill(skill_name, True)
+                        print "\n%s was dequipped." % skill_name
+                        main.confirm()
+                        break
+                self.view_skills(section = "e")
+            else:
+                answer = self.validate_input(
+                        prompt = ("This is an empty slot\n\n"
+                            "Press Enter To Go Back\n\n"
+                            "Do you want to equip something here? "),
+                        choices = ('y','n',''),
+                        invalid_prompt = "Please type either 'y' or 'n'."
+                        )
+                if answer == 'y':
+                    while 1:
+                        sub_menu, sub_options = self.list_attribute(
+                                "skills",
+                                prompt = gen_prompt)
+                        sub_choice = self.validate_input(
+                                prompt = sub_menu,
+                                choices = [str(x+1) for x in
+                                    range(len(sub_options))] + [""],
+                                invalid_prompt = "Invalid choice."
+                                )
+                        if sub_choice:
+                            skill = skills.Skill(sub_options[int(sub_choice)-1])
+                            answer = self.validate_input(
+                                    prompt = ("%s\n\nPress Enter To Go Back\n\n"
+                                        "Would you like to equip this skill? "
+                                        % skill.describe_self()),
+                                    choices = ("y", "n", ""),
+                                    invalid_prompt = ("Please type either"
+                                        " 'y' or 'n'.")
+                                    )
+                            if answer == 'y':
+                                self.equip_skill(skill.name)
+                                print "%s was equipped" % skill.name
+                                main.confirm()
+                        if not sub_choice or answer == 'y':
+                            break
+                self.view_skills(section = "e")
 
     def view_stats(self):
         '''
