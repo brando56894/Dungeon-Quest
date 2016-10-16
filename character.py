@@ -60,9 +60,6 @@ class Character(object):
 
         self.build(build)
 
-    def __repr__(self):
-        pass
-
     def build(self, build):
         '''
         Uses the dictionary passed to it by __init__ to
@@ -178,14 +175,22 @@ class Character(object):
         can be put there if the weapon in question needs 2 hands
         '''
 
+        #make string into Equipment object if not already
         if not isinstance(equipment, Equipment):
             equipment = Equipment(equipment)
+
+        #manage inventory
         if (not dequip) and (equipment.name in self.inventory):
             self.edit_inv(equipment.name, 1, True)
         elif dequip and equipment.name not in ("bare", "claws"):
             self.edit_inv(equipment.name, 1)
+
+        #apply or remove equipment mods
         self.stat_modifier(equipment.mods, dequip)
-        if equipment.equip_type == "armour":
+
+        #attach equipment to player
+        if (equipment.equip_type == "armour" or
+                equipment.hands_needed == 1):
             if not dequip:
                 if self.equipment[where_to_put]:
                     self.equip(self.equipment[where_to_put],
@@ -196,35 +201,17 @@ class Character(object):
                 if "hand" in where_to_put and not self_sent:
                     self.equip("bare", where_to_put)
         else:
-            hands_needed = equipment.hands_needed
-            if not dequip:
-                if hands_needed == 2:
-                    for h in ("right", "left"):
-                        if self.equipment[h + "_hand"]:
-                            self.equip(
-                                    self.equipment[h + "_hand"],
-                                    h + "_hand", True, True)
-                        self.equipment[h + "_hand"] = equipment
-                else:
-                    if self.equipment[where_to_put]:
-                        self.equip(self.equipment[where_to_put],
-                                where_to_put, True, True)
-                    self.equipment[where_to_put] = equipment
-            else:
-                if hands_needed == 2:
-                    for h in ("right", "left"):
-                        self.equipment[h + "_hand"] = None
-                        if not self_sent:
-                            self.equip("bare", h + "_hand")
-                else:
-                    self.equipment[where_to_put] = None
-                    if not self_sent:
-                        self.equip("bare", where_to_put)
-        if not self_sent:
-            #clean up None values in hand
             for h in ("right", "left"):
-                if not self.equipment[h + "_hand"]:
-                    self.equip("bare", h + "_hand")
+                if not dequip:
+                    if self.equipment[h + "_hand"]:
+                        self.equip(
+                                self.equipment[h + "_hand"],
+                                h + "_hand", True, True)
+                    self.equipment[h + "_hand"] = equipment
+                else:
+                    self.equipment[h + "_hand"] = None
+                    if not self_sent:
+                        self.equip("bare", h + "_hand")
 
     def add_skill(self, skill_name, remove = False):
         '''
@@ -267,7 +254,7 @@ class Character(object):
         else:
             self.inventory[item] = quantity
 
-    def format_atk(self, atk, target_name = ''):
+    def format_atk(self, atk, target_name = '', atk_name = ''):
         '''
         This handles the formatting the atk strings into
         a viewer friendly string
@@ -277,10 +264,10 @@ class Character(object):
             atk["target"] = target_name
         else:
             target_name = 'target_name'
-        atk = self.format_string_in_dict(atk, target_name)
+        atk = self.format_string_in_dict(atk, target_name, atk_name)
         return atk
 
-    def format_string_in_dict(self, dic, target_name):
+    def format_string_in_dict(self, dic, target_name, atk_name):
         '''
         used to format strings in the atk dictionary
 
@@ -302,7 +289,7 @@ class Character(object):
                             word = word[:len(word) - len(x)]
                     new_str += (target_name if word == 'target_name'
                             else self.name if word == 'name'
-                            else 'attack' if word == 'atk_name'
+                            else atk_name if word == 'atk_name'
                             else word)
                     new_str += after_word
                 dic[key] = (new_str[:len(new_str) - 1] if

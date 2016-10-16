@@ -15,13 +15,6 @@ class Player(Character):
     methods that will be used specifically for the player
     '''
   
-    def __repr__(self):
-        #the first part is not yet complete
-        first_part = super(Player, self).__repr__(self)
-        second_part = "Steps: %d\nTimes Run Away: %d" %(
-                self.stats["steps"], self.stats["run_away"])
-        return first_part + second_part
-
     def build(self, build):
         super(Player, self).build(build)
         for key in ("steps", "run_away", "dragon_attack",
@@ -88,7 +81,7 @@ class Player(Character):
             action = raw_input("Choice: ").lower()
             if 'a' in action:
                 return self.target_prompt(self.reg_atk,
-                        allies, enemies)
+                        '', allies, enemies)
             elif 's' in action or 'i' in action:
                 if 's' in action:
                     attribute = ("equipped skills", self.skills)
@@ -101,18 +94,19 @@ class Player(Character):
                     if attack in attribute[1]:
                         if 'i' in action:
                             self.edit_inv(attack, 1, True)
-                            item_dict = Item(attack).effect
+                            item = Item(attack)
+                            item_dict = item.effect
                             if not item_dict.get('target', 0):
                                 return self.target_prompt(
-                                        Item(attack).effect,
-                                        allies, enemies)
+                                        item.effect,
+                                        attack, allies, enemies)
                             else:
                                 return itemDict
                         elif 's' in action:
                             skill_dict = skills.Skill(attack).effect
                             if self.SPMP_handle(skill_dict):
                                 return self.target_prompt(skill_dict,
-                                        allies, enemies)
+                                        attack, allies, enemies)
                         else:
                             print ("\nYou don't have enough "
                                     "sp or mp to do that")
@@ -128,7 +122,7 @@ class Player(Character):
                 print "\nInvalid choice."
                 main.confirm()
 
-    def target_prompt(self, atk, allies, enemies):
+    def target_prompt(self, atk, atk_name, allies, enemies):
         '''
         prompts for target choice
         '''
@@ -148,7 +142,7 @@ class Player(Character):
             target = raw_input("%s\nWho is your target? " % display).lower()
             for char in allies + enemies:
                 if target == char.lower():
-                    return self.format_atk(deepcopy(atk), char)
+                    return self.format_atk(deepcopy(atk), char, atk_name)
             if not target:
                 return self.battle_prompt(allies, enemies)
             else:
