@@ -35,14 +35,21 @@ class Player(Character):
         information at the top of the screen
         '''
 
-        string = self.name + '\n'
-        for stat in ("hp", "sp", "mp"):
+        translate = main.player_friendly_stats
+        choices = ["hp", "sp", "mp", "lvl", "gold"]
+        options = []
+        for stat in choices:
             stat_val = self.stats[stat]
-            stat_max = self.stats["max_" + stat]
-            string += "%s: %d/%d\n" %(stat, stat_val, stat_max)
-        string += ("Level: %d\nGold: %d\n\n" %(
-            self.stats["lvl"], self.stats["gold"]))
-        print string
+            try:
+                stat_max = self.stats["max_" + stat]
+                options.append("%d/%d" %(stat_val, stat_max))
+            except KeyError:
+                options.append("%d" % stat_val)
+        print main.create_menu(
+                prompt = self.name,
+                choices = [translate[stat] for stat in choices],
+                options = options
+                )
 
     def validate_input(self, prompt = "", choices = (),
             invalid_prompt = "", show_HUD = False):

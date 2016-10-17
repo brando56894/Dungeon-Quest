@@ -201,10 +201,20 @@ def checkout_item(name, cost_descrip, section, section_dict,
     main.clearscreen(player)
     cost = cost_descrip[0]
     descrip = cost_descrip[1]()
-    prompt = "%s\nCost: %d\n\nPres Enter To Go Back\n" %(descrip, cost)
+    menu = main.create_menu(
+            prompt = "Do you want to buy this?",
+            choices = ('y', 'n'),
+            options = ('yes', 'no'),
+            enter_option = True
+            )
+    info_board = main.create_info_board(
+            heading = ("%s\nCost: %d"
+                %(descrip, cost))
+            )
+    info_menu = main.combine(info_board, menu)
     if not yes:
         answer = player.validate_input(
-                prompt = prompt + "\nDo you want to buy this? ",
+                prompt = info_menu,
                 choices = ("y", "n", ""),
                 invalid_prompt = "\nPlease type either 'y' or 'n'.",
                 show_HUD = True
@@ -218,9 +228,13 @@ def checkout_item(name, cost_descrip, section, section_dict,
                     section_dict, player, True)
             return
         if section != "skills":
+            sub_menu = main.create_menu(
+                    prompt = "How many do you want to buy?",
+                    enter_option = True
+                    )
+            sub_info_menu = main.combine(info_board, sub_menu)
             try:
-                answer = raw_input(
-                        prompt + "\nHow many do you want to buy? ").lower()
+                answer = raw_input(sub_info_menu).lower()
                 if not answer:
                     visit_shop_section(section, section_dict, player)
                     return

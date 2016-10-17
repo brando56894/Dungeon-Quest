@@ -45,8 +45,8 @@ def confirm():
 
     raw_input("\n**Press any button**")
 
-def create_menu(prompt = "", choices = (), options = (), enter_option = False):
-    #TODO:Make mult column menu compatibility
+def create_menu(prompt = '', choices = (), options = (),
+        enter_option = False):
     '''
     creates a menu
 
@@ -62,16 +62,16 @@ def create_menu(prompt = "", choices = (), options = (), enter_option = False):
     signal at the end of the menu
     '''
     longest = lambda x, y: x if (len(x) > len(y)) else y
+    choices = [x.capitalize() for x in choices]
+    options = [x.capitalize() for x in options]
     if isinstance(prompt, tuple):
         check_prompt = reduce(longest, prompt)
     else:
         check_prompt = prompt
         prompt = (prompt, )
     if enter_option:
-        #the reason += is not used is so that the original
-        #list is not modified
-        choices = tuple(choices) + ("Enter",)
-        options = tuple(options) + ("Go back",)
+        choices.append("Enter")
+        options.append("Go back")
     longest_choice = reduce(longest, choices)
     entries = []
     for index, choice in enumerate(choices):
@@ -80,8 +80,8 @@ def create_menu(prompt = "", choices = (), options = (), enter_option = False):
         entry += "%s%s" %(buff, options[index])
         entries.append(entry)
     longest_string = reduce(longest, [check_prompt] + [entries[i]
-                            + (" " * 6) for i in range(len(entries))])
-                            #" " * 6 is a buffer for entries
+                            + (" " * 4) for i in range(len(entries))])
+                            #" " * 4 is a buffer for entries
     length = len(longest_string)
     longest_entry = reduce(longest, entries)
     menu = ""
@@ -95,6 +95,73 @@ def create_menu(prompt = "", choices = (), options = (), enter_option = False):
         menu += string
     menu += (("*" * length) + "\n")
     return menu
+
+def create_info_board(heading = '', body = ''):
+    '''
+    creates info board
+
+    heading is what goes on top of board
+
+    body is what goes in the middle
+    '''
+    h_parts = heading.split('\n')
+    b_parts = []
+    if len(h_parts) > 1:
+        for x in h_parts[1]:
+            if x != '-':
+                break
+        else:
+            heading = h_parts[0]
+            h_parts.remove(h_parts[0])
+            h_parts.remove(h_parts[0])
+            b_parts = h_parts
+
+    longest = lambda x, y: x if (len(x) > len(y)) else y
+    if not b_parts:
+        b_parts = body.split('\n')
+    buff_b_parts = [x + (' ' * 4) for x in b_parts]
+    longest_string = reduce(longest, buff_b_parts + [heading])
+    length = len(longest_string)
+
+    info_board = "%s\n%s\n" %(heading.center(length, '-'),
+            ('*' * length))
+    for string in b_parts:
+        info_board += "**%s**\n" %(string.center(length - 4))
+    info_board += ("%s\n" %('*' * length))
+    return info_board
+
+def combine(*displays):
+    '''
+    combines different displays and makes
+    them uniform
+    '''
+
+    longest = lambda x, y: x if (len(x) > len(y)) else y
+    samples = [display.split('\n')[0] for display in displays]
+    longest_sample = reduce(longest, samples)
+    length = len(longest_sample)
+    longest_display = display[samples.index(longest_sample)]
+    combined_display = ''
+    for display in displays:
+        if display == longest_display:
+            combined_display += display
+        else:
+            new_display = ''
+            for line in display.split('\n'):
+                if not line:
+                    continue
+                elif line[:2] != "**":
+                    new_display += line.center(length, '-')
+                else:
+                    middle = line[2:len(line) - 2]
+                    if middle == ("*" * len(middle)):
+                        buff = "*"
+                    else:
+                        buff = " "
+                    new_display += ("**%s**" %(middle.center(length-4, buff)))
+                new_display += '\n'
+            combined_display += new_display
+    return combined_display
 
 cache = None #place to remember last function
 
