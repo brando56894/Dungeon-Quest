@@ -200,18 +200,14 @@ def checkout_item(name, cost_descrip, section, section_dict,
 
     main.clearscreen(player)
     cost = cost_descrip[0]
-    descrip = cost_descrip[1]()
+    descrip = cost_descrip[1](other = "\nCost: %d" %cost)
     menu = main.create_menu(
             prompt = "Do you want to buy this?",
             choices = ('y', 'n'),
             options = ('yes', 'no'),
             enter_option = True
             )
-    info_board = main.create_info_board(
-            heading = ("%s\nCost: %d"
-                %(descrip, cost))
-            )
-    info_menu = main.combine(info_board, menu)
+    info_menu = main.combine(descrip, menu)
     if not yes:
         answer = player.validate_input(
                 prompt = info_menu,
@@ -232,7 +228,7 @@ def checkout_item(name, cost_descrip, section, section_dict,
                     prompt = "How many do you want to buy?",
                     enter_option = True
                     )
-            sub_info_menu = main.combine(info_board, sub_menu)
+            sub_info_menu = main.combine(descrip, sub_menu)
             try:
                 answer = raw_input(sub_info_menu).lower()
                 if not answer:

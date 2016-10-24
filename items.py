@@ -48,35 +48,41 @@ class Item(object):
         char.stat_modifier(mod)
         print "%s %s" %(char.name, mod_string[5:])
 
-    def describe_self(self):
+    def describe_self(self, quantity = 0, other = ""):
         '''
         Used to describe skills and items
         '''
+        heading = self.name.capitalize()
 
-        string = "%s\n--------------\n" %(self.name.capitalize())
+        #quantity
+        body = "" if not quantity else "Quantity: %d\n" %quantity
 
         #type
-        string += "Type: %s\n" %(self.type)
+        body += "Type: %s\n" %(self.type)
 
         #target
         target = self.effect.get("target", 0)
         if target:
-            string += ("Target: " + ("all allies" if target == 2
+            body += ("Target: " + ("all allies" if target == 2
                 else "all enemies" if target == 3 else "You")
                 + '\n')
 
         #base_atk, base_acc
-        string += ("" if not self.effect.get("base_atk", 0) else
+        body += ("" if not self.effect.get("base_atk", 0) else
                 ("Strength: %d\n" %(self.effect["base_atk"])))
-        string += ("" if not self.effect.get("base_acc", 0) else
+        body += ("" if not self.effect.get("base_acc", 0) else
                 ("Accuracy: %d\n" %(self.effect["base_acc"])))
 
         #sp_used, mp_used
-        string += (("SP Used: %d\n" %(self.effect["sp_used"]))
+        body += (("SP Used: %d\n" %(self.effect["sp_used"]))
                 if self.effect.get("sp_used", 0) else
                 ("MP Used: %d\n" %(self.effect["mp_used"])) if
                 self.effect.get("mp_used", 0) else "")
 
         #ability description
-        string += "\n%s\n" %(self.effect["ability_descrip"])
-        return string
+        body += "\n%s\n" %(self.effect["ability_descrip"])
+
+        body += other
+
+        import main
+        return main.create_info_board(heading, body)

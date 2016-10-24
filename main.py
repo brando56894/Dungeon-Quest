@@ -43,7 +43,7 @@ def confirm():
     Pauses game until player presses enter
     '''
 
-    raw_input("\n**Press any button**")
+    raw_input("\n**Press Enter**")
 
 def create_menu(prompt = '', choices = (), options = (),
         enter_option = False):
@@ -86,6 +86,7 @@ def create_menu(prompt = '', choices = (), options = (),
     longest_entry = reduce(longest, entries)
     menu = ""
     for part in prompt:
+        part = part.capitalize()
         menu += ("%s\n" % part.center(length, "-"))
     menu += "%s\n" %("*" * length)
     for index, entry in enumerate(entries):
@@ -104,6 +105,7 @@ def create_info_board(heading = '', body = ''):
 
     body is what goes in the middle
     '''
+
     h_parts = heading.split('\n')
     b_parts = []
     if len(h_parts) > 1:
@@ -116,6 +118,7 @@ def create_info_board(heading = '', body = ''):
             h_parts.remove(h_parts[0])
             b_parts = h_parts
 
+    heading = heading.capitalize()
     longest = lambda x, y: x if (len(x) > len(y)) else y
     if not b_parts:
         b_parts = body.split('\n')
@@ -135,7 +138,7 @@ def combine(*displays):
     combines different displays and makes
     them uniform
     '''
-
+    
     longest = lambda x, y: x if (len(x) > len(y)) else y
     samples = [display.split('\n')[0] for display in displays]
     longest_sample = reduce(longest, samples)

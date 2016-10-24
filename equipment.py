@@ -117,19 +117,22 @@ class Equipment(object):
                     "hands_needed"]
         self.mods = def_dict[self.type][self.name]["mods"]
 
-    def describe_self(self):
+    def describe_self(self, quantity = 0, other = ""):
         '''
         much like describe_ability in actions.py but specific
         for equipment
         '''
 
-        string = "%s\n--------------\n" %(self.name.capitalize())
+        heading = self.name.capitalize()
+        body = "" if not quantity else "Quantity: %d\n" %quantity
+
+        import main
         if self.mods:
-            import main
             for stat,mod in self.mods.items():
-                string += "%s: %d\n" %(
+                body += "%s: %d\n" %(
                         main.player_friendly_stats[
                             stat].capitalize(), mod)
         if "w" in self.equip_type:
-            string += "Hands Needed: %d\n" %(self.hands_needed)
-        return string
+            body += "Hands Needed: %d\n" %(self.hands_needed)
+        body += other
+        return main.create_info_board(heading, body)
