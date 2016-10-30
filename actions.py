@@ -82,7 +82,7 @@ def roll_dice(player):
         main.confirm()
 
 def find_gold(player):
-    amount = super_randint(1,25)
+    amount = super_randint(1,25) * player.check_if_lucky()
     player.stat_modifier({"gold": amount})
     print ("\nYou found %d gold coins, which brings "
             "you to a total of %d coins!" % (

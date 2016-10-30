@@ -9,6 +9,7 @@ from copy import deepcopy
 import battle
 import skills
 
+#TODO: change this into a basis that and make compatible with lvl extrapolation
 #monster definitions
 monsters = {
         "gremlin": {
@@ -84,16 +85,17 @@ monsters = {
             "skills": ["fireball"],
             "inventory": {"potion": 2},
             "stats": {
-                "hp": 250,
-                "sp": 30,
-                "mp": 30,
-                "def": 25,
-                "str": 20,
-                "md": 20,
-                "ma": 20,
-                "lck": 1,
+                "hp": 200,
+                "sp": 15,
+                "mp": 15,
+                "str": 5,
+                "md": 5,
+                "ma": 5,
+                "lck": 0,
                 "exp": 200,
-                "gold": 150
+                "gold": 150,
+                #lvl of bosses are set but other monsters are dependent on player lvl
+                "lvl": 15
                 }
             },
         "basilisk": {
@@ -105,17 +107,16 @@ monsters = {
             "skills": [],
             "inventory": {"potion": 3},
             "stats": {
-                "hp": 350,
-                "sp": 50,
-                "mp": 50,
-                "def": 30,
-                "str": 35,
-                "md": 10,
-                "ma": 10,
-                "spe": 1,
-                "lck": 1,
+                "hp": 300,
+                "sp": 20,
+                "mp": 20,
+                "def": 15,
+                "str": 12,
+                "spe": 0,
+                "lck": 0,
                 "exp": 300,
-                "gold": 250
+                "gold": 250,
+                "lvl": 30
                 }
             }
         }
@@ -128,7 +129,16 @@ class ANPC(Character):
     '''
     def build(self, build):
         if self.name in monsters:
-            build = monsters[self.name]
+            build.update(monsters[self.name])
+            if not build["stats"].get("lvl",0):
+                base = build.pop("base", 0)
+                lower = 1 if (base - 2) < 0 else (base - 2)
+                upper = base + 2
+                lvl = super_randint(lower, upper)
+                build["stats"]["lvl"] = lvl
+                print lvl
+                import main
+                main.confirm()
         super(ANPC, self).build(build)
 
     def AI_atk(self, allies, enemies):
@@ -144,9 +154,10 @@ class ANPC(Character):
         if not rand_num:
             skill = self.reg_atk
         else:
-            skill = skills.Skill(super_choice(skill_list)).effect
+            skill_name = super_choice(skill_list)
+            skill = skills.Skill(skill_name).effect
         atk = skill if self.SPMP_handle(skill) else self.reg_atk
-        return self.format_atk(deepcopy(atk), super_choice(not_team))
+        return self.format_atk(deepcopy(atk), super_choice(not_team), skill_name)
 
 def monster_appearance(player, boss = False):
     '''
@@ -170,4 +181,7 @@ def monster_appearance(player, boss = False):
         print "\nYou were attacked by a %s!" % monster
         can_run = True
     main.confirm()
-    battle.battle(player, allies = [], enemies = [ANPC(name = monster)], can_run = can_run) 
+    player_lvl = player.stats["lvl"]
+    battle.battle(player, allies = [], enemies = [ANPC(
+        name = monster, base = player_lvl)],
+        can_run = can_run) 

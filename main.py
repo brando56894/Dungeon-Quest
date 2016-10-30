@@ -80,8 +80,8 @@ def create_menu(prompt = '', choices = (), options = (),
         entry += "%s%s" %(buff, options[index])
         entries.append(entry)
     longest_string = reduce(longest, [check_prompt] + [entries[i]
-                            + (" " * 4) for i in range(len(entries))])
-                            #" " * 4 is a buffer for entries
+                            + (" " * 6) for i in range(len(entries))])
+                            #" " * 6 is a buffer for entries
     length = len(longest_string)
     longest_entry = reduce(longest, entries)
     menu = ""
@@ -91,8 +91,8 @@ def create_menu(prompt = '', choices = (), options = (),
     menu += "%s\n" %("*" * length)
     for index, entry in enumerate(entries):
         buff = " " * (len(longest_entry) - len(entry))
-        entry = (entry + buff).center(length - 4)
-        string = "**%s**\n" %entry
+        entry = (entry + buff).center(length - 6)
+        string = "** %s **\n" %entry
         menu += string
     menu += (("*" * length) + "\n")
     return menu
@@ -122,14 +122,14 @@ def create_info_board(heading = '', body = ''):
     longest = lambda x, y: x if (len(x) > len(y)) else y
     if not b_parts:
         b_parts = body.split('\n')
-    buff_b_parts = [x + (' ' * 4) for x in b_parts]
+    buff_b_parts = [x + (' ' * 6) for x in b_parts]
     longest_string = reduce(longest, buff_b_parts + [heading])
     length = len(longest_string)
 
     info_board = "%s\n%s\n" %(heading.center(length, '-'),
             ('*' * length))
     for string in b_parts:
-        info_board += "**%s**\n" %(string.center(length - 4))
+        info_board += "** %s **\n" %(string.center(length - 6))
     info_board += ("%s\n" %('*' * length))
     return info_board
 

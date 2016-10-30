@@ -16,8 +16,8 @@ class Character(object):
     def __init__(self, **build):
         self.name = build["name"]
         self.stats = {
-                "hp": 200, #health points
-                "max_hp": 200,
+                "hp": 100, #health points
+                "max_hp": 100,
                 "sp": 10, #skill points
                 "max_sp": 10,
                 "mp": 10, #magic points
@@ -28,10 +28,13 @@ class Character(object):
                 "ma": 10, #magic attack
                 "spe": 10, #speed
                 "lck": 10, #luck
+                #accuracy and evasion are only for use in battle
+                #thus will never recieve an upgrade via lvl_up
                 "acc": 100, #accuracy
                 "eva": 100, #evasion
                 "lvl": 1, #level
                 "exp": 0, #experience
+                "exp_needed": 200, #experience needed for next level
                 "gold": 0, #gold
                 }
         self.inventory = {} #item:quantity
@@ -101,6 +104,11 @@ class Character(object):
                 self.stats[stat] = amount
                 if ("max_" + stat) in self.stats:
                     self.stats["max_" + stat] = amount
+            #extrapolates stats from basis
+            if self.stats["lvl"] - 1:
+                lvl = self.stats["lvl"]
+                self.stats["lvl"] = 1
+                self.lvl_up(lvl)
 
     def stat_modifier(self, stat_mod, reverse = False):
         '''
@@ -109,6 +117,8 @@ class Character(object):
 
         stat_mod is a dictionary with the following syntax:
         {stat_to_be_modified:modification,...}
+
+        the reverse flag is for when you want to divide or subtract
         '''
 
         for sM in stat_mod:
@@ -129,8 +139,47 @@ class Character(object):
                         stat]:
                     self.stats[stat] = self.stats["max_" +
                             stat]
+            elif "max" in stat:
+                real_stat = stat[-2:]
+                if self.stats[stat] != self.stats[real_stat]:
+                    self.stats[real_stat] = self.stats[stat]
             if self.stats[stat] < 0:
                 self.stats[stat] = 0
+
+    def lvl_up(self, next_lvl = 0):
+        '''
+        used to lvl up characters
+        '''
+
+        current_lvl = self.stats["lvl"]
+        if not next_lvl:
+            next_lvl = current_lvl + 1
+        if next_lvl > 100: #max lvl is 100
+            return
+        diff = next_lvl - current_lvl
+        squared_diff = (next_lvl**2) - (current_lvl**2)
+        hp_b = 18 #max hp possible is about 900 + base
+        exp_m = 2 #max exp needed possible is about 10000
+        other_stat_b = 6 #max other stat is about 290 + base
+        lvl_func = (lambda m, b: (.5 * m * squared_diff) + (b * diff))
+
+        valid_stats = ('max_hp','max_sp','max_mp','def',
+                'str','md','ma','spe','lck','exp_needed')
+        stat_mod_dict = {"lvl":diff}
+        for stat in valid_stats:
+            if 'hp' in stat:
+                b = hp_b
+                m = b / -101.0
+            elif 'exp' in stat:
+                m = exp_m
+                b = 0
+            else:
+                b = other_stat_b
+                m = b / -101.0
+            stat_mod_dict[stat] = int(round(lvl_func(m,b)))
+        self.stat_modifier(stat_mod_dict)
+        if self.stats["lvl"] == 100: #lvl 100 is max
+            self.stats["exp_needed"] = float("inf")
 
     def SPMP_regen(self):
         '''

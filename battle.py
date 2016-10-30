@@ -116,6 +116,7 @@ def battle(player = None, allies = [], enemies = [], can_run = True):
         for stat, mod in rewards.items():
             send_to_screen("\nYou recieved %d %s!" %(mod, stat))
             player.stat_modifier({stat:mod})
+        player.validate_exp()
         reset_arena()
         return 1
 

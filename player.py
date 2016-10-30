@@ -77,6 +77,31 @@ class Player(Character):
             else:
                 return answer
 
+    def validate_exp(self):
+        '''
+        checks to see if player should lvl up
+        or not and then increases lvl if they should
+        '''
+
+        if self.stats["exp"] >= self.stats["exp_needed"]:
+            main.clearscreen()
+            before_stats = deepcopy(self.stats)
+            self.lvl_up()
+            after_stats = deepcopy(self.stats)
+            body = ''
+            #dictionaries dont save key order so I have to order them
+            for stat in ("hp","sp","mp","def","str","md",
+                    "ma","spe","lck"):
+                b_stat = before_stats[stat]
+                a_stat = after_stats[stat]
+                stat = main.player_friendly_stats[stat].capitalize()
+                if b_stat != a_stat:
+                    body += ("%s: %d --> %d\n"%(stat,b_stat, a_stat))
+            print main.create_info_board(
+                    heading = "Leveled Up!!!",
+                    body = body
+                    )
+            main.confirm()
 
     def battle_prompt(self, allies = [], enemies = []):
         '''
@@ -85,7 +110,6 @@ class Player(Character):
         '''
 
         while 1:
-            main.clearscreen(self)
             choices = ("a", "s", "i", "r")
             menu = main.create_menu(
                     prompt = "What do you want to do?",
@@ -95,7 +119,8 @@ class Player(Character):
             action = self.validate_input(
                     prompt = menu,
                     choices = choices,
-                    invalid_prompt = "Invalid choice."
+                    invalid_prompt = "Invalid choice.",
+                    show_HUD = True
                     )
             if action == 'a':
                 return self.target_prompt(self.reg_atk,
