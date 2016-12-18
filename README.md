@@ -1,7 +1,7 @@
 # Dungeon-Quest
 
 This is a roll and move style game I had originally created as a final project for my Python class at Rutgers University in New Brunswick,  NJ.
-With the help of Masa-Yume, it has morphed into something more complex than I could have ever imagined.
+With the help of another contributor named Masa-Yume, it has morphed into something more complex than I could have ever imagined.
 
 ####Dependencies
 * dill (obtained via pip)
@@ -16,5 +16,6 @@ The current features are as follows:
 * Interactive, turn based attack system
 * Player gains experience based upon which monster was killed, will be used later for leveling up character
 * Save and load features
+* Heads Up Display of Player's current stats
 
 To start the game simply execute main.py with Python v2.x (preferably 2.7.x), the game will not work at all with Python 3
