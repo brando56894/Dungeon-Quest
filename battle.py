@@ -4,7 +4,6 @@
 
 from random import random
 from superRandom import super_randint, super_choice
-from skills import skills
 from copy import deepcopy
 import main
 
@@ -25,6 +24,7 @@ player_stats_copy = {} #allows some stats to go back to normal
 quiet = False
 run_ability = True
 
+#TODO:Make display more appealing
 def send_to_screen(messege):
     '''
     prints message if not quiet
@@ -58,11 +58,9 @@ def battle(player = None, allies = [], enemies = [], can_run = True):
     allies.append(player)
     for aE in allies + enemies:
         everyone[aE.name] = aE
-    allies = [char.name for char in allies]
-    enemies = [char.name for char in enemies]
+    faction["allies"] = allies = [char.name for char in allies]
+    faction["enemies"] = enemies = [char.name for char in enemies]
     player = player.name
-    faction["allies"] = allies
-    faction["enemies"] = enemies
     run_ability = can_run
     rewards = calc_reward(player, enemies)
 
@@ -70,8 +68,6 @@ def battle(player = None, allies = [], enemies = [], can_run = True):
     ran = False
     while not check_if_end(player):
         count += 1
-        #for sE in status_effects:
-        #    apply_status_effects(sE, status_effects[sE])
         if collect_atks(player):
             ran = True
             break
@@ -120,6 +116,7 @@ def battle(player = None, allies = [], enemies = [], can_run = True):
         for stat, mod in rewards.items():
             send_to_screen("\nYou recieved %d %s!" %(mod, stat))
             player.stat_modifier({stat:mod})
+        player.validate_exp()
         reset_arena()
         return 1
 
@@ -180,10 +177,6 @@ def reset_arena():
     quiet = False
     run_ability = True
 
-#apply any status effects
-#def apply_status_effects(character, effect):
-#    pass
-
 def collect_atks(player):
     '''
     collects atks from all alive characters
@@ -225,8 +218,7 @@ def run_check(player):
                     [everyone[char].stats["spe"]
                         for char in teamList])
             team_len = len(faction[team])
-            faction_avg[team] = ((team_lck * team_spe) *
-                    (team_len ** 2))
+            faction_avg[team] = (team_lck * team_spe) / team_len
         if faction_avg["allies"] >= faction_avg["enemies"]:
             return True
 
@@ -447,9 +439,6 @@ def absorb(char_name, dmg, absorb_dict):
     mod = int(round((factor / 100.0) * -dmg))
     character.stat_modifier({stat: mod})
     send_to_screen("%s gained %d %s!" %(char_name, mod, stat))
-
-#def status_effect():
-#    pass
 
 def bury_if_dead(char_name):
     '''
