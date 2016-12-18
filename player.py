@@ -17,7 +17,7 @@ class CreatePlayer(object):
         self.weapons = ["dagger"]
         self.name = name
         self.steps = 0
-        self.damage_dealt = 12
+        self.damage_dealt = 12 #not needed
         self.current_weapon = "dagger"
         self.dragon_attack = False
         self.basilisk_attack = False
@@ -158,7 +158,16 @@ class CreatePlayer(object):
         return self
     
     def deal_damage(self,Monster):
-        Monster.take_damage(self.damage_dealt,self)
+        if self.current_weapon == "sword":
+            damage_dealt = superRandint(13,30)
+        elif self.current_weapon == "pistol":
+            damage_dealt = superRandint(31,60)
+        elif self.current_weapon == "rifle":
+            damage_dealt = superRandint(61,120)
+        else: 
+            damage_dealt = superRandint(1,12)
+        
+        Monster.take_damage(damage_dealt,self)
         
     def gain_xp(self,monster_name):
         if monster_name == "Dragon":
@@ -175,18 +184,6 @@ class CreatePlayer(object):
         print "\nYou gained %d XP!" % gained
         return self
 
-    def add_weapon(self,name,damage):
-        if name == "pistol" and self.has_pistol is False:
-            self.has_pistol = True            
-        elif name == "rifle" and self.has_rifle is False:
-            self.has_rifle = True            
-        elif name == "sword" and self.has_sword is False:
-            self.has_sword = True            
-        else:
-            print "\nYou already own that weapon!"
-        sleep(2)            
-        return (self)
-    
     def buy_weapon(self):
         print "\nS)word:   25 Gold"
         print "P)istol:  60 Gold"
@@ -194,17 +191,17 @@ class CreatePlayer(object):
         choice = raw_input("\nWhich one would you like to purchase? ").lower()
         if choice == 's'and self.gold >= 25:
             self.gold -= 25
-            self.add_weapon("sword",25)
+            self.has_sword == True
             print "\nA sword has been added to your inventory."
             sleep(2)
         elif choice == 'p' and self.gold >= 60:
             self.gold -= 60
-            self.add_weapon("pistol",60)
+            self.has_pistol == True
             print "\nA pistol has been added to your inventory."
             sleep(2)
         elif choice == 'r' and self.gold >= 120:
             self.gold -= 120
-            self.add_weapon("rifle",120)
+            self.has_rifle == True
             print "\nA rifle has been added to your inventory."
             sleep(2)
         else:
@@ -215,21 +212,17 @@ class CreatePlayer(object):
     
     def set_current_weapon(self): 
         print "\nCurrent Weapon: " + self.current_weapon
-        #doesn't show correct weapons immediately after a new weapon is found
+        #doesn't show correct weapons after a new weapon is found
         #even if weapon is in inventory, method itself works perfectly.
         print "Available Weapons: %s" % ", ".join(str(weapon) for weapon in self.weapons) 
         choice = raw_input("\nUse weapon: ").lower()
         if choice == "sword" and self.has_sword is True:
-            self.damage_dealt = 25
             self.current_weapon = "sword"
         elif choice == "pistol" and self.has_pistol is True:
-            self.damage_dealt = 60
             self.current_weapon = "pistol"
         elif choice == "rifle" and self.has_rifle is True:
-            self.damage_dealt = 120
             self.current_weapon = "rifle"
         elif choice == "dagger":
-            self.damage_dealt = 12
             self.current_weapon = "dagger"
         else:
             print "\nSorry you don't currently have that weapon in your inventory."
