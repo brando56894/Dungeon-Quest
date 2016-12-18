@@ -280,7 +280,6 @@ if __name__ == "__main__":
 
     #autoload player data, if available
     actions.load_game(new_player, auto = True)
-    new_player.edit_inv("key", 1)
 
     while new_player.stats["hp"] > 0:
         continue_game = main_menu(new_player)
