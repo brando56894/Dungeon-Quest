@@ -66,12 +66,11 @@ class CreatePlayer(object):
         found = superChoice(weapons)
         print "\nYou found a %s!" % found
         if found == "sword":
-            damage = 25
+            self.has_sword = True
         elif found == "pistol":
-            damage = 60
+            self.has_pistol = True
         else:
-            damage = 120
-        self.add_weapon(found,damage)
+            self.has_rifle = True
         return self     
     
     def buy_potions(self):
