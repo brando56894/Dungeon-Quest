@@ -220,12 +220,12 @@ def main_menu(player):
 
 if __name__ == "__main__":
     #Starts the game
-    #clearscreen()
-    #print "Dungeon Quest v%.2f" % version
-    #name = raw_input("\nWho dares to enter the dungeon? ")
+    clearscreen()
+    print "Dungeon Quest v%.2f" % version
+    name = raw_input("\nWho dares to enter the dungeon? ")
 
     #quick player definition taken from battle.py
-    new_player = player.Player(**{"name": "Brandon",
+    new_player = player.Player(**{"name": player.name,
         "equipment": {
             "head": "cap",
             "body": "rusty chainmail",
@@ -233,7 +233,7 @@ if __name__ == "__main__":
             "legs": "leather greaves"
             },
         "skills": ["smokescreen", "trip", "focus shot"],
-        "stats": {"gold": 99999999999} #dev buff
+        "stats": {"gold": player.gold} 
         })
 
     while new_player.stats["hp"] > 0:
