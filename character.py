@@ -22,19 +22,19 @@ class Character(object):
                 "max_sp": 10,
                 "mp": 10, #magic points
                 "max_mp": 10,
-                "def": 10, #defense
-                "str": 10, #strength
-                "md": 10, #magic defence
-                "ma": 10, #magic attack
-                "spe": 10, #speed
-                "lck": 10, #luck
+                "def": 30, #defense
+                "str": 30, #strength
+                "md": 30, #magic defence
+                "ma": 30, #magic attack
+                "spe": 30, #speed
+                "lck": 30, #luck
                 #accuracy and evasion are only for use in battle
                 #thus will never recieve an upgrade via lvl_up
                 "acc": 100, #accuracy
                 "eva": 100, #evasion
                 "lvl": 1, #level
                 "exp": 0, #experience
-                "exp_needed": 200, #experience needed for next level
+                "exp_needed": 50, #experience needed for next level
                 "gold": 0, #gold
                 }
         self.inventory = {} #item:quantity
@@ -58,7 +58,7 @@ class Character(object):
         self.check_if_dead = lambda: (True if not self.stats["hp"]
                 else False)
         self.check_if_lucky = lambda: super_choice([
-            super_choice((1,1,1,2)) for x in range(self.stats["lck"])
+            super_choice((1,1,1,2,2)) for x in range(self.stats["lck"])
             ])
 
         self.build(build)
@@ -83,11 +83,14 @@ class Character(object):
         stats = build.get("stats", {})
 
         #equip
-        for part, item in equipment.items():
-            if "hand" not in part and item:
-                self.equip(item, part)
+        for part, equip in equipment.items():
+            if "hand" not in part and equip:
+                self.equip(equip, part)
             elif "hand" in part:
-                self.equip(item if item else 'bare', part)
+                self.equip(equip if equip else 'bare', part)
+        if not (self.equipment['right_hand'] and self.equipment['left_hand']):
+            self.equip('bare', 'right_hand')
+            self.equip('bare', 'left_hand')
 
         #skills
         for skill in skill_set:
@@ -104,11 +107,11 @@ class Character(object):
                 self.stats[stat] = amount
                 if ("max_" + stat) in self.stats:
                     self.stats["max_" + stat] = amount
-            #extrapolates stats from basis
-            if self.stats["lvl"] - 1:
-                lvl = self.stats["lvl"]
-                self.stats["lvl"] = 1
-                self.lvl_up(lvl)
+        #extrapolate stats from basis
+        if self.stats["lvl"] - 1:
+            lvl = self.stats["lvl"]
+            self.stats["lvl"] = 1
+            self.lvl_up(lvl)
 
     def stat_modifier(self, stat_mod, reverse = False):
         '''
@@ -139,6 +142,7 @@ class Character(object):
                         stat]:
                     self.stats[stat] = self.stats["max_" +
                             stat]
+            #change current stat to value of max stat
             elif "max" in stat:
                 real_stat = stat[-2:]
                 if self.stats[stat] != self.stats[real_stat]:
@@ -159,9 +163,9 @@ class Character(object):
         diff = next_lvl - current_lvl
         squared_diff = (next_lvl**2) - (current_lvl**2)
         hp_b = 18 #max hp possible is about 900 + base
-        exp_m = 2 #max exp needed possible is about 10000
+        exp_m = 50 #max exp needed possible is about 245000
         other_stat_b = 6 #max other stat is about 290 + base
-        lvl_func = (lambda m, b: (.5 * m * squared_diff) + (b * diff))
+        lvl_func = (lambda m, b: (.5 * (m * squared_diff) + (b * diff)))
 
         valid_stats = ('max_hp','max_sp','max_mp','def',
                 'str','md','ma','spe','lck','exp_needed')
@@ -178,7 +182,8 @@ class Character(object):
                 m = b / -101.0
             stat_mod_dict[stat] = int(round(lvl_func(m,b)))
         self.stat_modifier(stat_mod_dict)
-        if self.stats["lvl"] == 100: #lvl 100 is max
+        #this makes it impossible to lvl up past lvl 100
+        if self.stats["lvl"] == 100:
             self.stats["exp_needed"] = float("inf")
 
     def SPMP_regen(self):
@@ -242,8 +247,14 @@ class Character(object):
                 equipment.hands_needed == 1):
             if not dequip:
                 if self.equipment[where_to_put]:
-                    self.equip(self.equipment[where_to_put],
-                            where_to_put, True, True)
+                    curr_equip = self.equipment[where_to_put]
+                    self.equip(curr_equip, where_to_put, True,
+                            True)
+                    if (curr_equip.equip_type == "weapons" and
+                            curr_equip.hands_needed == 2):
+                        other_hand = ("left_hand" if "r" in
+                                where_to_put else "right_hand")
+                        self.equip("bare", other_hand)
                 self.equipment[where_to_put] = equipment
             else:
                 self.equipment[where_to_put] = None
@@ -326,7 +337,8 @@ class Character(object):
 
         for key in dic:
             if isinstance(dic[key], dict):
-                dic[key] = self.format_string_in_dict(dic[key], target_name)
+                dic[key] = self.format_string_in_dict(dic[key],
+                        target_name, atk_name)
             if (isinstance(dic[key], str) and
                     len(dic[key].split()) > 1):
                 new_str = ''

@@ -88,7 +88,6 @@ def battle(player = None, allies = [], enemies = [], can_run = True):
     player = everyone[player]
     main.clearscreen(player)
     if player.check_if_dead():
-        send_to_screen("You died.")
         reset_arena()
         return 0
     elif ran:
@@ -116,6 +115,7 @@ def battle(player = None, allies = [], enemies = [], can_run = True):
         for stat, mod in rewards.items():
             send_to_screen("\nYou recieved %d %s!" %(mod, stat))
             player.stat_modifier({stat:mod})
+        main.confirm()
         player.validate_exp()
         reset_arena()
         return 1
@@ -124,6 +124,8 @@ def calc_reward(player, enemies):
     '''
     Reward is calculated here
     '''
+
+    luck = everyone[player].check_if_lucky
 
     #inventory
     inv = {}
@@ -134,19 +136,20 @@ def calc_reward(player, enemies):
                     if item in inv else quantity)
     items = {}
     for item, quanitity in inv.items():
-        if super_choice([1,0]):
-            items[item] = (super_randint(1,quantity)
-                    * everyone[player].check_if_lucky())
+        if super_choice([1,0,0,0]):
+            items[item] = super_randint(1,quantity) * luck()
 
     reward_dict = {"items": items}
     #gold, exp
+    enemy_avg_lvl = (reduce((lambda x,y:x+y),
+        [everyone[char].stats['lvl'] for char in enemies]) /
+        (len(enemies) * 1.0))
+    ratio = enemy_avg_lvl / everyone[player].stats['lvl']
     for stat in ("gold", "exp"):
-        total = reduce((lambda x,t: x+y),
-                [everyone[char].stats[stat]
+        total = reduce((lambda x,y: x+y),
+                [everyone[char].stats[stat] * ratio * luck()
                     for char in enemies])
-        stat_value = (total * everyone[player].check_if_lucky()
-                / len(enemies))
-        reward_dict[stat] = stat_value
+        reward_dict[stat] = int(round(total * luck()))
     return reward_dict
 
 def clean_up():
@@ -307,7 +310,7 @@ def attack(char_name, atk_dict):
         for char in lis:
             atk_handler(char_name, char,
                     character.format_string_in_dict(
-                        deepcopy(atk_dict), char))
+                        deepcopy(atk_dict), char, atk_dict["NAME"]))
     else:
         atk_handler(char_name, target_name, atk_dict)
 
@@ -318,16 +321,20 @@ def atk_handler(char_name, target_name, atk_dict):
     '''
 
     global wait_for_hit, wait_for_next_turn
+    #atk fails if target is dead
     if (everyone[target_name].check_if_dead() and
             "wait_for_next_turn" not in atk_dict):
         send_to_screen(char_name + "'s attack failed.")
         return 0
+    #print lose_turn string if char in lose_turn list
     elif char_name in target_lose_turn:
         send_to_screen(target_lose_turn.pop(char_name))
         return 0
+    #check accuracy
     elif not checkAcc(char_name, target_name, atk_dict):
         send_to_screen(char_name + " missed!")
     else:
+        #handling for targets that are waiting to be hit
         if target_name in wait_for_hit:
             target_atk = wait_for_hit.pop(target_name)
             wait_dict = target_atk.pop("wait_for_hit")
@@ -343,6 +350,7 @@ def atk_handler(char_name, target_name, atk_dict):
                         "counter_atk_str"]
                 target_atk["target"] = char_name
                 attack(target_name, target_atk)
+        #handling for targets waiting for n turn(s)
         elif target_name in wait_for_next_turn:
             recieve_dmg = wait_for_next_turn[target_name][
                     "wait_for_next_turn"]["recieve_dmg"]
@@ -350,6 +358,7 @@ def atk_handler(char_name, target_name, atk_dict):
                 mod_atk(char_name, target_name, atk_dict)
             else:
                 send_to_screen(char_name + " missed!")
+        #default atk handling
         else:
             mod_atk(char_name, target_name, atk_dict)
 
@@ -383,17 +392,24 @@ def mod_atk(char_name, target_name, atk_dict):
     global everyone, target_lose_turn
     target = everyone[target_name]
     mod_dict = atk_dict.get("mod", {})
+    #check if target should lose turn
     lose = atk_dict.get("target_lose_turn", False)
     if lose:
         target_lose_turn[target_name] = lose
+    #get mod_string if it is there
     if mod_dict:
         mod_string = atk_dict.get("mod_str")
     else:
         mod_string = ''
+    #calculate dmg and display string if dmg != False
     dmg = calc_dmg(char_name, target_name, atk_dict)
     if dmg:
         mod_dict["hp"] = dmg
         send_to_screen("%s took %d damage!" %(target_name, -dmg))
+    #special string for very weak atks with dmg == 0
+    elif not isinstance(dmg, bool):
+        send_to_screen("%s's atk was too weak to give damage!" % char_name)
+    #give char health if the atk has an absorb factor
     absorb_dict = atk_dict.get("absorb", False)
     if absorb_dict:
         absorb(char_name, dmg, absorb_dict)
@@ -412,6 +428,7 @@ def calc_dmg(char_name, target_name, atk_dict):
     global everyone
     character = everyone[char_name]
     target = everyone[target_name]
+    #collect attributes
     mag_atk = atk_dict.get("mp_used", 0)
     atk = character.stats["ma" if mag_atk else "str"]
     defe = target.stats["md" if mag_atk else "def"]
@@ -420,9 +437,11 @@ def calc_dmg(char_name, target_name, atk_dict):
     atk_def_ratio = ((atk * 1.0) / (defe * 2.0)) * lck
     base_atk = (atk_dict.get("base_atk", 0) / 100.0) * atk
     if not base_atk:
-        return 0
+        return False #don't display dmg string
+    #print notification of critical hit
     if lck == 2:
         send_to_screen('That\'s gonna leave a mark!')
+    #return dmg as negative number
     return int(round(-1 * (atk_def_ratio + base_atk)
         * atk_def_ratio))
 
