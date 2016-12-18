@@ -183,7 +183,8 @@ def visit_shop_section(name, area, player): #here
     name_cost_descrip = {}
     for key, nested_dict in area[0].items():
         for item_name, info in nested_dict.items():
-            if (not info.get("no_shop", 0) and
+            if (isinstance(info, dict) and
+                    not info.get("no_shop", 0) and
                     not ((name == "skills") and
                         (item_name in player.skill_bag or
                             item_name in player.skills))):
