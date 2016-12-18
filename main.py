@@ -38,11 +38,30 @@ def clearscreen(player = None):
     if player: #do not pass the player if you don't want HUD to be displayed
         player.HUD()
 
+def flush():
+    '''
+    Flushes the stdin buffer
+
+    Best if used with raw_input after sleep so that
+    any key pressed by the user does not interfere with
+    the raw_input
+    '''
+
+    try:
+        import sys, termios
+        termios.tcflush(sys.stdin, termios.TCIFLUSH)
+    #TODO: Test on windows
+    except ImportError: #Added for windows support
+        import msvcrt
+        while msvcrt.kbhit():
+            msvcrt.getch()
+
 def confirm():
     '''
     Pauses game until player presses enter
     '''
 
+    flush()
     raw_input("\n**Press Enter**")
 
 def create_menu(prompt = '', choices = (), options = (),
@@ -64,6 +83,9 @@ def create_menu(prompt = '', choices = (), options = (),
     longest = lambda x, y: x if (len(x) > len(y)) else y
     choices = [x.capitalize() for x in choices]
     options = [x.capitalize() for x in options]
+    if len(choices) != len(options):
+        raise ValueError("Options list must be the same length "
+                "as the choices list")
     if isinstance(prompt, tuple):
         check_prompt = reduce(longest, prompt)
     else:
@@ -138,7 +160,7 @@ def combine(*displays):
     combines different displays and makes
     them uniform
     '''
-    
+
     longest = lambda x, y: x if (len(x) > len(y)) else y
     samples = [display.split('\n')[0] for display in displays]
     longest_sample = reduce(longest, samples)
@@ -174,18 +196,18 @@ def main_menu(player):
     clearscreen(player)
     start_screen = create_menu(
             prompt = "What would you like to do?",
-            choices = ("Enter", "R", "G", "I", "E", "V", "C",
+            choices = ("Enter", "J", "G", "I", "E", "V", "C",
                 "S", "L", "Q"),
-            options = ("Prev Action", "Roll Dice", "Go To Shop",
+            options = ("Prev Action", "Continue Journey", "Go To Shop",
                 "Inventory", "Equipment", "View Skills", "Check Stats",
                 "Save Game", "Load Game", "Quit"),
             )
-    print start_screen
-    
-    choice = raw_input("\nChoice: ").lower()
+
+    flush()
+    choice = raw_input("%s\nChoice: " %(start_screen)).lower()
     #using this method helps clean up all those logic gates
     choices = {
-            'r': actions.roll_dice,
+            'j': actions.roll_dice,
             'g': actions.visit_shop,
             'i': player.view_inv,
             'e': player.view_equip,
@@ -205,13 +227,14 @@ def main_menu(player):
         try:
             if choices[choice] != cache:
                 cache = choices[choice]
-            x = choices[choice]()
-            if x == 0: #quit_game should be the only one that returns zero
-                return 0
+            choices[choice]()
         except TypeError:
             if choices[choice] != cache:
                 cache = choices[choice]
-            choices[choice](player)
+            x = choices[choice](player)
+            #quit_game should be the only one that returns False/zero
+            if x == 0:
+                return 0
         except KeyError:
             print ("\nYou didn't select a valid choice.\n"
                     "Please choose again.")
@@ -220,25 +243,48 @@ def main_menu(player):
 
 if __name__ == "__main__":
     #Starts the game
-    #clearscreen()
-    #print "Dungeon Quest v%.2f" % version
-    #name = raw_input("\nWho dares to enter the dungeon? ")
 
-    #quick player definition taken from battle.py
-    new_player = player.Player(**{"name": "Brandon",
-        "equipment": {
-            "head": "cap",
-            "body": "rusty chainmail",
-            "both_hands": "rifle",
-            "legs": "leather greaves"
-            },
-        "skills": ["smokescreen", "trip", "focus shot"],
-        "stats": {"gold": 99999999999} #dev buff
-        })
+    #make sure the usre types something
+    name = ''
+    while not name:
+        clearscreen()
+        print "Dungeon Quest v%.2f" % version
+        name = raw_input("\nWho dares to enter the dungeon? ")
+
+    #dev pre-defined profile
+    if name in ("brandon", "Brandon"):
+        new_player = player.Player(**{"name": "Brandon",
+            "equipment": {
+                "head": "cap",
+                "body": "rusty chainmail",
+                "both_hands": "rifle",
+                "legs": "leather greaves"
+                },
+            "skills": ["smokescreen", "trip", "focus shot"],
+            "stats": {"gold": 99999999999} #dev buff
+            })
+    elif name in ("masayume", "MasaYume", "Masayume"):
+        new_player = player.Player(name = "MasaYume",
+                equipment = {
+                    "head": "cap",
+                    "body": "rusty chainmail",
+                    "right_hand": "gauntlet",
+                    "left_hand": "dagger",
+                    "legs": "leather greaves"
+                    },
+                skills = ["speed punch", "zen punch", "backstab"],
+                stats = {"gold": 99999999999} #dev buff
+                )
+    else:
+        new_player = player.Player(name = name)
+
+    #autoload player data, if available
+    actions.load_game(new_player, auto = True)
+    new_player.edit_inv("key", 1)
 
     while new_player.stats["hp"] > 0:
         continue_game = main_menu(new_player)
-        if new_player.stats["basilisk_attack"]:
+        if new_player.stats['hp'] and new_player.stats["basilisk_attack"]:
             print "\nCongratulations! You made it through the dungeon alive!\n"
             break
         elif new_player.stats["run_away"] > 5:

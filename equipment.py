@@ -97,6 +97,18 @@ class Equipment(object):
     This class is for all equipment
     '''
 
+    def __eq__(self, other):
+        """
+        Used to check if two Equipment objects are
+        equal using the name as that should be unique
+        for every equipment definition
+
+        :other: The other equipment object
+        :returns: boolean value, true for equal, false, for not
+
+        """
+        return self.name == other.name
+
     def __init__(self, name):
         self.name = name
         for key, values in armour.items():
@@ -111,7 +123,7 @@ class Equipment(object):
                 self.type = key
                 break
         else:
-            raise KeyError
+            raise KeyError("%s is not a %s" %(name, type(self).__name__))
         if 'n' in self.equip_type:
             self.hands_needed = def_dict[self.type][self.name][
                     "hands_needed"]
@@ -124,7 +136,7 @@ class Equipment(object):
         '''
 
         heading = self.name.capitalize()
-        body = "" if not quantity else "Quantity: %d\n" %quantity
+        body = "" if not quantity else "Quantity: %d\n" % quantity
 
         import main
         if self.mods:

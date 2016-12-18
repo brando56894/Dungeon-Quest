@@ -292,4 +292,4 @@ class Skill(Item):
         '''
         disabled for Skill class
         '''
-        raise AttributeError("'Skill' class has not attribute 'use'.")
+        raise AttributeError("'Skill' class has no attribute 'use'.")

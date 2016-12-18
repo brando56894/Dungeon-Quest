@@ -17,13 +17,12 @@ items = {
                 },
             },
         "battle": {},
+        #these items are specific to triggering events rather anywhere
+        #or battle use so they only need a description
+        "special": {
+            "key": "I wonder what door this unlocks..."
+            }
         }
-
-#these items are specific to triggering events rather anywhere
-#or battle use
-special_items = [
-    'key'
-    ]
 
 class Item(object):
     '''
@@ -38,9 +37,11 @@ class Item(object):
             if name in item_dic:
                 self.effect = item_dic[name]
                 self.type = item_type
+                if self.type != "special":
+                    self.effect["NAME"] = name
                 break
         else:
-            raise KeyError
+            raise KeyError("%s is not a %s" %(name, type(self).__name__))
 
     def use(self, char):
         mod = self.effect["mod"]
@@ -60,27 +61,31 @@ class Item(object):
         #type
         body += "Type: %s\n" %(self.type)
 
-        #target
-        target = self.effect.get("target", 0)
-        if target:
-            body += ("Target: " + ("all allies" if target == 2
-                else "all enemies" if target == 3 else "You")
-                + '\n')
+        if self.type != "special":
+            #target
+            target = self.effect.get("target", 0)
+            if target:
+                body += ("Target: " + ("all allies" if target == 2
+                    else "all enemies" if target == 3 else "You")
+                    + '\n')
 
-        #base_atk, base_acc
-        body += ("" if not self.effect.get("base_atk", 0) else
-                ("Strength: %d\n" %(self.effect["base_atk"])))
-        body += ("" if not self.effect.get("base_acc", 0) else
-                ("Accuracy: %d\n" %(self.effect["base_acc"])))
+            #base_atk, base_acc
+            body += ("" if not self.effect.get("base_atk", 0) else
+                    ("Strength: %d\n" %(self.effect["base_atk"])))
+            body += ("" if not self.effect.get("base_acc", 0) else
+                    ("Accuracy: %d\n" %(self.effect["base_acc"])))
 
-        #sp_used, mp_used
-        body += (("SP Used: %d\n" %(self.effect["sp_used"]))
-                if self.effect.get("sp_used", 0) else
-                ("MP Used: %d\n" %(self.effect["mp_used"])) if
-                self.effect.get("mp_used", 0) else "")
+            #sp_used, mp_used
+            body += (("SP Used: %d\n" %(self.effect["sp_used"]))
+                    if self.effect.get("sp_used", 0) else
+                    ("MP Used: %d\n" %(self.effect["mp_used"])) if
+                    self.effect.get("mp_used", 0) else "")
 
-        #ability description
-        body += "\n%s\n" %(self.effect["ability_descrip"])
+            #ability description
+            body += "\n%s\n" %(self.effect["ability_descrip"])
+        else:
+            body += "\n"
+            body += self.effect
 
         body += other
 
