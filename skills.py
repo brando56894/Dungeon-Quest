@@ -73,6 +73,8 @@ Shortcuts for all strings:
     atk_name = name of atk #yet to be implemented
 '''
 #TODO: make strings more interesting to read
+
+#dictionary of skills
 skills = {
     "all": {
         "smokescreen": {
@@ -279,7 +281,7 @@ skills = {
                 }
         },
     }
-
+ 
 class Skill(Item):
     '''
     class for all skills

@@ -44,6 +44,9 @@ class Item(object):
             raise KeyError("%s is not a %s" %(name, type(self).__name__))
 
     def use(self, char):
+        '''
+        apply item mods to character object
+        '''
         mod = self.effect["mod"]
         mod_string = self.effect["mod_str"]
         char.stat_modifier(mod)

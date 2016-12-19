@@ -111,12 +111,16 @@ class Equipment(object):
 
     def __init__(self, name):
         self.name = name
+
+        #define equip_type
         for key, values in armour.items():
             if name in values:
                 self.equip_type = "armour"
                 break
         else:
             self.equip_type = "weapons"
+
+        #define type, if can't find type raise error
         def_dict = armour if 'r' in self.equip_type else weapons
         for key, values in def_dict.items():
             if name in values:
@@ -124,27 +128,44 @@ class Equipment(object):
                 break
         else:
             raise KeyError("%s is not a %s" %(name, type(self).__name__))
+
+        #define hands_needed if weapon
         if 'n' in self.equip_type:
             self.hands_needed = def_dict[self.type][self.name][
                     "hands_needed"]
+
+        #save mods
         self.mods = def_dict[self.type][self.name]["mods"]
 
     def describe_self(self, quantity = 0, other = ""):
-        '''
-        much like describe_ability in actions.py but specific
-        for equipment
-        '''
+        """
+        Generate description of equipment
 
+        :quantity: amount of equipment, if nonzero, quantity
+                   will be displayed
+        :other: Any additional info to be added at the bottom
+                of the description
+        :returns: a info_board as a string containing information
+                  about the equipment
+
+        """
         heading = self.name.capitalize()
+
+        #if quantity is nonzero display quantity
         body = "" if not quantity else "Quantity: %d\n" % quantity
 
         import main
+        #display modifications
         if self.mods:
             for stat,mod in self.mods.items():
                 body += "%s: %d\n" %(
                         main.player_friendly_stats[
                             stat].capitalize(), mod)
+
+        #if weapon display hands_needed
         if "w" in self.equip_type:
             body += "Hands Needed: %d\n" %(self.hands_needed)
+
+        #add on other to body
         body += other
         return main.create_info_board(heading, body)
