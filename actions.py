@@ -13,7 +13,10 @@ def roll_dice(Player):
     #If zork-style gameplay is enabled, this will no longer be a problem
     roll = superRandrange(1,6)
     Player.steps += roll
-    
+    Player.turns += 1
+    if Player.turns > 6:
+       Player.turns = 0
+
     #mid-game boss
     if Player.steps >= 100 and Player.dragon_attack is False:
         dragon = monsters.CreateMonster(200,25,"Dragon") #HP,damage_dealt,name

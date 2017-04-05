@@ -76,8 +76,8 @@ def player_methods(Player):
             "13. buy_weapon()\n"
             "14. set_current_weapon()\n"
             "15. set step count\n"
-            "16. Player object attributes")
-    
+            "16. Player object attributes\n"
+   	    "17. Turns Taken") 
     choice = raw_input("\nWhich method? ")
     
     if choice == '1':
@@ -121,6 +121,9 @@ def player_methods(Player):
     elif choice == '16':
         print Player
         sleep(9)
+    elif choice == '17':
+	turn = int(raw_input("\nSet turn count to what? "))
+	Player.turns = turn 
     else:
         print "\nNot a valid choice"
         sleep(2)

@@ -1,5 +1,5 @@
 #!/usr/bin/python2
-#
+
 #~main.py~
 
 import actions
@@ -26,9 +26,9 @@ def menu(Player):
             "***************************\n"
             "** Enter: Prev Action    **\n"
             "** R:     Roll Dice      **\n"
+            "** V:     Visit Shop     **\n" 
             "** L:     List Inventory **\n"
             "** C:     Change Weapon  **\n"
-            "** V:     Visit Shop     **\n"
             "** U:     Use Potion     **\n"
             "** S:     Save Game      **\n"
             "** Q:     Quit           **\n" %(Player.health))

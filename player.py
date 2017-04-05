@@ -26,6 +26,7 @@ class CreatePlayer(object):
         self.has_rifle = False
         self.run_away = 0
         self.has_key = False
+	self.turns = 0
         
     def __repr__(self):
         return ("\nName: %s\nHealth: %d\nXP: %d\nPotions: "
@@ -33,12 +34,12 @@ class CreatePlayer(object):
                 "ent Weapon: %s\nDragon Attack: %s\nBasili"
                 "skAttack: %s\nHas Sword: %s\nHas Pistol: "
                 "%s\nHas Rifle: %s\nTimes Run Away: %d\nHa"
-                "s Key: %s" % (self.name,self.health,self.xp,
+                "s Key: %s\nTurns: %s" % (self.name,self.health,self.xp,
                     self.potions,self.gold,self.weapons,
                     self.steps,self.current_weapon,
                     self.dragon_attack,self.basilisk_attack,
                     self.has_sword,self.has_pistol,self.has_rifle,
-                    self.run_away,self.has_key)
+                    self.run_away,self.has_key,self.turns)
                 )
 
     def find_gold(self):
