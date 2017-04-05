@@ -6,7 +6,7 @@ import actions
 import player
 from time import sleep
 
-version = 1.12 
+version = 1.2 
 
 #enables the debug menu option in the main menu
 DEBUG_MODE = "enabled"
