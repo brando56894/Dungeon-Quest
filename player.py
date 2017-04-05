@@ -190,17 +190,17 @@ class CreatePlayer(object):
         choice = raw_input("\nWhich one would you like to purchase? ").lower()
         if choice == 's'and self.gold >= 25:
             self.gold -= 25
-            self.has_sword == True
+            self.has_sword = True 
             print "\nA sword has been added to your inventory."
             sleep(2)
         elif choice == 'p' and self.gold >= 60:
             self.gold -= 60
-            self.has_pistol == True
+            self.has_pistol = True
             print "\nA pistol has been added to your inventory."
             sleep(2)
         elif choice == 'r' and self.gold >= 120:
             self.gold -= 120
-            self.has_rifle == True
+            self.has_rifle = True
             print "\nA rifle has been added to your inventory."
             sleep(2)
         else:
