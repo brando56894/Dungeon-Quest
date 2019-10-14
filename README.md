@@ -1,10 +1,6 @@
 # Dungeon-Quest
 
-This is a roll and move style game I had originally created as a final project for my Python class at Rutgers University in New Brunswick,  NJ.
-I had converted it to Java and then a GUI game using the Swing library. Sadly over the years I had lost the code and decided to 
-recreate it while I was re-learning Python, and make it better than it ever was before since we never learned about classes.
-
-The current features are as follows:
+This is a roll and move style game, the current features are as follows:
 
 * A shop where the player can purchase health potions and better weapons
 * Player finds random items such as gold, health potions and weapons as (s)he is navigating the dungeon
